@@ -8,10 +8,10 @@ import module namespace tconst = "tconst"
     at "tconst.xqy";
 
 test:html(
-<testsuite>
+<testsuite title="const module">
   <test name="const1" desc="load constant module">
     <expected>true</expected>
-    <result>{tconst:loadConstantModule()}</result>
+    <result>{tconst:loadModuleTest()}</result>
   </test>
   <test name="const2" desc="check version">
     <expected>true</expected>
@@ -43,7 +43,16 @@ test:html(
   </test>
   <test name="const9" desc="check if psvi is supported">
     <expected>true</expected>
+
     <result>{tconst:checkPsviSupported()}</result>
+  </test>
+  <test name="const10" desc="check error codes">
+    <expected>true</expected>
+    <result>{tconst:checkXprocErrorCodes()}</result>
+  </test>
+  <test name="const11" desc="check xprocxq error codes">
+    <expected>true</expected>
+    <result>{tconst:checkXprocXQErrorCodes()}</result>
   </test>
 
 </testsuite>

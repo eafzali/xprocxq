@@ -1,50 +1,6 @@
-xquery version "3.0";
-
-module namespace tconst ="tconst";
-
-import module namespace test = "http://www.marklogic.com/test"
-    at "../lib/test.xqm";
-
-import module namespace const = "http://xproc.net/xproc/const" at "../../xquery/const.xqm";
-
-declare function (:TEST:) tconst:loadModuleTest() { 
-  test:assertStringEqual($const:init_unique_id, '!1')
-};
-
-declare function (:TEST:) tconst:checkVersion() { 
-  test:assertStringEqual($const:version, '0.9')
-};
-
-declare function (:TEST:) tconst:checkProductVersion() { 
-  test:assertStringEqual($const:product-version, '0.9')
-};
-
-declare function (:TEST:) tconst:checkProductVersioName() { 
-  test:assertStringEqual($const:product-name, 'xprocxq')
-};
-
-declare function (:TEST:) tconst:checkVendor() { 
-  test:assertStringEqual($const:vendor, 'James Fuller')
-};
-
-declare function (:TEST:) tconst:checkLanguage() { 
-  test:assertStringEqual($const:language, 'en')
-};
-
-declare function (:TEST:) tconst:checkVendorURI() { 
-  test:assertStringEqual($const:vendor-uri, 'http://www.xproc.net')
-};
-
-declare function (:TEST:) tconst:checkXpathVersion() { 
-  test:assertStringEqual($const:xpath-version, '2.0')
-};
-
-declare function (:TEST:) tconst:checkPsviSupported() { 
-  test:assertStringEqual($const:psvi-supported, 'false')
-};
-
-declare function (:TEST:) tconst:checkXprocErrorCodes() { 
-  test:assertXMLEqual($const:error, <error-list xmlns="http://www.w3.org/ns/xproc-error">
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: error-list.xml,v 1.64 2010/05/07 12:14:30 NormanWalsh Exp $ -->
+<error-list xmlns="http://www.w3.org/ns/xproc-error">
    <error code="XC0002">It is a dynamic error if the value starts with the string “--”.</error>
    <error code="XC0003">It is a dynamic error if a username or password is specified without specifying an auth-method, if the requested auth-method isn't supported, or the authentication challenge contains an authentication method that isn't supported.</error>
    <error code="XC0004">It is a dynamic error if the status-only attribute has the value true and the detailed attribute does not have the value true.</error>
@@ -191,19 +147,4 @@ declare function (:TEST:) tconst:checkXprocErrorCodes() {
    <error code="XS0062">It is a static error if a required version attribute is not present.</error>
 
    <error code="XS0063">It is a static error if the value of the version attribute is not a xs:decimal.</error>
-</error-list>)
-};
-
-declare function (:TEST:) tconst:checkXprocXQErrorCodes() { 
-  test:assertXMLEqual($const:xprocxq-error,<error-list xmlns="http://xproc.net/xproc/error">
-   <error code="XXQ0001">This step is not yet supported by xprocxq.</error>
-   <error code="XXQ0002">This component is not yet supported by xprocxq.</error>
-   <error code="XXQ0003">XProc pipeline supplied is empty, non-existent, corrupted or invalid when checked against xproc schema.</error>	
-   <error code="XXQ0004">This step requires has dependencies which have not loaded.</error>
-</error-list>)
-
-};
-
-
-
-
+</error-list>

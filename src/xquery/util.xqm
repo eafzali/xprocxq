@@ -1,14 +1,14 @@
-xquery version "1.0" encoding "UTF-8";
-module namespace u = "http://xproc.net/xproc/util";
 (: ------------------------------------------------------------------------------------- 
  
 	util.xqm - contains most of the XQuery processor specific functions, including all
 	helper functions.
 	
 ---------------------------------------------------------------------------------------- :)
+xquery version "3.0" encoding "UTF-8";
 
+module namespace u = "http://xproc.net/xproc/util";
 
-(: XProc Namespace Declaration :)
+(: declare namespaces :)
 declare namespace p="http://www.w3.org/ns/xproc";
 declare namespace c="http://www.w3.org/ns/xproc-step";
 declare namespace err="http://www.w3.org/ns/xproc-error";
@@ -19,12 +19,10 @@ declare namespace opt = "http://xproc.net/xproc/opt";
 declare namespace ext = "http://xproc.net/xproc/ext";
 declare namespace xxq-error = "http://xproc.net/xproc/error";
 
-declare namespace t = "http://xproc.org/ns/testsuite";
 
 (: Module Imports :)
 import module namespace const = "http://xproc.net/xproc/const" at "resource:net/xproc/xprocxq/src/xquery/const.xqm";
-import module namespace p1 = "http://xproc.net/xproc/functions" at "resource:net/xproc/xprocxq/src/xquery/functions.xqm";
-
+(: import module namespace p1 = "http://xproc.net/xproc/functions" at "resource:net/xproc/xprocxq/src/xquery/functions.xqm"; :)
 
 (: set to 1 to enable debugging :)
 declare variable $u:NDEBUG :=1;
@@ -32,7 +30,6 @@ declare variable $u:NDEBUG :=1;
 (: -------------------------------------------------------------------------- :)
 (: manage namespaces                                                          :)
 (: -------------------------------------------------------------------------- :)
-
 
 declare function u:declarens($element){
     u:declare-ns(u:enum-ns($element))

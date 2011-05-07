@@ -8,7 +8,7 @@ xquery version "3.0"  encoding "UTF-8";
 
 module namespace xproc = "http://xproc.net/xproc";
 
- (:  declare namespaces :)
+ (: declare namespaces :)
  declare namespace p="http://www.w3.org/ns/xproc";
  declare namespace c="http://www.w3.org/ns/xproc-step";
  declare namespace err="http://www.w3.org/ns/xproc-error";
@@ -17,7 +17,7 @@ module namespace xproc = "http://xproc.net/xproc";
  import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
 
  (: declare functions :)
- declare variable $xproc:run-step       := ();
+ declare variable $xproc:run-step       := xproc:run#6;
  declare variable $xproc:parse-and-eval := ();
  declare variable $xproc:declare-step   := ();
  declare variable $xproc:choose         := ();
