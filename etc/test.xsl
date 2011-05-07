@@ -7,9 +7,9 @@
      
 <xsl:output indent="yes"/>
 
-<xsl:variable name="total" select="count(testsuite/test)"/>
-<xsl:variable name="success" select="count(testsuite/test[contains(result,expected)])"/>
-<xsl:variable name="failed" select="count(testsuite/test[not(contains(result,expected))])"/>
+<xsl:variable name="total" select="1"/>
+<xsl:variable name="success" select="1"/>
+<xsl:variable name="failed" select="1"/>
 
 <xsl:template match ='testsuite'>
 <html>
