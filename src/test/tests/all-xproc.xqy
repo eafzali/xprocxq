@@ -20,6 +20,15 @@ test:html(
     <expected>true</expected>
     <result>{txproc:runEntryPointTest2()}</result>
   </test>
+  <test name="xproc2a" desc="test explicit naming parsing">
+    <expected>true</expected>
+    <result>{txproc:parseExplicitNames()}</result>
+  </test>
+  <test name="xproc2b" desc="test explicit naming parsing">
+    <expected>true</expected>
+    <result>{txproc:parseExplicitNames1()}</result>
+  </test>
+
 </testsuite>
 )
 

@@ -15,6 +15,7 @@ module namespace xproc = "http://xproc.net/xproc";
 
  (: module imports :)
  import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
+ import module namespace parse = "http://xproc.net/xproc/parse" at "parse.xqm";
 
  (: declare functions :)
  declare variable $xproc:run-step       := xproc:run#6;
@@ -39,7 +40,7 @@ module namespace xproc = "http://xproc.net/xproc";
      (: STEP I: preprocess :)
      let $validate        := ()
      let $namespaces      := ()
-     let $preparse-naming := ()
+     let $parse           := ()
      let $xproc-binding   := ()
 
      (: STEP II: eval AST :)
