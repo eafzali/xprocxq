@@ -38,9 +38,11 @@ module namespace xproc = "http://xproc.net/xproc";
  (: -------------------------------------------------------------------------- :)
 
      (: STEP I: preprocess :)
-     let $validate        := ()
-     let $namespaces      := ()
-     let $parse           := ()
+     let $validate       := ()
+     let $namespaces     := ()
+     let $explicit-type  := parse:explicit-type($pipeline)
+     let $explicit-name  := parse:explicit-name($explicit-type,'!1')
+
      let $xproc-binding   := ()
 
      (: STEP II: eval AST :)

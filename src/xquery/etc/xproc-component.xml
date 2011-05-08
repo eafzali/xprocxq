@@ -20,10 +20,6 @@
     <xproc:element type="p:choose" xproc:step="true" xproc:support="true">
 		<p:input port="source" primary="true" select="/"/>
         <p:output port="result" primary="true" select="/"/>	
- 		<xproc:element type="p:when" xproc:support="true">
-        	<xproc:attribute name="test"/>
-    	</xproc:element>
-    	<xproc:element type="p:otherwise" xproc:support="true"/>     
     </xproc:element>
 
     <xproc:element type="p:for-each" xproc:step="true" xproc:support="true">
@@ -61,6 +57,12 @@
     <xproc:element type="p:xpath-context" xproc:support="true"/>
     <xproc:element type="xproc:xpath-context" xproc:support="true"/>
 
+<!-- //-->    
+
+    <xproc:element type="p:when" xproc:support="true" xproc:step="true">
+      <xproc:attribute name="test"/>
+    </xproc:element>
+    <xproc:element type="p:otherwise" xproc:support="true" xproc:step="true"/>     
 
 <!-- //-->    
 
