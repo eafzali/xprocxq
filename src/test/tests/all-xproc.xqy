@@ -65,17 +65,30 @@ test:html(
     <expected>true</expected>
     <result>{txproc:testParseType6()}</result>
   </test>
-  <test name="xproc7a" desc="test parse:explicit-name with p:choose">
+  <test name="xproc7a" desc="test parse:explicit-name">
+    <expected>true</expected>
+    <result>{txproc:testExplicitName1()}</result>
+  </test>
+  <test name="xproc7b" desc="test parse:explicit-name with p:choose">
     <expected>true</expected>
     <result>{txproc:testExplicitName()}</result>
   </test>
-  <test name="xproc7b" desc="test parse:explicit-name with p:group">
+  <test name="xproc7c" desc="test parse:explicit-name with p:group">
     <expected>true</expected>
     <result>{txproc:testExplicitName()}</result>
   </test>
   <test name="xproc7b" desc="test parse:explicit-name with p:viewport">
     <expected>true</expected>
     <result>{txproc:testExplicitName()}</result>
+  </test>
+
+  <test name="xproc8a" desc="test parse:AST">
+    <expected>true</expected>
+    <result>{txproc:testAST()}</result>
+  </test>
+  <test name="xproc8b" desc="test parse:AST">
+    <expected>true</expected>
+    <result>{txproc:testAST1()}</result>
   </test>
 
 </testsuite>

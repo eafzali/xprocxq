@@ -145,5 +145,30 @@ declare function (:TEST:) txproc:testExplicitName() {
   let $pipeline := fn:doc('data/submit-test-report.xpl')
   let $result   := parse:explicit-name(parse:explicit-type($pipeline))
   return 
-    (test:assertXMLEqual( $result, <test/>),$result) 
+    (test:assertXMLEqual( $result, <test/>),$result)
+};
+
+declare function (:TEST:) txproc:testExplicitName1() { 
+  let $pipeline := fn:doc('data/test.xpl')
+  let $result   := parse:explicit-name(parse:explicit-type($pipeline))
+  return 
+    (test:assertXMLEqual( $result, <p:declare-step xmlns:p="http://www.w3.org/ns/xproc" xmlns:xproc="http://xproc.net/xproc" version="1.0" xproc:type="comp-step" xproc:default-name="!1"><p:input port="source" xproc:type="comp">
+  
+<p:inline xproc:type="comp"><doc>
+Congratulations! You've run your first pipeline!
+</doc></p:inline></p:input><p:output port="result" xproc:type="comp"/><p:identity xproc:step="true" xproc:type="std-step" xproc:defaultname="!1.1"/></p:declare-step>),$result)
+};
+
+declare function (:TEST:) txproc:testAST() { 
+  let $pipeline := fn:doc('data/test.xpl')
+  let $result   := parse:AST(parse:explicit-name(parse:explicit-type($pipeline)))
+  return 
+    (test:assertXMLEqual( $result, <test/>),$result)
+};
+
+declare function (:TEST:) txproc:testAST1() { 
+  let $pipeline := fn:doc('data/submit-test-report.xpl')
+  let $result   := parse:AST(parse:explicit-name(parse:explicit-type($pipeline)))
+  return 
+    (test:assertXMLEqual( $result, <test/>),$result)
 };
