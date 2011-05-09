@@ -91,6 +91,15 @@ test:html(
     <result>{txproc:testAST1()}</result>
   </test>
 
+  <test name="xproc9a" desc="test parse:explicit-bindings">
+    <expected>true</expected>
+    <result>{txproc:testExplicitBindings1()}</result>
+  </test>
+  <test name="xproc9b" desc="test parse:explicit-bindings">
+    <expected>true</expected>
+    <result>{txproc:testExplicitBindings2()}</result>
+  </test>
+
 </testsuite>
 )
 

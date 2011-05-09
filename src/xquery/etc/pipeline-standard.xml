@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <p:library xmlns:p="http://www.w3.org/ns/xproc"
 		xmlns:xproc="http://xproc.net/xproc">
-
-
    <p:declare-step type="p:add-attribute" xml:id="add-attribute"  xmlns:xproc="http://xproc.net/xproc" xproc:support="true">
-      <p:input port="source"/>
-      <p:output port="result"/>
+      <p:input port="source" primary="true" />
+      <p:output port="result" primary="true" />
       <p:option name="match" required="true"/>
       <p:option name="attribute-name" required="true"/>
       <p:option name="attribute-prefix"/>                          
@@ -86,7 +84,7 @@
       <p:option name="undeclare-prefixes"/>
       <p:option name="version" select="'1.0'"/>
    </p:declare-step>
-   <p:declare-step type="p:identity" xml:id="identity" xmlns:xproc="http://xproc.net/xproc" xproc:support="true">
+   <p:declare-step type="p:identity" xml:id="identity" xproc:support="true">
       <p:input port="source" sequence="true" primary="true" select="/"/>
       <p:output port="result" sequence="true" primary="true" select="/"/>
    </p:declare-step>

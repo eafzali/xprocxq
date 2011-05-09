@@ -17,6 +17,10 @@ module namespace xproc = "http://xproc.net/xproc";
  import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
  import module namespace parse = "http://xproc.net/xproc/parse" at "parse.xqm";
 
+ (: declare options :)
+ declare boundary-space strip;
+ declare option saxon:output "indent=yes";
+
  (: declare functions :)
  declare variable $xproc:run-step       := xproc:run#6;
  declare variable $xproc:parse-and-eval := ();

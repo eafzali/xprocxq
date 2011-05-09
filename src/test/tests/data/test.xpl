@@ -7,5 +7,13 @@ Congratulations! You've run your first pipeline!
 </p:input>
 <p:output port="result"/>
 
+<p:group>
 <p:identity/>
+</p:group>
+
+<p:identity>
+  <p:input port="source" select="/test"><test>test</test></p:input>
+</p:identity>
+
+<p:count/>
 </p:declare-step>

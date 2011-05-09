@@ -3,12 +3,12 @@
                     xmlns:xproc = "http://xproc.net/xproc"
                     name="xprocxq-extension-library">
                         
-    <p:declare-step type="ext:pre" xproc:bindings="all" xproc:support="true">
+    <p:declare-step type="ext:pre" xproc:step="true" xproc:bindings="all" xproc:support="true">
         <p:input port="source" primary="true" sequence="true" select="/"/>
         <p:output port="result" primary="true" sequence="true" select="/"/>
     </p:declare-step>
 
-    <p:declare-step type="ext:post" xproc:support="true">
+    <p:declare-step type="ext:post" xproc:step="true" xproc:support="true">
         <p:input port="source" primary="true" sequence="true" select="/"/>
         <p:output port="stdout" primary="true" sequence="true" select="/"/>
     </p:declare-step> 

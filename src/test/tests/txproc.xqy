@@ -172,3 +172,17 @@ declare function (:TEST:) txproc:testAST1() {
   return 
     (test:assertXMLEqual( $result, <test/>),$result)
 };
+
+declare function (:TEST:) txproc:testExplicitBindings1() { 
+  let $pipeline := fn:doc('data/test.xpl')
+  let $result   := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
+  return 
+    (test:assertXMLEqual( $result, <test/>),$result)
+};
+
+declare function (:TEST:) txproc:testExplicitBindings2() { 
+  let $pipeline := fn:doc('data/submit-test-report.xpl')
+  let $result   := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
+  return 
+    (test:assertXMLEqual( $result, <test/>),$result)
+};
