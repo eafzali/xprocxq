@@ -48,18 +48,35 @@ declare function (:TEST:) txproc:runEntryPointTest2() {
 
 declare function (:TEST:) txproc:parseExplicitNames() { 
   let $pipeline := fn:doc('data/test.xpl')
-  let $result   := document{parse:explicit-type($pipeline)}
+  let $expected := <p:declare-step xmlns:xproc="http://xproc.net/xproc" xmlns:ext="http://xproc.net/xproc"
+                                        xmlns:c="http://www.w3.org/ns/xproc-step"
+                                        xmlns:err="http://www.w3.org/ns/xproc-error"
+                                        xmlns:xxq-error="http://xproc.net/xproc/error"
+                                        xmlns:p="http://www.w3.org/ns/xproc"
+                                        version="1.0"
+                                        xproc:type="comp-step"> 
+                           <p:input xproc:type="comp"> 
+                              <p:inline xproc:type="comp"> 
+                                 <doc>Congratulations! You've run your first pipeline!</doc> 
+                              </p:inline> 
+                           </p:input> 
+                           <p:output xproc:type="comp"/> 
+ 
+                           <p:group xproc:step="true" xproc:type="comp-step"> 
+                              <p:identity xproc:step="true" xproc:type="std-step"/> 
+                           </p:group> 
+ 
+                           <p:identity xproc:step="true" xproc:type="std-step"> 
+                              <p:input select="/test" xproc:type="comp"> 
+                                 <test>test</test> 
+                              </p:input> 
+                           </p:identity> 
+ 
+                           <p:count xproc:step="true" xproc:type="std-step"/> 
+                        </p:declare-step>
+  let $result   := parse:explicit-type($pipeline)
   return
-(    test:assertXMLEqual( $result,document{<p:declare-step xmlns:p="http://www.w3.org/ns/xproc" version="1.0" name="pipeline">
-<p:input port="source">
-  <p:inline><doc>
-Congratulations! You've run your first pipeline!
-</doc></p:inline>
-</p:input>
-<p:output port="result"/>
-
-<p:identity/>
-</p:declare-step>}),$result)
+(    test:assertXMLEqual( $result, $expected),$result)
 };
 
 declare function (:TEST:) txproc:parseExplicitNames1() { 
@@ -184,5 +201,5 @@ declare function (:TEST:) txproc:testExplicitBindings2() {
   let $pipeline := fn:doc('data/submit-test-report.xpl')
   let $result   := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
   return 
-    (test:assertXMLEqual( $result, <test/>),$result)
+    (test:assertXMLEqual( $result,<test/>),$result)
 };

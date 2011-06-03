@@ -91,36 +91,34 @@ module namespace parse = "http://xproc.net/xproc/parse";
       element {node-name($node)} {$node/@*,
        for $input in $node/p:input
          return
-           element p:input {$input/@*,
-            <p:pipe step="{$unique_before}" port=""/>
-           }
+           if ($input/*) then
+             $input
+           else
+             element p:input {$input/@*,
+             <p:pipe step="{$unique_before}" port=""/>
+             }
        ,$node/*[name(.) ne 'p:input']
       }
     else
       $node
 };
 
-
  (: parse input bindings:)  
  (: --------------------------------------------------------------------------------------------------------- :)
- declare function parse:input-port($node, $step-definition){
+ declare function parse:input-port($node as element(p:input)*, $step-definition){
  (: --------------------------------------------------------------------------------------------------------- :)
-  for $input in $step-definition/p:input
-  let $s := $node//p:input[@port eq $input/@port]
-  return
-    element p:input {
-      $input/@*[name(.) ne 'select'],
-      ($s/@select, attribute select {'/'})[1],
-      $s/*
-    }
- };
+  for $input in $step-definition//p:input
+  let $s := $node//*[@port eq $input/@port]
+  return 
+    (<test3/>,$step-definition,$node)
+};
 
  (: parse output bindings:)  
  (: --------------------------------------------------------------------------------------------------------- :)
- declare function parse:output-port($node, $step-definition){
+ declare function parse:output-port($node as element(p:output)*, $step-definition){
  (: --------------------------------------------------------------------------------------------------------- :)
-  for $input in $step-definition/p:output
-  let $s := $node//p:outport[@port eq $input/@port]
+  for $input in $step-definition//p:output
+  let $s := $node[@port eq $input/@port]
   return
     if ($input/@required eq 'true' and fn:empty($s)) then
        fn:error(xs:QName('err:XS0027'),'option required')   (: error XS0027:)
@@ -135,10 +133,10 @@ module namespace parse = "http://xproc.net/xproc/parse";
 
  (: parse options :)  
  (: --------------------------------------------------------------------------------------------------------- :)
- declare function parse:options($node, $step-definition){
+ declare function parse:options($node as element(p:with-option)*, $step-definition){
  (: --------------------------------------------------------------------------------------------------------- :)
  for $option in $step-definition/p:option
-  let $s := $node//p:with-option[@name eq $option/@name]
+  let $s := $node[@name eq $option/@name]
   return
    element p:with-option {
      $option/@*[name(.) ne 'select'],
@@ -148,12 +146,12 @@ module namespace parse = "http://xproc.net/xproc/parse";
 
  (: parse options :)  
  (: --------------------------------------------------------------------------------------------------------- :)
- declare function parse:bindings($node, $step-definition){
+ declare function parse:bindings($step as node()*, $step-definition){
  (: --------------------------------------------------------------------------------------------------------- :)
   (
-    parse:input-port($node, $step-definition),
-    parse:output-port($node, $step-definition),
-    parse:options($node,$step-definition)
+    parse:input-port($step//p:input, $step-definition),
+    if ($step//p:output) then parse:output-port($step//p:output, $step-definition) else <error/>,
+    if ($step//p:with-option) then parse:options($step//p:with-option,$step-definition) else <error/>
   )
  };
 
@@ -173,43 +171,30 @@ module namespace parse = "http://xproc.net/xproc/parse";
         typeswitch($node)
             case text()
                    return $node
-            case document-node() 
-                   return
-                     parse:AST($node/node()) 
             case element(p:declare-step) 
                    return element p:declare-step {$node/@*,
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                      $node/@xproc:type,
-                     parse:AST($node/*[@xproc:type eq 'comp'])},   (: need to eventually parse bindings here :)
+                     parse:bindings($node[@xproc:type eq 'comp'],$step-definition)},
                      parse:AST($node/*[@xproc:type ne 'comp'])}
+(:
             case element(p:group) 
                    return element p:group {$node/@*,               
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                      $node/@xproc:type,
-                     parse:AST($node/*[@xproc:type eq 'comp'])},   (: need to eventually parse bindings here :)
+                     parse:bindings($node/*[@xproc:type eq 'comp'],$step-definition)},
                      parse:AST($node/*[@xproc:type ne 'comp'])}
             case element(p:choose) 
                    return element p:choose {$node/@*,
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                      $node/@xproc:type,
-                     parse:AST($node/*[@xproc:type eq 'comp'])},   (: need to eventually parse bindings here :)
+                     parse:bindings($node/*[@xproc:type eq 'comp'],$step-definition)},
                      parse:AST($node/*[@xproc:type ne 'comp'])}
-            case element(p:when) 
-                   return element p:when {$node/@*,
+  :)
+           default return element {node-name($node)}{$node/@*,
+parse:bindings($node/*[@xproc:type eq 'comp'],$step-definition),
                      parse:AST($node/*[@xproc:type ne 'comp'])}
-            case element(p:otherwise) 
-                   return element p:otherwise {$node/@*,
-                     parse:AST($node/*[@xproc:type ne 'comp'])}
-            case element() 
-                   return element {node-name($node)} {$node/@*,
-                     if ($node/@xproc:type eq 'comp') then
-                       parse:AST($node/node())
-                     else if (fn:contains($node/@xproc:type, 'step')) then
-                       parse:bindings($node, $step-definition)
-                     else
-                       parse:AST($node/node())
-                   }
-            default return parse:AST($node/node())
+                     
 };
 
  (: entry point for parse:explicit-name() :)
@@ -270,7 +255,7 @@ module namespace parse = "http://xproc.net/xproc/parse";
             case element(p:pipeline)
                    return element p:declare-step {$node/@*,
                      namespace xproc {"http://xproc.net/xproc"},
-                     namespace ext {"http://xproc.net/xproc"},
+                     namespace ext {"http://xproc.net/xproc/ext"},
                      namespace c {"http://www.w3.org/ns/xproc-step"},
                      namespace err {"http://www.w3.org/ns/xproc-error"},
                      namespace xxq-error {"http://xproc.net/xproc/error"},
@@ -279,7 +264,7 @@ module namespace parse = "http://xproc.net/xproc/parse";
             case element(p:declare-step) 
                    return element p:declare-step {$node/@*,
                      namespace xproc {"http://xproc.net/xproc"},
-                     namespace ext {"http://xproc.net/xproc"},
+                     namespace ext {"http://xproc.net/xproc/ext"},
                      namespace c {"http://www.w3.org/ns/xproc-step"},
                      namespace err {"http://www.w3.org/ns/xproc-error"},
                      namespace xxq-error {"http://xproc.net/xproc/error"},
@@ -287,8 +272,7 @@ module namespace parse = "http://xproc.net/xproc/parse";
                      parse:explicit-type($node/node())}
             case element()
                    return element {node-name($node)} {
-                     $node/@name,
-                     $node/@select,
+                     $node/@*,
                      if (fn:contains($type,'step')) then attribute xproc:step {fn:true()} else (),
                      if ($type ne 'error') then attribute xproc:type {$type} else (),
                        if (fn:contains($type,'step')) then

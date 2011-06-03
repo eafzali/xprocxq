@@ -80,29 +80,31 @@
                   </td>
                   <td>
                      <textarea name="content" rows="6" cols="60">
-                        <result>false<p:declare-step xmlns:xproc="http://xproc.net/xproc" xmlns:ext="http://xproc.net/xproc"
+                        <result>false<p:declare-step xmlns:xproc="http://xproc.net/xproc" xmlns:ext="http://xproc.net/xproc/ext"
                                            xmlns:c="http://www.w3.org/ns/xproc-step"
                                            xmlns:err="http://www.w3.org/ns/xproc-error"
                                            xmlns:xxq-error="http://xproc.net/xproc/error"
                                            xmlns:p="http://www.w3.org/ns/xproc"
                                            version="1.0"
                                            xproc:type="comp-step">
-                              <p:input xproc:type="comp">
+                              <p:input port="source" xproc:type="comp">
                                  <p:inline xproc:type="comp">
                                     <doc>
 Congratulations! You've run your first pipeline!
 </doc>
                                  </p:inline>
                               </p:input>
-                              <p:output xproc:type="comp"/>
+                              <p:output port="result" xproc:type="comp"/>
 
                               <p:group xproc:step="true" xproc:type="comp-step">
                                  <p:identity xproc:step="true" xproc:type="std-step"/>
                               </p:group>
 
                               <p:identity xproc:step="true" xproc:type="std-step">
-                                 <p:input select="/test" xproc:type="comp">
-                                    <test>test</test>
+                                 <p:input port="source" select="/test" xproc:type="comp">
+                                    <p:inline xproc:type="comp">
+                                       <test>test</test>
+                                    </p:inline>
                                  </p:input>
                               </p:identity>
 
@@ -124,21 +126,21 @@ Congratulations! You've run your first pipeline!
                   </td>
                   <td>
                      <textarea name="content" rows="6" cols="60">
-                        <result>false<p:declare-step xmlns:xproc="http://xproc.net/xproc" xmlns:ext="http://xproc.net/xproc"
+                        <result>false<p:declare-step xmlns:xproc="http://xproc.net/xproc" xmlns:ext="http://xproc.net/xproc/ext"
                                            xmlns:c="http://www.w3.org/ns/xproc-step"
                                            xmlns:err="http://www.w3.org/ns/xproc-error"
                                            xmlns:xxq-error="http://xproc.net/xproc/error"
                                            xmlns:p="http://www.w3.org/ns/xproc"
                                            version="1.0"
                                            xproc:type="comp-step">
-                              <p:input xproc:type="comp">
+                              <p:input port="source" xproc:type="comp">
                                  <p:inline xproc:type="comp">
                                     <doc>
 Congratulations! You've run your first pipeline!
 </doc>
                                  </p:inline>
                               </p:input>
-                              <p:output xproc:type="comp"/>
+                              <p:output port="result" xproc:type="comp"/>
 
                               <p:identity xproc:step="true" xproc:type="std-step"/>
                            </p:declare-step>
@@ -158,7 +160,7 @@ Congratulations! You've run your first pipeline!
                   </td>
                   <td>
                      <textarea name="content" rows="6" cols="60">
-                        <result>false<p:declare-step xmlns:xproc="http://xproc.net/xproc" xmlns:ext="http://xproc.net/xproc"
+                        <result>false<p:declare-step xmlns:xproc="http://xproc.net/xproc" xmlns:ext="http://xproc.net/xproc/ext"
                                            xmlns:c="http://www.w3.org/ns/xproc-step"
                                            xmlns:err="http://www.w3.org/ns/xproc-error"
                                            xmlns:xxq-error="http://xproc.net/xproc/error"
@@ -167,7 +169,7 @@ Congratulations! You've run your first pipeline!
                                            name="main"
                                            version="1.0"
                                            xproc:type="comp-step">
-                              <p:output xproc:type="comp"/>
+                              <p:output port="result" xproc:type="comp"/>
                               <p:option name="host" select="'tests.xproc.org'" xproc:type="comp"/>
                               <p:option name="username" select="'calabash'" xproc:type="comp"/>
                               <p:option name="password" select="''" xproc:type="comp"/>
@@ -179,15 +181,16 @@ Congratulations! You've run your first pipeline!
   <code>password</code>.</p>
                                     <p>The <code>host</code> option is used to specify the host to use
   in the URIs of test suite documents. (Because Norm has a local copy of
-  <a>http://tests.xproc.org/</a>.)</p>
+  <a href="http://tests.xproc.org/">http://tests.xproc.org/</a>.)</p>
                                     <p>The <code>username</code> and <code>password</code> are used to submit
-  the test results to <a>http://tests.xproc.org</a>.
+  the test results to <a href="http://tests.xproc.org/">http://tests.xproc.org</a>.
   If run without a password, it simply outputs the report document.</p>
                                  </div>
                               </p:documentation>
 
-                              <p:string-replace name="patch-test-uris" xproc:step="true" xproc:type="std-step">
-                                 <p:input xproc:type="comp">
+                              <p:string-replace match="uri/text()" name="patch-test-uris" xproc:step="true"
+                                                xproc:type="std-step">
+                                 <p:input port="source" xproc:type="comp">
                                     <p:inline xproc:type="comp">
                                        <test-suites>
 	                                         <uri>/tests/required/test-suite.xml</uri>
@@ -204,8 +207,8 @@ Congratulations! You've run your first pipeline!
                               </p:string-replace>
 
                               <p:identity name="extract-uri" xproc:step="true" xproc:type="std-step">
-                                 <p:input select="/*/uri" xproc:type="comp">
-                                    <p:pipe xproc:type="comp"/>
+                                 <p:input port="source" select="/*/uri" xproc:type="comp">
+                                    <p:pipe step="patch-test-uris" port="result" xproc:type="comp"/>
                                  </p:input>
                               </p:identity>
 
@@ -213,21 +216,21 @@ Congratulations! You've run your first pipeline!
                                  <p:xpath-context xproc:type="comp">
                                     <p:empty xproc:type="comp"/>
                                  </p:xpath-context>
-                                 <p:when xproc:step="true" xproc:type="comp-step">
+                                 <p:when test="$host = 'tests.xproc.org'" xproc:step="true" xproc:type="comp-step">
                                     <p:with-option name="test" select="$host = 'tests.xproc.org'"/>
-                                    <p:wrap-sequence xproc:step="true" xproc:type="std-step">
+                                    <p:wrap-sequence wrapper="test-suites" xproc:step="true" xproc:type="std-step">
                                        <p:with-option name="wrapper" select="test-suites"/>
-                                       <p:input xproc:type="comp">
-	                                         <p:pipe xproc:type="comp"/>
+                                       <p:input port="source" xproc:type="comp">
+	                                         <p:pipe step="extract-uri" port="result" xproc:type="comp"/>
 	
                                        </p:input>
                                     </p:wrap-sequence>
                                  </p:when>
                                  <p:otherwise xproc:step="true" xproc:type="comp-step">
-                                    <p:wrap-sequence xproc:step="true" xproc:type="std-step">
+                                    <p:wrap-sequence wrapper="test-suites" xproc:step="true" xproc:type="std-step">
                                        <p:with-option name="wrapper" select="test-suites"/>
-                                       <p:input xproc:type="comp">
-	                                         <p:pipe xproc:type="comp"/>
+                                       <p:input port="source" xproc:type="comp">
+	                                         <p:pipe step="extract-uri" port="result" xproc:type="comp"/>
 	                                         <p:inline xproc:type="comp">
 	                                            <uri>http://localhost:8130/tests/test-suite.xml</uri>
 	                                         </p:inline>
@@ -236,49 +239,54 @@ Congratulations! You've run your first pipeline!
                                  </p:otherwise>
                               </p:choose>
 
-                              <p:exec>
-                                 <p:input xproc:type="comp">
+                              <p:exec command="/projects/src/calabash/generate-test-report">
+                                 <p:input port="source" xproc:type="comp">
                                     <p:empty xproc:type="comp"/>
                                  </p:input>
                                  <p:with-option name="args" select="string-join(//uri,' ')" xproc:type="comp"/>
                               </p:exec>
 
                               <p:choose xproc:step="true" xproc:type="comp-step">
-                                 <p:when xproc:step="true" xproc:type="comp-step">
+                                 <p:when test="$password = ''" xproc:step="true" xproc:type="comp-step">
                                     <p:with-option name="test" select="$password = ''"/>
                                     <p:identity xproc:step="true" xproc:type="std-step"/>
                                  </p:when>
                                  <p:otherwise xproc:step="true" xproc:type="comp-step">
-                                    <p:wrap xproc:step="true" xproc:type="std-step">
+                                    <p:wrap wrapper="c:body" match="/" xproc:step="true" xproc:type="std-step">
                                        <p:with-option name="wrapper" select="c:body"/>
                                        <p:with-option name="match" select="/"/>
-                                       <p:input select="/c:result/*" xproc:type="comp"/>
+                                       <p:input port="source" select="/c:result/*" xproc:type="comp"/>
                                     </p:wrap>
 
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step">
+                                    <p:add-attribute match="c:body" attribute-name="content-type" attribute-value="application/xml"
+                                                     xproc:step="true"
+                                                     xproc:type="std-step">
                                        <p:with-option name="match" select="c:body"/>
                                        <p:with-option name="attribute-name" select="content-type"/>
                                        <p:with-option name="attribute-value" select="application/xml"/>
                                     </p:add-attribute>
 
-                                    <p:wrap xproc:step="true" xproc:type="std-step">
+                                    <p:wrap wrapper="c:request" match="/" xproc:step="true" xproc:type="std-step">
                                        <p:with-option name="wrapper" select="c:request"/>
                                        <p:with-option name="match" select="/"/>
                                     </p:wrap>
 
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step">
+                                    <p:add-attribute attribute-name="password" match="/c:request" xproc:step="true"
+                                                     xproc:type="std-step">
                                        <p:with-option name="attribute-name" select="password"/>
                                        <p:with-option name="match" select="/c:request"/>
                                        <p:with-option name="attribute-value" select="$password" xproc:type="comp"/>
                                     </p:add-attribute>
 
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step">
+                                    <p:add-attribute attribute-name="username" match="/c:request" xproc:step="true"
+                                                     xproc:type="std-step">
                                        <p:with-option name="attribute-name" select="username"/>
                                        <p:with-option name="match" select="/c:request"/>
                                        <p:with-option name="attribute-value" select="$username" xproc:type="comp"/>
                                     </p:add-attribute>
 
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step">
+                                    <p:add-attribute attribute-name="href" match="/c:request" xproc:step="true"
+                                                     xproc:type="std-step">
                                        <p:with-option name="attribute-name" select="href"/>
                                        <p:with-option name="match" select="/c:request"/>
                                        <p:with-option name="attribute-value"
@@ -286,11 +294,11 @@ Congratulations! You've run your first pipeline!
                                                       xproc:type="comp"/>
                                     </p:add-attribute>
 
-                                    <p:set-attributes xproc:step="true" xproc:type="std-step">
+                                    <p:set-attributes match="c:request" xproc:step="true" xproc:type="std-step">
                                        <p:with-option name="match" select="c:request"/>
-                                       <p:input xproc:type="comp">
+                                       <p:input port="attributes" xproc:type="comp">
 	                                         <p:inline xproc:type="comp">
-	                                            <c:request/>
+	                                            <c:request method="post" auth-method="Basic" send-authorization="true"/>
 	                                         </p:inline>
                                        </p:input>
                                     </p:set-attributes>
@@ -448,7 +456,7 @@ Congratulations! You've run your first pipeline!
                                            version="1.0"
                                            xproc:type="comp-step"
                                            xproc:default-name="!1">
-                              <p:input xproc:type="comp">
+                              <p:input port="source" xproc:type="comp">
   
                                  <p:inline xproc:type="comp">
                                     <doc>
@@ -456,15 +464,17 @@ Congratulations! You've run your first pipeline!
 </doc>
                                  </p:inline>
                               </p:input>
-                              <p:output xproc:type="comp"/>
+                              <p:output port="result" xproc:type="comp"/>
                               <p:group xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.1">
 
                                  <p:identity xproc:step="true" xproc:type="std-step" xproc:default-name="!1.1.1"/>
                               </p:group>
                               <p:identity xproc:step="true" xproc:type="std-step" xproc:default-name="!1.2">
   
-                                 <p:input select="/test" xproc:type="comp">
-                                    <test>test</test>
+                                 <p:input port="source" select="/test" xproc:type="comp">
+                                    <p:inline xproc:type="comp">
+                                       <test>test</test>
+                                    </p:inline>
                                  </p:input>
                               </p:identity>
                               <p:count xproc:step="true" xproc:type="std-step" xproc:default-name="!1.3"/>
@@ -491,7 +501,7 @@ Congratulations! You've run your first pipeline!
                                            version="1.0"
                                            xproc:type="comp-step"
                                            xproc:default-name="!1">
-                              <p:output xproc:type="comp"/>
+                              <p:output port="result" xproc:type="comp"/>
                               <p:option name="host" select="'tests.xproc.org'" xproc:type="comp"/>
                               <p:option name="username" select="'calabash'" xproc:type="comp"/>
                               <p:option name="password" select="''" xproc:type="comp"/>
@@ -511,21 +521,22 @@ Congratulations! You've run your first pipeline!
                                     <p>The  option is used to specify the host to use
   in the URIs of test suite documents. (Because Norm has a local copy of
   .)<code>host</code>
-                                       <a>http://tests.xproc.org/</a>
+                                       <a href="http://tests.xproc.org/">http://tests.xproc.org/</a>
                                     </p>
                                     <p>The  and  are used to submit
   the test results to .
   If run without a password, it simply outputs the report document.<code>username</code>
                                        <code>password</code>
-                                       <a>http://tests.xproc.org</a>
+                                       <a href="http://tests.xproc.org/">http://tests.xproc.org</a>
                                     </p>
                                  </div>
                               </p:documentation>
-                              <p:string-replace name="patch-test-uris" xproc:step="true" xproc:type="std-step"
+                              <p:string-replace match="uri/text()" name="patch-test-uris" xproc:step="true"
+                                                xproc:type="std-step"
                                                 xproc:default-name="!1.1">
   
   
-                                 <p:input xproc:type="comp">
+                                 <p:input port="source" xproc:type="comp">
     
                                     <p:inline xproc:type="comp">
       
@@ -550,9 +561,9 @@ Congratulations! You've run your first pipeline!
                               <p:identity name="extract-uri" xproc:step="true" xproc:type="std-step"
                                           xproc:default-name="!1.2">
   
-                                 <p:input select="/*/uri" xproc:type="comp">
+                                 <p:input port="source" select="/*/uri" xproc:type="comp">
     
-                                    <p:pipe xproc:type="comp"/>
+                                    <p:pipe step="patch-test-uris" port="result" xproc:type="comp"/>
                                  </p:input>
                               </p:identity>
                               <p:choose xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.3">
@@ -563,14 +574,16 @@ Congratulations! You've run your first pipeline!
     
                                     <p:empty xproc:type="comp"/>
                                  </p:xpath-context>
-                                 <p:when xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.3.1">
+                                 <p:when test="$host = 'tests.xproc.org'" xproc:step="true" xproc:type="comp-step"
+                                         xproc:default-name="!1.3.1">
     
-                                    <p:wrap-sequence xproc:step="true" xproc:type="std-step" xproc:default-name="!1.3.1.1">
+                                    <p:wrap-sequence wrapper="test-suites" xproc:step="true" xproc:type="std-step"
+                                                     xproc:default-name="!1.3.1.1">
       
-                                       <p:input xproc:type="comp">
+                                       <p:input port="source" xproc:type="comp">
 	
 	
-                                          <p:pipe xproc:type="comp"/>
+                                          <p:pipe step="extract-uri" port="result" xproc:type="comp"/>
                                        </p:input>
                                        <p:with-option name="wrapper" select="test-suites"/>
                                     </p:wrap-sequence>
@@ -578,12 +591,13 @@ Congratulations! You've run your first pipeline!
                                  </p:when>
                                  <p:otherwise xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.3.2">
     
-                                    <p:wrap-sequence xproc:step="true" xproc:type="std-step" xproc:default-name="!1.3.2.1">
+                                    <p:wrap-sequence wrapper="test-suites" xproc:step="true" xproc:type="std-step"
+                                                     xproc:default-name="!1.3.2.1">
       
-                                       <p:input xproc:type="comp">
+                                       <p:input port="source" xproc:type="comp">
 	
 	
-                                          <p:pipe xproc:type="comp"/>
+                                          <p:pipe step="extract-uri" port="result" xproc:type="comp"/>
                                           <p:inline xproc:type="comp">
 	  
 	                                            <uri>http://localhost:8130/tests/test-suite.xml</uri>
@@ -596,7 +610,8 @@ Congratulations! You've run your first pipeline!
                               <p:choose xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.4">
   
   
-                                 <p:when xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.4.1">
+                                 <p:when test="$password = ''" xproc:step="true" xproc:type="comp-step"
+                                         xproc:default-name="!1.4.1">
     
                                     <p:identity xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.1.1"/>
                                     <p:with-option name="test" select="$password = ''"/>
@@ -617,34 +632,45 @@ Congratulations! You've run your first pipeline!
     
 
     
-                                    <p:wrap xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.1">
+                                    <p:wrap wrapper="c:body" match="/" xproc:step="true" xproc:type="std-step"
+                                            xproc:default-name="!1.4.2.1">
       
-                                       <p:input select="/c:result/*" xproc:type="comp"/>
+                                       <p:input port="source" select="/c:result/*" xproc:type="comp"/>
                                        <p:with-option name="wrapper" select="c:body"/>
                                        <p:with-option name="match" select="/"/>
                                     </p:wrap>
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.2">
+                                    <p:add-attribute match="c:body" attribute-name="content-type" attribute-value="application/xml"
+                                                     xproc:step="true"
+                                                     xproc:type="std-step"
+                                                     xproc:default-name="!1.4.2.2">
                                        <p:with-option name="match" select="c:body"/>
                                        <p:with-option name="attribute-name" select="content-type"/>
                                        <p:with-option name="attribute-value" select="application/xml"/>
                                     </p:add-attribute>
-                                    <p:wrap xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.3">
+                                    <p:wrap wrapper="c:request" match="/" xproc:step="true" xproc:type="std-step"
+                                            xproc:default-name="!1.4.2.3">
                                        <p:with-option name="wrapper" select="c:request"/>
                                        <p:with-option name="match" select="/"/>
                                     </p:wrap>
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.4">
+                                    <p:add-attribute attribute-name="password" match="/c:request" xproc:step="true"
+                                                     xproc:type="std-step"
+                                                     xproc:default-name="!1.4.2.4">
       
                                        <p:with-option name="attribute-value" select="$password" xproc:type="comp"/>
                                        <p:with-option name="attribute-name" select="password"/>
                                        <p:with-option name="match" select="/c:request"/>
                                     </p:add-attribute>
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.5">
+                                    <p:add-attribute attribute-name="username" match="/c:request" xproc:step="true"
+                                                     xproc:type="std-step"
+                                                     xproc:default-name="!1.4.2.5">
       
                                        <p:with-option name="attribute-value" select="$username" xproc:type="comp"/>
                                        <p:with-option name="attribute-name" select="username"/>
                                        <p:with-option name="match" select="/c:request"/>
                                     </p:add-attribute>
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.6">
+                                    <p:add-attribute attribute-name="href" match="/c:request" xproc:step="true"
+                                                     xproc:type="std-step"
+                                                     xproc:default-name="!1.4.2.6">
       
                                        <p:with-option name="attribute-value"
                                                       select="concat('http://',$host,'/results/submit/report')"
@@ -652,13 +678,15 @@ Congratulations! You've run your first pipeline!
                                        <p:with-option name="attribute-name" select="href"/>
                                        <p:with-option name="match" select="/c:request"/>
                                     </p:add-attribute>
-                                    <p:set-attributes xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.7">
+                                    <p:set-attributes match="c:request" xproc:step="true" xproc:type="std-step"
+                                                      xproc:default-name="!1.4.2.7">
       
-                                       <p:input xproc:type="comp">
+                                       <p:input port="attributes" xproc:type="comp">
 	
                                           <p:inline xproc:type="comp">
 	  
-	                                            <c:request xmlns:c="http://www.w3.org/ns/xproc-step"/>
+	                                            <c:request xmlns:c="http://www.w3.org/ns/xproc-step" method="post" auth-method="Basic"
+                                                        send-authorization="true"/>
                                           </p:inline>
                                        </p:input>
                                        <p:with-option name="match" select="c:request"/>
@@ -666,10 +694,10 @@ Congratulations! You've run your first pipeline!
                                     <p:http-request xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.8"/>
                                  </p:otherwise>
                               </p:choose>
-                              <p:exec>
+                              <p:exec command="/projects/src/calabash/generate-test-report">
   
   
-                                 <p:input xproc:type="comp">
+                                 <p:input port="source" xproc:type="comp">
     
                                     <p:empty xproc:type="comp"/>
                                  </p:input>
@@ -698,7 +726,7 @@ Congratulations! You've run your first pipeline!
                                            version="1.0"
                                            xproc:type="comp-step"
                                            xproc:default-name="!1">
-                              <p:output xproc:type="comp"/>
+                              <p:output port="result" xproc:type="comp"/>
                               <p:option name="host" select="'tests.xproc.org'" xproc:type="comp"/>
                               <p:option name="username" select="'calabash'" xproc:type="comp"/>
                               <p:option name="password" select="''" xproc:type="comp"/>
@@ -718,21 +746,22 @@ Congratulations! You've run your first pipeline!
                                     <p>The  option is used to specify the host to use
   in the URIs of test suite documents. (Because Norm has a local copy of
   .)<code>host</code>
-                                       <a>http://tests.xproc.org/</a>
+                                       <a href="http://tests.xproc.org/">http://tests.xproc.org/</a>
                                     </p>
                                     <p>The  and  are used to submit
   the test results to .
   If run without a password, it simply outputs the report document.<code>username</code>
                                        <code>password</code>
-                                       <a>http://tests.xproc.org</a>
+                                       <a href="http://tests.xproc.org/">http://tests.xproc.org</a>
                                     </p>
                                  </div>
                               </p:documentation>
-                              <p:string-replace name="patch-test-uris" xproc:step="true" xproc:type="std-step"
+                              <p:string-replace match="uri/text()" name="patch-test-uris" xproc:step="true"
+                                                xproc:type="std-step"
                                                 xproc:default-name="!1.1">
   
   
-                                 <p:input xproc:type="comp">
+                                 <p:input port="source" xproc:type="comp">
     
                                     <p:inline xproc:type="comp">
       
@@ -757,9 +786,9 @@ Congratulations! You've run your first pipeline!
                               <p:identity name="extract-uri" xproc:step="true" xproc:type="std-step"
                                           xproc:default-name="!1.2">
   
-                                 <p:input select="/*/uri" xproc:type="comp">
+                                 <p:input port="source" select="/*/uri" xproc:type="comp">
     
-                                    <p:pipe xproc:type="comp"/>
+                                    <p:pipe step="patch-test-uris" port="result" xproc:type="comp"/>
                                  </p:input>
                               </p:identity>
                               <p:choose xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.3">
@@ -770,14 +799,16 @@ Congratulations! You've run your first pipeline!
     
                                     <p:empty xproc:type="comp"/>
                                  </p:xpath-context>
-                                 <p:when xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.3.1">
+                                 <p:when test="$host = 'tests.xproc.org'" xproc:step="true" xproc:type="comp-step"
+                                         xproc:default-name="!1.3.1">
     
-                                    <p:wrap-sequence xproc:step="true" xproc:type="std-step" xproc:default-name="!1.3.1.1">
+                                    <p:wrap-sequence wrapper="test-suites" xproc:step="true" xproc:type="std-step"
+                                                     xproc:default-name="!1.3.1.1">
       
-                                       <p:input xproc:type="comp">
+                                       <p:input port="source" xproc:type="comp">
 	
 	
-                                          <p:pipe xproc:type="comp"/>
+                                          <p:pipe step="extract-uri" port="result" xproc:type="comp"/>
                                        </p:input>
                                        <p:with-option name="wrapper" select="test-suites"/>
                                     </p:wrap-sequence>
@@ -785,12 +816,13 @@ Congratulations! You've run your first pipeline!
                                  </p:when>
                                  <p:otherwise xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.3.2">
     
-                                    <p:wrap-sequence xproc:step="true" xproc:type="std-step" xproc:default-name="!1.3.2.1">
+                                    <p:wrap-sequence wrapper="test-suites" xproc:step="true" xproc:type="std-step"
+                                                     xproc:default-name="!1.3.2.1">
       
-                                       <p:input xproc:type="comp">
+                                       <p:input port="source" xproc:type="comp">
 	
 	
-                                          <p:pipe xproc:type="comp"/>
+                                          <p:pipe step="extract-uri" port="result" xproc:type="comp"/>
                                           <p:inline xproc:type="comp">
 	  
 	                                            <uri>http://localhost:8130/tests/test-suite.xml</uri>
@@ -803,7 +835,8 @@ Congratulations! You've run your first pipeline!
                               <p:choose xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.4">
   
   
-                                 <p:when xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.4.1">
+                                 <p:when test="$password = ''" xproc:step="true" xproc:type="comp-step"
+                                         xproc:default-name="!1.4.1">
     
                                     <p:identity xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.1.1"/>
                                     <p:with-option name="test" select="$password = ''"/>
@@ -824,34 +857,45 @@ Congratulations! You've run your first pipeline!
     
 
     
-                                    <p:wrap xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.1">
+                                    <p:wrap wrapper="c:body" match="/" xproc:step="true" xproc:type="std-step"
+                                            xproc:default-name="!1.4.2.1">
       
-                                       <p:input select="/c:result/*" xproc:type="comp"/>
+                                       <p:input port="source" select="/c:result/*" xproc:type="comp"/>
                                        <p:with-option name="wrapper" select="c:body"/>
                                        <p:with-option name="match" select="/"/>
                                     </p:wrap>
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.2">
+                                    <p:add-attribute match="c:body" attribute-name="content-type" attribute-value="application/xml"
+                                                     xproc:step="true"
+                                                     xproc:type="std-step"
+                                                     xproc:default-name="!1.4.2.2">
                                        <p:with-option name="match" select="c:body"/>
                                        <p:with-option name="attribute-name" select="content-type"/>
                                        <p:with-option name="attribute-value" select="application/xml"/>
                                     </p:add-attribute>
-                                    <p:wrap xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.3">
+                                    <p:wrap wrapper="c:request" match="/" xproc:step="true" xproc:type="std-step"
+                                            xproc:default-name="!1.4.2.3">
                                        <p:with-option name="wrapper" select="c:request"/>
                                        <p:with-option name="match" select="/"/>
                                     </p:wrap>
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.4">
+                                    <p:add-attribute attribute-name="password" match="/c:request" xproc:step="true"
+                                                     xproc:type="std-step"
+                                                     xproc:default-name="!1.4.2.4">
       
                                        <p:with-option name="attribute-value" select="$password" xproc:type="comp"/>
                                        <p:with-option name="attribute-name" select="password"/>
                                        <p:with-option name="match" select="/c:request"/>
                                     </p:add-attribute>
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.5">
+                                    <p:add-attribute attribute-name="username" match="/c:request" xproc:step="true"
+                                                     xproc:type="std-step"
+                                                     xproc:default-name="!1.4.2.5">
       
                                        <p:with-option name="attribute-value" select="$username" xproc:type="comp"/>
                                        <p:with-option name="attribute-name" select="username"/>
                                        <p:with-option name="match" select="/c:request"/>
                                     </p:add-attribute>
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.6">
+                                    <p:add-attribute attribute-name="href" match="/c:request" xproc:step="true"
+                                                     xproc:type="std-step"
+                                                     xproc:default-name="!1.4.2.6">
       
                                        <p:with-option name="attribute-value"
                                                       select="concat('http://',$host,'/results/submit/report')"
@@ -859,13 +903,15 @@ Congratulations! You've run your first pipeline!
                                        <p:with-option name="attribute-name" select="href"/>
                                        <p:with-option name="match" select="/c:request"/>
                                     </p:add-attribute>
-                                    <p:set-attributes xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.7">
+                                    <p:set-attributes match="c:request" xproc:step="true" xproc:type="std-step"
+                                                      xproc:default-name="!1.4.2.7">
       
-                                       <p:input xproc:type="comp">
+                                       <p:input port="attributes" xproc:type="comp">
 	
                                           <p:inline xproc:type="comp">
 	  
-	                                            <c:request xmlns:c="http://www.w3.org/ns/xproc-step"/>
+	                                            <c:request xmlns:c="http://www.w3.org/ns/xproc-step" method="post" auth-method="Basic"
+                                                        send-authorization="true"/>
                                           </p:inline>
                                        </p:input>
                                        <p:with-option name="match" select="c:request"/>
@@ -873,10 +919,10 @@ Congratulations! You've run your first pipeline!
                                     <p:http-request xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.8"/>
                                  </p:otherwise>
                               </p:choose>
-                              <p:exec>
+                              <p:exec command="/projects/src/calabash/generate-test-report">
   
   
-                                 <p:input xproc:type="comp">
+                                 <p:input port="source" xproc:type="comp">
     
                                     <p:empty xproc:type="comp"/>
                                  </p:input>
@@ -905,7 +951,7 @@ Congratulations! You've run your first pipeline!
                                            version="1.0"
                                            xproc:type="comp-step"
                                            xproc:default-name="!1">
-                              <p:output xproc:type="comp"/>
+                              <p:output port="result" xproc:type="comp"/>
                               <p:option name="host" select="'tests.xproc.org'" xproc:type="comp"/>
                               <p:option name="username" select="'calabash'" xproc:type="comp"/>
                               <p:option name="password" select="''" xproc:type="comp"/>
@@ -925,21 +971,22 @@ Congratulations! You've run your first pipeline!
                                     <p>The  option is used to specify the host to use
   in the URIs of test suite documents. (Because Norm has a local copy of
   .)<code>host</code>
-                                       <a>http://tests.xproc.org/</a>
+                                       <a href="http://tests.xproc.org/">http://tests.xproc.org/</a>
                                     </p>
                                     <p>The  and  are used to submit
   the test results to .
   If run without a password, it simply outputs the report document.<code>username</code>
                                        <code>password</code>
-                                       <a>http://tests.xproc.org</a>
+                                       <a href="http://tests.xproc.org/">http://tests.xproc.org</a>
                                     </p>
                                  </div>
                               </p:documentation>
-                              <p:string-replace name="patch-test-uris" xproc:step="true" xproc:type="std-step"
+                              <p:string-replace match="uri/text()" name="patch-test-uris" xproc:step="true"
+                                                xproc:type="std-step"
                                                 xproc:default-name="!1.1">
   
   
-                                 <p:input xproc:type="comp">
+                                 <p:input port="source" xproc:type="comp">
     
                                     <p:inline xproc:type="comp">
       
@@ -964,9 +1011,9 @@ Congratulations! You've run your first pipeline!
                               <p:identity name="extract-uri" xproc:step="true" xproc:type="std-step"
                                           xproc:default-name="!1.2">
   
-                                 <p:input select="/*/uri" xproc:type="comp">
+                                 <p:input port="source" select="/*/uri" xproc:type="comp">
     
-                                    <p:pipe xproc:type="comp"/>
+                                    <p:pipe step="patch-test-uris" port="result" xproc:type="comp"/>
                                  </p:input>
                               </p:identity>
                               <p:choose xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.3">
@@ -977,14 +1024,16 @@ Congratulations! You've run your first pipeline!
     
                                     <p:empty xproc:type="comp"/>
                                  </p:xpath-context>
-                                 <p:when xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.3.1">
+                                 <p:when test="$host = 'tests.xproc.org'" xproc:step="true" xproc:type="comp-step"
+                                         xproc:default-name="!1.3.1">
     
-                                    <p:wrap-sequence xproc:step="true" xproc:type="std-step" xproc:default-name="!1.3.1.1">
+                                    <p:wrap-sequence wrapper="test-suites" xproc:step="true" xproc:type="std-step"
+                                                     xproc:default-name="!1.3.1.1">
       
-                                       <p:input xproc:type="comp">
+                                       <p:input port="source" xproc:type="comp">
 	
 	
-                                          <p:pipe xproc:type="comp"/>
+                                          <p:pipe step="extract-uri" port="result" xproc:type="comp"/>
                                        </p:input>
                                        <p:with-option name="wrapper" select="test-suites"/>
                                     </p:wrap-sequence>
@@ -992,12 +1041,13 @@ Congratulations! You've run your first pipeline!
                                  </p:when>
                                  <p:otherwise xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.3.2">
     
-                                    <p:wrap-sequence xproc:step="true" xproc:type="std-step" xproc:default-name="!1.3.2.1">
+                                    <p:wrap-sequence wrapper="test-suites" xproc:step="true" xproc:type="std-step"
+                                                     xproc:default-name="!1.3.2.1">
       
-                                       <p:input xproc:type="comp">
+                                       <p:input port="source" xproc:type="comp">
 	
 	
-                                          <p:pipe xproc:type="comp"/>
+                                          <p:pipe step="extract-uri" port="result" xproc:type="comp"/>
                                           <p:inline xproc:type="comp">
 	  
 	                                            <uri>http://localhost:8130/tests/test-suite.xml</uri>
@@ -1010,7 +1060,8 @@ Congratulations! You've run your first pipeline!
                               <p:choose xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.4">
   
   
-                                 <p:when xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.4.1">
+                                 <p:when test="$password = ''" xproc:step="true" xproc:type="comp-step"
+                                         xproc:default-name="!1.4.1">
     
                                     <p:identity xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.1.1"/>
                                     <p:with-option name="test" select="$password = ''"/>
@@ -1031,34 +1082,45 @@ Congratulations! You've run your first pipeline!
     
 
     
-                                    <p:wrap xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.1">
+                                    <p:wrap wrapper="c:body" match="/" xproc:step="true" xproc:type="std-step"
+                                            xproc:default-name="!1.4.2.1">
       
-                                       <p:input select="/c:result/*" xproc:type="comp"/>
+                                       <p:input port="source" select="/c:result/*" xproc:type="comp"/>
                                        <p:with-option name="wrapper" select="c:body"/>
                                        <p:with-option name="match" select="/"/>
                                     </p:wrap>
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.2">
+                                    <p:add-attribute match="c:body" attribute-name="content-type" attribute-value="application/xml"
+                                                     xproc:step="true"
+                                                     xproc:type="std-step"
+                                                     xproc:default-name="!1.4.2.2">
                                        <p:with-option name="match" select="c:body"/>
                                        <p:with-option name="attribute-name" select="content-type"/>
                                        <p:with-option name="attribute-value" select="application/xml"/>
                                     </p:add-attribute>
-                                    <p:wrap xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.3">
+                                    <p:wrap wrapper="c:request" match="/" xproc:step="true" xproc:type="std-step"
+                                            xproc:default-name="!1.4.2.3">
                                        <p:with-option name="wrapper" select="c:request"/>
                                        <p:with-option name="match" select="/"/>
                                     </p:wrap>
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.4">
+                                    <p:add-attribute attribute-name="password" match="/c:request" xproc:step="true"
+                                                     xproc:type="std-step"
+                                                     xproc:default-name="!1.4.2.4">
       
                                        <p:with-option name="attribute-value" select="$password" xproc:type="comp"/>
                                        <p:with-option name="attribute-name" select="password"/>
                                        <p:with-option name="match" select="/c:request"/>
                                     </p:add-attribute>
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.5">
+                                    <p:add-attribute attribute-name="username" match="/c:request" xproc:step="true"
+                                                     xproc:type="std-step"
+                                                     xproc:default-name="!1.4.2.5">
       
                                        <p:with-option name="attribute-value" select="$username" xproc:type="comp"/>
                                        <p:with-option name="attribute-name" select="username"/>
                                        <p:with-option name="match" select="/c:request"/>
                                     </p:add-attribute>
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.6">
+                                    <p:add-attribute attribute-name="href" match="/c:request" xproc:step="true"
+                                                     xproc:type="std-step"
+                                                     xproc:default-name="!1.4.2.6">
       
                                        <p:with-option name="attribute-value"
                                                       select="concat('http://',$host,'/results/submit/report')"
@@ -1066,13 +1128,15 @@ Congratulations! You've run your first pipeline!
                                        <p:with-option name="attribute-name" select="href"/>
                                        <p:with-option name="match" select="/c:request"/>
                                     </p:add-attribute>
-                                    <p:set-attributes xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.7">
+                                    <p:set-attributes match="c:request" xproc:step="true" xproc:type="std-step"
+                                                      xproc:default-name="!1.4.2.7">
       
-                                       <p:input xproc:type="comp">
+                                       <p:input port="attributes" xproc:type="comp">
 	
                                           <p:inline xproc:type="comp">
 	  
-	                                            <c:request xmlns:c="http://www.w3.org/ns/xproc-step"/>
+	                                            <c:request xmlns:c="http://www.w3.org/ns/xproc-step" method="post" auth-method="Basic"
+                                                        send-authorization="true"/>
                                           </p:inline>
                                        </p:input>
                                        <p:with-option name="match" select="c:request"/>
@@ -1080,10 +1144,10 @@ Congratulations! You've run your first pipeline!
                                     <p:http-request xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.8"/>
                                  </p:otherwise>
                               </p:choose>
-                              <p:exec>
+                              <p:exec command="/projects/src/calabash/generate-test-report">
   
   
-                                 <p:input xproc:type="comp">
+                                 <p:input port="source" xproc:type="comp">
     
                                     <p:empty xproc:type="comp"/>
                                  </p:input>
@@ -1112,32 +1176,52 @@ Congratulations! You've run your first pipeline!
                                            xproc:default-name="!1">
                               <ext:pre xmlns:ext="http://xproc.net/xproc/ext" xproc:default-name="!1.0"
                                        xproc:type="comp-step">
-                                 <p:input xproc:type="comp">
-  
-                                    <p:inline xproc:type="comp">
-                                       <doc>
-Congratulations! You've run your first pipeline!
-</doc>
-                                    </p:inline>
-                                 </p:input>
-                                 <p:output xproc:type="comp"/>
+                                 <test3/>
+                                 <xproc:element type="p:declare-step" xproc:step="true" xproc:bindings="all"
+                                                xproc:support="true">
+                                    <p:input port="source"/>
+                                    <p:output port="result"/>
+                                 </xproc:element>
+                                 <error/>
+                                 <error/>
                               </ext:pre>
                               <p:group xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.1">
-                                 <ext:pre xmlns:ext="http://xproc.net/xproc/ext" xproc:default-name="!1.1.0"
-                                          xproc:type="comp-step"/>
+                                 <test3/>
+                                 <xproc:element xmlns:ext="http://xproc.net/xproc/ext" type="p:group" xproc:step="true"
+                                                xproc:support="true">
+		                                  <p:input port="xproc:source" primary="true" select="/"/>
+                                    <p:output port="xproc:result" primary="true" select="/"/>	
+	                                </xproc:element>
+                                 <error/>
+                                 <error/>
                                  <p:identity xproc:step="true" xproc:type="std-step" xproc:default-name="!1.1.1">
-                                    <p:input port="source" sequence="true" primary="true" select="/"/>
-                                    <p:outport port="result" sequence="true" primary="true" select="/"/>
+                                    <test3/>
+                                    <p:declare-step type="p:identity" xml:id="identity" xproc:support="true">
+                                       <p:input port="source" sequence="true" primary="true" select="/"/>
+                                       <p:output port="result" sequence="true" primary="true" select="/"/>
+                                    </p:declare-step>
+                                    <error/>
+                                    <error/>
                                  </p:identity>
                               </p:group>
                               <p:identity xproc:step="true" xproc:type="std-step" xproc:default-name="!1.2">
-                                 <p:input port="source" sequence="true" primary="true" select="/"/>
-                                 <p:outport port="result" sequence="true" primary="true" select="/"/>
+                                 <test3/>
+                                 <p:declare-step type="p:identity" xml:id="identity" xproc:support="true">
+                                    <p:input port="source" sequence="true" primary="true" select="/"/>
+                                    <p:output port="result" sequence="true" primary="true" select="/"/>
+                                 </p:declare-step>
+                                 <error/>
+                                 <error/>
                               </p:identity>
                               <p:count xproc:step="true" xproc:type="std-step" xproc:default-name="!1.3">
-                                 <p:input port="source" primary="true" sequence="true" select="/"/>
-                                 <p:outport port="result" primary="true" select="/"/>
-                                 <p:with-option name="limit" select="/"/>
+                                 <test3/>
+                                 <p:declare-step type="p:count" xml:id="count" xproc:support="true">
+                                    <p:input port="source" primary="true" sequence="true" select="/"/>
+                                    <p:output port="result" primary="true" select="/"/>
+                                    <p:option name="limit" select="'0'"/>
+                                 </p:declare-step>
+                                 <error/>
+                                 <error/>
                               </p:count>
                            </p:declare-step>
                         </result>
@@ -1164,159 +1248,240 @@ Congratulations! You've run your first pipeline!
                                            xproc:default-name="!1">
                               <ext:pre xmlns:ext="http://xproc.net/xproc/ext" xproc:default-name="!1.0"
                                        xproc:type="comp-step">
-                                 <p:output xproc:type="comp"/>
-                                 <p:option name="host" select="'tests.xproc.org'" xproc:type="comp"/>
-                                 <p:option name="username" select="'calabash'" xproc:type="comp"/>
-                                 <p:option name="password" select="''" xproc:type="comp"/>
-                                 <p:documentation xproc:type="comp">
-
-                                    <div xmlns="http://www.w3.org/1999/xhtml">
-  
-  
-  
-  
-                                       <p>This pipeline runs the XProc test suite and reports the results.</p>
-                                       <p>It has three options: , , and
-  .<code>host</code>
-                                          <code>username</code>
-                                          <code>password</code>
-                                       </p>
-                                       <p>The  option is used to specify the host to use
-  in the URIs of test suite documents. (Because Norm has a local copy of
-  .)<code>host</code>
-                                          <a>http://tests.xproc.org/</a>
-                                       </p>
-                                       <p>The  and  are used to submit
-  the test results to .
-  If run without a password, it simply outputs the report document.<code>username</code>
-                                          <code>password</code>
-                                          <a>http://tests.xproc.org</a>
-                                       </p>
-                                    </div>
-                                 </p:documentation>
+                                 <test3/>
+                                 <xproc:element type="p:declare-step" xproc:step="true" xproc:bindings="all"
+                                                xproc:support="true">
+                                    <p:input port="source"/>
+                                    <p:output port="result"/>
+                                 </xproc:element>
+                                 <error/>
+                                 <error/>
                               </ext:pre>
-                              <p:string-replace name="patch-test-uris" xproc:step="true" xproc:type="std-step"
+                              <p:string-replace match="uri/text()" name="patch-test-uris" xproc:step="true"
+                                                xproc:type="std-step"
                                                 xproc:default-name="!1.1">
-                                 <p:input port="source" primary="true" select="/"/>
-                                 <p:outport port="result" primary="true" select="/"/>
-                                 <p:with-option name="match" required="true" select="/"/>
-                                 <p:with-option name="replace" required="true" select="concat('concat(&#34;http://',$host,'&#34;,.)')"/>
+                                 <test3/>
+                                 <p:declare-step type="p:string-replace" xml:id="string-replace" xproc:support="true">
+                                    <p:input port="source" primary="true" select="/"/>
+                                    <p:output port="result" primary="true" select="/"/>
+                                    <p:option name="match" required="true"/>
+                                    <p:option name="replace" required="true"/>
+                                 </p:declare-step>
+                                 <error/>
+                                 <error/>
                               </p:string-replace>
                               <p:identity name="extract-uri" xproc:step="true" xproc:type="std-step"
                                           xproc:default-name="!1.2">
-                                 <p:input port="source" sequence="true" primary="true" select="/"/>
-                                 <p:outport port="result" sequence="true" primary="true" select="/"/>
+                                 <test3/>
+                                 <p:declare-step type="p:identity" xml:id="identity" xproc:support="true">
+                                    <p:input port="source" sequence="true" primary="true" select="/"/>
+                                    <p:output port="result" sequence="true" primary="true" select="/"/>
+                                 </p:declare-step>
+                                 <error/>
+                                 <error/>
                               </p:identity>
                               <p:choose xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.3">
-                                 <ext:pre xmlns:ext="http://xproc.net/xproc/ext" xproc:default-name="!1.3.0"
-                                          xproc:type="comp-step">
-                                    <p:xpath-context xproc:type="comp">
-    
-                                       <p:empty xproc:type="comp"/>
-                                    </p:xpath-context>
-                                 </ext:pre>
-                                 <p:when xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.3.1">
-                                    <p:wrap-sequence xproc:step="true" xproc:type="std-step" xproc:default-name="!1.3.1.1">
-                                       <p:input port="source" sequence="true" primary="true" select="/"/>
-                                       <p:outport port="result" sequence="true" primary="true" select="/"/>
-                                       <p:with-option name="wrapper" required="true" select="test-suites"/>
-                                       <p:with-option name="group-adjacent" select="/"/>
+                                 <test3/>
+                                 <xproc:element xmlns:ext="http://xproc.net/xproc/ext" type="p:choose" xproc:step="true"
+                                                xproc:support="true">
+		                                  <p:input port="source" primary="true" select="/"/>
+                                    <p:output port="result" primary="true" select="/"/>	
+                                 </xproc:element>
+                                 <error/>
+                                 <error/>
+                                 <p:when test="$host = 'tests.xproc.org'" xproc:step="true" xproc:type="comp-step"
+                                         xproc:default-name="!1.3.1">
+                                    <error/>
+                                    <error/>
+                                    <p:wrap-sequence wrapper="test-suites" xproc:step="true" xproc:type="std-step"
+                                                     xproc:default-name="!1.3.1.1">
+                                       <test3/>
+                                       <p:declare-step type="p:wrap-sequence" xml:id="wrap-sequence" xproc:support="true">
+                                          <p:input port="source" sequence="true" primary="true" select="/"/>
+                                          <p:output port="result" sequence="true" primary="true" select="/"/>
+                                          <p:option name="wrapper" required="true"/>
+                                          <p:option name="group-adjacent"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:wrap-sequence>
                                  </p:when>
                                  <p:otherwise xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.3.2">
-                                    <p:wrap-sequence xproc:step="true" xproc:type="std-step" xproc:default-name="!1.3.2.1">
-                                       <p:input port="source" sequence="true" primary="true" select="/"/>
-                                       <p:outport port="result" sequence="true" primary="true" select="/"/>
-                                       <p:with-option name="wrapper" required="true" select="test-suites"/>
-                                       <p:with-option name="group-adjacent" select="/"/>
+                                    <error/>
+                                    <error/>
+                                    <p:wrap-sequence wrapper="test-suites" xproc:step="true" xproc:type="std-step"
+                                                     xproc:default-name="!1.3.2.1">
+                                       <test3/>
+                                       <p:declare-step type="p:wrap-sequence" xml:id="wrap-sequence" xproc:support="true">
+                                          <p:input port="source" sequence="true" primary="true" select="/"/>
+                                          <p:output port="result" sequence="true" primary="true" select="/"/>
+                                          <p:option name="wrapper" required="true"/>
+                                          <p:option name="group-adjacent"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:wrap-sequence>
                                  </p:otherwise>
                               </p:choose>
                               <p:choose xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.4">
-                                 <ext:pre xmlns:ext="http://xproc.net/xproc/ext" xproc:default-name="!1.4.0"
-                                          xproc:type="comp-step"/>
-                                 <p:when xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.4.1">
+                                 <test3/>
+                                 <xproc:element xmlns:ext="http://xproc.net/xproc/ext" type="p:choose" xproc:step="true"
+                                                xproc:support="true">
+		                                  <p:input port="source" primary="true" select="/"/>
+                                    <p:output port="result" primary="true" select="/"/>	
+                                 </xproc:element>
+                                 <error/>
+                                 <error/>
+                                 <p:when test="$password = ''" xproc:step="true" xproc:type="comp-step"
+                                         xproc:default-name="!1.4.1">
+                                    <error/>
+                                    <error/>
                                     <p:identity xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.1.1">
-                                       <p:input port="source" sequence="true" primary="true" select="/"/>
-                                       <p:outport port="result" sequence="true" primary="true" select="/"/>
+                                       <test3/>
+                                       <p:declare-step type="p:identity" xml:id="identity" xproc:support="true">
+                                          <p:input port="source" sequence="true" primary="true" select="/"/>
+                                          <p:output port="result" sequence="true" primary="true" select="/"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:identity>
                                  </p:when>
                                  <p:otherwise xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.4.2">
-                                    <p:wrap xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.1">
-                                       <p:input port="source" primary="true" select="/"/>
-                                       <p:outport port="result" primary="true" select="/"/>
-                                       <p:with-option name="wrapper" required="true" default="/" select="c:body"/>
-                                       <p:with-option name="match" required="true" default="/" select="/"/>
-                                       <p:with-option name="group-adjacent" default="/" select="/"/>
+                                    <error/>
+                                    <error/>
+                                    <p:wrap wrapper="c:body" match="/" xproc:step="true" xproc:type="std-step"
+                                            xproc:default-name="!1.4.2.1">
+                                       <test3/>
+                                       <p:declare-step type="p:wrap" xml:id="wrap" xproc:support="true">
+                                          <p:input port="source" primary="true" select="/"/>
+                                          <p:output port="result" primary="true" select="/"/>
+                                          <p:option name="wrapper" required="true" default="/"/>
+                                          <p:option name="match" required="true" default="/"/>
+                                          <p:option name="group-adjacent" default="/"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:wrap>
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.2">
-                                       <p:input port="source" primary="true" select="/"/>
-                                       <p:outport port="result" primary="true" select="/"/>
-                                       <p:with-option name="match" required="true" select="c:body"/>
-                                       <p:with-option name="attribute-name" required="true" select="content-type"/>
-                                       <p:with-option name="attribute-prefix" select="/"/>
-                                       <p:with-option name="attribute-namespace" select="/"/>
-                                       <p:with-option name="attribute-value" required="true" select="application/xml"/>
+                                    <p:add-attribute match="c:body" attribute-name="content-type" attribute-value="application/xml"
+                                                     xproc:step="true"
+                                                     xproc:type="std-step"
+                                                     xproc:default-name="!1.4.2.2">
+                                       <test3/>
+                                       <p:declare-step type="p:add-attribute" xml:id="add-attribute" xproc:support="true">
+                                          <p:input port="source" primary="true"/>
+                                          <p:output port="result" primary="true"/>
+                                          <p:option name="match" required="true"/>
+                                          <p:option name="attribute-name" required="true"/>
+                                          <p:option name="attribute-prefix"/>                          
+                                          <p:option name="attribute-namespace"/>                       
+                                          <p:option name="attribute-value" required="true"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:add-attribute>
-                                    <p:wrap xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.3">
-                                       <p:input port="source" primary="true" select="/"/>
-                                       <p:outport port="result" primary="true" select="/"/>
-                                       <p:with-option name="wrapper" required="true" default="/" select="c:request"/>
-                                       <p:with-option name="match" required="true" default="/" select="/"/>
-                                       <p:with-option name="group-adjacent" default="/" select="/"/>
+                                    <p:wrap wrapper="c:request" match="/" xproc:step="true" xproc:type="std-step"
+                                            xproc:default-name="!1.4.2.3">
+                                       <test3/>
+                                       <p:declare-step type="p:wrap" xml:id="wrap" xproc:support="true">
+                                          <p:input port="source" primary="true" select="/"/>
+                                          <p:output port="result" primary="true" select="/"/>
+                                          <p:option name="wrapper" required="true" default="/"/>
+                                          <p:option name="match" required="true" default="/"/>
+                                          <p:option name="group-adjacent" default="/"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:wrap>
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.4">
-                                       <p:input port="source" primary="true" select="/"/>
-                                       <p:outport port="result" primary="true" select="/"/>
-                                       <p:with-option name="match" required="true" select="/c:request"/>
-                                       <p:with-option name="attribute-name" required="true" select="password"/>
-                                       <p:with-option name="attribute-prefix" select="/"/>
-                                       <p:with-option name="attribute-namespace" select="/"/>
-                                       <p:with-option name="attribute-value" required="true" select="$password"/>
+                                    <p:add-attribute attribute-name="password" match="/c:request" xproc:step="true"
+                                                     xproc:type="std-step"
+                                                     xproc:default-name="!1.4.2.4">
+                                       <test3/>
+                                       <p:declare-step type="p:add-attribute" xml:id="add-attribute" xproc:support="true">
+                                          <p:input port="source" primary="true"/>
+                                          <p:output port="result" primary="true"/>
+                                          <p:option name="match" required="true"/>
+                                          <p:option name="attribute-name" required="true"/>
+                                          <p:option name="attribute-prefix"/>                          
+                                          <p:option name="attribute-namespace"/>                       
+                                          <p:option name="attribute-value" required="true"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:add-attribute>
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.5">
-                                       <p:input port="source" primary="true" select="/"/>
-                                       <p:outport port="result" primary="true" select="/"/>
-                                       <p:with-option name="match" required="true" select="/c:request"/>
-                                       <p:with-option name="attribute-name" required="true" select="username"/>
-                                       <p:with-option name="attribute-prefix" select="/"/>
-                                       <p:with-option name="attribute-namespace" select="/"/>
-                                       <p:with-option name="attribute-value" required="true" select="$username"/>
+                                    <p:add-attribute attribute-name="username" match="/c:request" xproc:step="true"
+                                                     xproc:type="std-step"
+                                                     xproc:default-name="!1.4.2.5">
+                                       <test3/>
+                                       <p:declare-step type="p:add-attribute" xml:id="add-attribute" xproc:support="true">
+                                          <p:input port="source" primary="true"/>
+                                          <p:output port="result" primary="true"/>
+                                          <p:option name="match" required="true"/>
+                                          <p:option name="attribute-name" required="true"/>
+                                          <p:option name="attribute-prefix"/>                          
+                                          <p:option name="attribute-namespace"/>                       
+                                          <p:option name="attribute-value" required="true"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:add-attribute>
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.6">
-                                       <p:input port="source" primary="true" select="/"/>
-                                       <p:outport port="result" primary="true" select="/"/>
-                                       <p:with-option name="match" required="true" select="/c:request"/>
-                                       <p:with-option name="attribute-name" required="true" select="href"/>
-                                       <p:with-option name="attribute-prefix" select="/"/>
-                                       <p:with-option name="attribute-namespace" select="/"/>
-                                       <p:with-option name="attribute-value" required="true"
-                                                      select="concat('http://',$host,'/results/submit/report')"/>
+                                    <p:add-attribute attribute-name="href" match="/c:request" xproc:step="true"
+                                                     xproc:type="std-step"
+                                                     xproc:default-name="!1.4.2.6">
+                                       <test3/>
+                                       <p:declare-step type="p:add-attribute" xml:id="add-attribute" xproc:support="true">
+                                          <p:input port="source" primary="true"/>
+                                          <p:output port="result" primary="true"/>
+                                          <p:option name="match" required="true"/>
+                                          <p:option name="attribute-name" required="true"/>
+                                          <p:option name="attribute-prefix"/>                          
+                                          <p:option name="attribute-namespace"/>                       
+                                          <p:option name="attribute-value" required="true"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:add-attribute>
-                                    <p:set-attributes xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.7">
-                                       <p:input port="source" primary="true" select="/"/>
-                                       <p:input port="attributes" primary="false" select="/"/>
-                                       <p:outport port="result" primary="true" select="/"/>
-                                       <p:with-option name="match" required="true" select="c:request"/>
+                                    <p:set-attributes match="c:request" xproc:step="true" xproc:type="std-step"
+                                                      xproc:default-name="!1.4.2.7">
+                                       <test3/>
+                                       <p:declare-step type="p:set-attributes" xml:id="set-attributes" xproc:support="true">
+                                          <p:input port="source" primary="true" select="/"/>
+                                          <p:input port="attributes" primary="false" select="/"/>
+                                          <p:output port="result" primary="true" select="/"/>
+                                          <p:option name="match" required="true"/>
+                                       </p:declare-step>
+                                       <test3/>
+                                       <p:declare-step type="p:set-attributes" xml:id="set-attributes" xproc:support="true">
+                                          <p:input port="source" primary="true" select="/"/>
+                                          <p:input port="attributes" primary="false" select="/"/>
+                                          <p:output port="result" primary="true" select="/"/>
+                                          <p:option name="match" required="true"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:set-attributes>
                                     <p:http-request xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.8">
-                                       <p:input port="source" primary="true" select="/"/>
-                                       <p:outport port="result" primary="true" select="/"/>
-                                       <p:with-option name="byte-order-mark" select="/"/>
-                                       <p:with-option name="cdata-section-elements" select="/"/>
-                                       <p:with-option name="doctype-public" select="/"/>
-                                       <p:with-option name="doctype-system" select="/"/>
-                                       <p:with-option name="encoding" select="/"/>
-                                       <p:with-option name="escape-uri-attributes" select="/"/>
-                                       <p:with-option name="include-content-type" select="/"/>
-                                       <p:with-option name="indent" select="/"/>
-                                       <p:with-option name="media-type" select="/"/>
-                                       <p:with-option name="method" select="/"/>
-                                       <p:with-option name="normalization-form" select="/"/>
-                                       <p:with-option name="omit-xml-declaration" select="/"/>
-                                       <p:with-option name="standalone" select="/"/>
-                                       <p:with-option name="undeclare-prefixes" select="/"/>
-                                       <p:with-option name="version" select="/"/>
+                                       <test3/>
+                                       <p:declare-step type="p:http-request" xml:id="http-request" xproc:support="true">
+                                          <p:input port="source" primary="true" select="/"/>
+                                          <p:output port="result" primary="true" select="/"/>
+                                          <p:option name="byte-order-mark"/>
+                                          <p:option name="cdata-section-elements"/>
+                                          <p:option name="doctype-public"/>
+                                          <p:option name="doctype-system"/>
+                                          <p:option name="encoding"/>
+                                          <p:option name="escape-uri-attributes"/>
+                                          <p:option name="include-content-type"/>
+                                          <p:option name="indent" select="'false'"/>
+                                          <p:option name="media-type"/>
+                                          <p:option name="method" select="'xml'"/>
+                                          <p:option name="normalization-form"/>
+                                          <p:option name="omit-xml-declaration"/>
+                                          <p:option name="standalone"/>
+                                          <p:option name="undeclare-prefixes"/>
+                                          <p:option name="version" select="'1.0'"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:http-request>
                                  </p:otherwise>
                               </p:choose>
@@ -1343,31 +1508,52 @@ Congratulations! You've run your first pipeline!
                                            xproc:default-name="!1">
                               <ext:pre xmlns:ext="http://xproc.net/xproc/ext" xproc:default-name="!1.0"
                                        xproc:type="comp-step">
-                                 <p:input xproc:type="comp">
-                                    <p:pipe port="" step="!1.-1"/>
-                                 </p:input>
-                                 <p:output xproc:type="comp"/>
+                                 <test3/>
+                                 <xproc:element type="p:declare-step" xproc:step="true" xproc:bindings="all"
+                                                xproc:support="true">
+                                    <p:input port="source"/>
+                                    <p:output port="result"/>
+                                 </xproc:element>
+                                 <error/>
+                                 <error/>
                               </ext:pre>
                               <p:group xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.1">
-                                 <ext:pre xmlns:ext="http://xproc.net/xproc/ext" xproc:default-name="!1.1.0"
-                                          xproc:type="comp-step"/>
+                                 <test3/>
+                                 <xproc:element xmlns:ext="http://xproc.net/xproc/ext" type="p:group" xproc:step="true"
+                                                xproc:support="true">
+		                                  <p:input port="xproc:source" primary="true" select="/"/>
+                                    <p:output port="xproc:result" primary="true" select="/"/>	
+	                                </xproc:element>
+                                 <error/>
+                                 <error/>
                                  <p:identity xproc:step="true" xproc:type="std-step" xproc:default-name="!1.1.1">
-                                    <p:input port="source" sequence="true" primary="true" select="/"/>
-                                    <p:outport port="result" sequence="true" primary="true" select="/"/>
+                                    <test3/>
+                                    <p:declare-step type="p:identity" xml:id="identity" xproc:support="true">
+                                       <p:input port="source" sequence="true" primary="true" select="/"/>
+                                       <p:output port="result" sequence="true" primary="true" select="/"/>
+                                    </p:declare-step>
+                                    <error/>
+                                    <error/>
                                  </p:identity>
                               </p:group>
                               <p:identity xproc:step="true" xproc:type="std-step" xproc:default-name="!1.2">
-                                 <p:input port="source" sequence="true" primary="true" select="/">
-                                    <p:pipe port="" step="!1.1"/>
-                                 </p:input>
-                                 <p:outport port="result" sequence="true" primary="true" select="/"/>
+                                 <test3/>
+                                 <p:declare-step type="p:identity" xml:id="identity" xproc:support="true">
+                                    <p:input port="source" sequence="true" primary="true" select="/"/>
+                                    <p:output port="result" sequence="true" primary="true" select="/"/>
+                                 </p:declare-step>
+                                 <error/>
+                                 <error/>
                               </p:identity>
                               <p:count xproc:step="true" xproc:type="std-step" xproc:default-name="!1.3">
-                                 <p:input port="source" primary="true" sequence="true" select="/">
-                                    <p:pipe port="" step="!1.2"/>
-                                 </p:input>
-                                 <p:outport port="result" primary="true" select="/"/>
-                                 <p:with-option name="limit" select="/"/>
+                                 <test3/>
+                                 <p:declare-step type="p:count" xml:id="count" xproc:support="true">
+                                    <p:input port="source" primary="true" sequence="true" select="/"/>
+                                    <p:output port="result" primary="true" select="/"/>
+                                    <p:option name="limit" select="'0'"/>
+                                 </p:declare-step>
+                                 <error/>
+                                 <error/>
                               </p:count>
                            </p:declare-step>
                         </result>
@@ -1394,163 +1580,240 @@ Congratulations! You've run your first pipeline!
                                            xproc:default-name="!1">
                               <ext:pre xmlns:ext="http://xproc.net/xproc/ext" xproc:default-name="!1.0"
                                        xproc:type="comp-step">
-                                 <p:output xproc:type="comp"/>
-                                 <p:option name="host" select="'tests.xproc.org'" xproc:type="comp"/>
-                                 <p:option name="username" select="'calabash'" xproc:type="comp"/>
-                                 <p:option name="password" select="''" xproc:type="comp"/>
-                                 <p:documentation xproc:type="comp">
-
-                                    <div xmlns="http://www.w3.org/1999/xhtml">
-  
-  
-  
-  
-                                       <p>This pipeline runs the XProc test suite and reports the results.</p>
-                                       <p>It has three options: , , and
-  .<code>host</code>
-                                          <code>username</code>
-                                          <code>password</code>
-                                       </p>
-                                       <p>The  option is used to specify the host to use
-  in the URIs of test suite documents. (Because Norm has a local copy of
-  .)<code>host</code>
-                                          <a>http://tests.xproc.org/</a>
-                                       </p>
-                                       <p>The  and  are used to submit
-  the test results to .
-  If run without a password, it simply outputs the report document.<code>username</code>
-                                          <code>password</code>
-                                          <a>http://tests.xproc.org</a>
-                                       </p>
-                                    </div>
-                                 </p:documentation>
+                                 <test3/>
+                                 <xproc:element type="p:declare-step" xproc:step="true" xproc:bindings="all"
+                                                xproc:support="true">
+                                    <p:input port="source"/>
+                                    <p:output port="result"/>
+                                 </xproc:element>
+                                 <error/>
+                                 <error/>
                               </ext:pre>
-                              <p:string-replace name="patch-test-uris" xproc:step="true" xproc:type="std-step"
+                              <p:string-replace match="uri/text()" name="patch-test-uris" xproc:step="true"
+                                                xproc:type="std-step"
                                                 xproc:default-name="!1.1">
-                                 <p:input port="source" primary="true" select="/">
-                                    <p:pipe port="" step="!1.0"/>
-                                 </p:input>
-                                 <p:outport port="result" primary="true" select="/"/>
-                                 <p:with-option name="match" required="true" select="/"/>
-                                 <p:with-option name="replace" required="true" select="concat('concat(&#34;http://',$host,'&#34;,.)')"/>
+                                 <test3/>
+                                 <p:declare-step type="p:string-replace" xml:id="string-replace" xproc:support="true">
+                                    <p:input port="source" primary="true" select="/"/>
+                                    <p:output port="result" primary="true" select="/"/>
+                                    <p:option name="match" required="true"/>
+                                    <p:option name="replace" required="true"/>
+                                 </p:declare-step>
+                                 <error/>
+                                 <error/>
                               </p:string-replace>
                               <p:identity name="extract-uri" xproc:step="true" xproc:type="std-step"
                                           xproc:default-name="!1.2">
-                                 <p:input port="source" sequence="true" primary="true" select="/">
-                                    <p:pipe port="" step="!1.1"/>
-                                 </p:input>
-                                 <p:outport port="result" sequence="true" primary="true" select="/"/>
+                                 <test3/>
+                                 <p:declare-step type="p:identity" xml:id="identity" xproc:support="true">
+                                    <p:input port="source" sequence="true" primary="true" select="/"/>
+                                    <p:output port="result" sequence="true" primary="true" select="/"/>
+                                 </p:declare-step>
+                                 <error/>
+                                 <error/>
                               </p:identity>
                               <p:choose xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.3">
-                                 <ext:pre xmlns:ext="http://xproc.net/xproc/ext" xproc:default-name="!1.3.0"
-                                          xproc:type="comp-step">
-                                    <p:xpath-context xproc:type="comp">
-    
-                                       <p:empty xproc:type="comp"/>
-                                    </p:xpath-context>
-                                 </ext:pre>
-                                 <p:when xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.3.1">
-                                    <p:wrap-sequence xproc:step="true" xproc:type="std-step" xproc:default-name="!1.3.1.1">
-                                       <p:input port="source" sequence="true" primary="true" select="/"/>
-                                       <p:outport port="result" sequence="true" primary="true" select="/"/>
-                                       <p:with-option name="wrapper" required="true" select="test-suites"/>
-                                       <p:with-option name="group-adjacent" select="/"/>
+                                 <test3/>
+                                 <xproc:element xmlns:ext="http://xproc.net/xproc/ext" type="p:choose" xproc:step="true"
+                                                xproc:support="true">
+		                                  <p:input port="source" primary="true" select="/"/>
+                                    <p:output port="result" primary="true" select="/"/>	
+                                 </xproc:element>
+                                 <error/>
+                                 <error/>
+                                 <p:when test="$host = 'tests.xproc.org'" xproc:step="true" xproc:type="comp-step"
+                                         xproc:default-name="!1.3.1">
+                                    <error/>
+                                    <error/>
+                                    <p:wrap-sequence wrapper="test-suites" xproc:step="true" xproc:type="std-step"
+                                                     xproc:default-name="!1.3.1.1">
+                                       <test3/>
+                                       <p:declare-step type="p:wrap-sequence" xml:id="wrap-sequence" xproc:support="true">
+                                          <p:input port="source" sequence="true" primary="true" select="/"/>
+                                          <p:output port="result" sequence="true" primary="true" select="/"/>
+                                          <p:option name="wrapper" required="true"/>
+                                          <p:option name="group-adjacent"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:wrap-sequence>
                                  </p:when>
                                  <p:otherwise xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.3.2">
-                                    <p:wrap-sequence xproc:step="true" xproc:type="std-step" xproc:default-name="!1.3.2.1">
-                                       <p:input port="source" sequence="true" primary="true" select="/"/>
-                                       <p:outport port="result" sequence="true" primary="true" select="/"/>
-                                       <p:with-option name="wrapper" required="true" select="test-suites"/>
-                                       <p:with-option name="group-adjacent" select="/"/>
+                                    <error/>
+                                    <error/>
+                                    <p:wrap-sequence wrapper="test-suites" xproc:step="true" xproc:type="std-step"
+                                                     xproc:default-name="!1.3.2.1">
+                                       <test3/>
+                                       <p:declare-step type="p:wrap-sequence" xml:id="wrap-sequence" xproc:support="true">
+                                          <p:input port="source" sequence="true" primary="true" select="/"/>
+                                          <p:output port="result" sequence="true" primary="true" select="/"/>
+                                          <p:option name="wrapper" required="true"/>
+                                          <p:option name="group-adjacent"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:wrap-sequence>
                                  </p:otherwise>
                               </p:choose>
                               <p:choose xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.4">
-                                 <ext:pre xmlns:ext="http://xproc.net/xproc/ext" xproc:default-name="!1.4.0"
-                                          xproc:type="comp-step"/>
-                                 <p:when xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.4.1">
+                                 <test3/>
+                                 <xproc:element xmlns:ext="http://xproc.net/xproc/ext" type="p:choose" xproc:step="true"
+                                                xproc:support="true">
+		                                  <p:input port="source" primary="true" select="/"/>
+                                    <p:output port="result" primary="true" select="/"/>	
+                                 </xproc:element>
+                                 <error/>
+                                 <error/>
+                                 <p:when test="$password = ''" xproc:step="true" xproc:type="comp-step"
+                                         xproc:default-name="!1.4.1">
+                                    <error/>
+                                    <error/>
                                     <p:identity xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.1.1">
-                                       <p:input port="source" sequence="true" primary="true" select="/"/>
-                                       <p:outport port="result" sequence="true" primary="true" select="/"/>
+                                       <test3/>
+                                       <p:declare-step type="p:identity" xml:id="identity" xproc:support="true">
+                                          <p:input port="source" sequence="true" primary="true" select="/"/>
+                                          <p:output port="result" sequence="true" primary="true" select="/"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:identity>
                                  </p:when>
                                  <p:otherwise xproc:step="true" xproc:type="comp-step" xproc:default-name="!1.4.2">
-                                    <p:wrap xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.1">
-                                       <p:input port="source" primary="true" select="/"/>
-                                       <p:outport port="result" primary="true" select="/"/>
-                                       <p:with-option name="wrapper" required="true" default="/" select="c:body"/>
-                                       <p:with-option name="match" required="true" default="/" select="/"/>
-                                       <p:with-option name="group-adjacent" default="/" select="/"/>
+                                    <error/>
+                                    <error/>
+                                    <p:wrap wrapper="c:body" match="/" xproc:step="true" xproc:type="std-step"
+                                            xproc:default-name="!1.4.2.1">
+                                       <test3/>
+                                       <p:declare-step type="p:wrap" xml:id="wrap" xproc:support="true">
+                                          <p:input port="source" primary="true" select="/"/>
+                                          <p:output port="result" primary="true" select="/"/>
+                                          <p:option name="wrapper" required="true" default="/"/>
+                                          <p:option name="match" required="true" default="/"/>
+                                          <p:option name="group-adjacent" default="/"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:wrap>
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.2">
-                                       <p:input port="source" primary="true" select="/"/>
-                                       <p:outport port="result" primary="true" select="/"/>
-                                       <p:with-option name="match" required="true" select="c:body"/>
-                                       <p:with-option name="attribute-name" required="true" select="content-type"/>
-                                       <p:with-option name="attribute-prefix" select="/"/>
-                                       <p:with-option name="attribute-namespace" select="/"/>
-                                       <p:with-option name="attribute-value" required="true" select="application/xml"/>
+                                    <p:add-attribute match="c:body" attribute-name="content-type" attribute-value="application/xml"
+                                                     xproc:step="true"
+                                                     xproc:type="std-step"
+                                                     xproc:default-name="!1.4.2.2">
+                                       <test3/>
+                                       <p:declare-step type="p:add-attribute" xml:id="add-attribute" xproc:support="true">
+                                          <p:input port="source" primary="true"/>
+                                          <p:output port="result" primary="true"/>
+                                          <p:option name="match" required="true"/>
+                                          <p:option name="attribute-name" required="true"/>
+                                          <p:option name="attribute-prefix"/>                          
+                                          <p:option name="attribute-namespace"/>                       
+                                          <p:option name="attribute-value" required="true"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:add-attribute>
-                                    <p:wrap xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.3">
-                                       <p:input port="source" primary="true" select="/"/>
-                                       <p:outport port="result" primary="true" select="/"/>
-                                       <p:with-option name="wrapper" required="true" default="/" select="c:request"/>
-                                       <p:with-option name="match" required="true" default="/" select="/"/>
-                                       <p:with-option name="group-adjacent" default="/" select="/"/>
+                                    <p:wrap wrapper="c:request" match="/" xproc:step="true" xproc:type="std-step"
+                                            xproc:default-name="!1.4.2.3">
+                                       <test3/>
+                                       <p:declare-step type="p:wrap" xml:id="wrap" xproc:support="true">
+                                          <p:input port="source" primary="true" select="/"/>
+                                          <p:output port="result" primary="true" select="/"/>
+                                          <p:option name="wrapper" required="true" default="/"/>
+                                          <p:option name="match" required="true" default="/"/>
+                                          <p:option name="group-adjacent" default="/"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:wrap>
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.4">
-                                       <p:input port="source" primary="true" select="/"/>
-                                       <p:outport port="result" primary="true" select="/"/>
-                                       <p:with-option name="match" required="true" select="/c:request"/>
-                                       <p:with-option name="attribute-name" required="true" select="password"/>
-                                       <p:with-option name="attribute-prefix" select="/"/>
-                                       <p:with-option name="attribute-namespace" select="/"/>
-                                       <p:with-option name="attribute-value" required="true" select="$password"/>
+                                    <p:add-attribute attribute-name="password" match="/c:request" xproc:step="true"
+                                                     xproc:type="std-step"
+                                                     xproc:default-name="!1.4.2.4">
+                                       <test3/>
+                                       <p:declare-step type="p:add-attribute" xml:id="add-attribute" xproc:support="true">
+                                          <p:input port="source" primary="true"/>
+                                          <p:output port="result" primary="true"/>
+                                          <p:option name="match" required="true"/>
+                                          <p:option name="attribute-name" required="true"/>
+                                          <p:option name="attribute-prefix"/>                          
+                                          <p:option name="attribute-namespace"/>                       
+                                          <p:option name="attribute-value" required="true"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:add-attribute>
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.5">
-                                       <p:input port="source" primary="true" select="/"/>
-                                       <p:outport port="result" primary="true" select="/"/>
-                                       <p:with-option name="match" required="true" select="/c:request"/>
-                                       <p:with-option name="attribute-name" required="true" select="username"/>
-                                       <p:with-option name="attribute-prefix" select="/"/>
-                                       <p:with-option name="attribute-namespace" select="/"/>
-                                       <p:with-option name="attribute-value" required="true" select="$username"/>
+                                    <p:add-attribute attribute-name="username" match="/c:request" xproc:step="true"
+                                                     xproc:type="std-step"
+                                                     xproc:default-name="!1.4.2.5">
+                                       <test3/>
+                                       <p:declare-step type="p:add-attribute" xml:id="add-attribute" xproc:support="true">
+                                          <p:input port="source" primary="true"/>
+                                          <p:output port="result" primary="true"/>
+                                          <p:option name="match" required="true"/>
+                                          <p:option name="attribute-name" required="true"/>
+                                          <p:option name="attribute-prefix"/>                          
+                                          <p:option name="attribute-namespace"/>                       
+                                          <p:option name="attribute-value" required="true"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:add-attribute>
-                                    <p:add-attribute xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.6">
-                                       <p:input port="source" primary="true" select="/"/>
-                                       <p:outport port="result" primary="true" select="/"/>
-                                       <p:with-option name="match" required="true" select="/c:request"/>
-                                       <p:with-option name="attribute-name" required="true" select="href"/>
-                                       <p:with-option name="attribute-prefix" select="/"/>
-                                       <p:with-option name="attribute-namespace" select="/"/>
-                                       <p:with-option name="attribute-value" required="true"
-                                                      select="concat('http://',$host,'/results/submit/report')"/>
+                                    <p:add-attribute attribute-name="href" match="/c:request" xproc:step="true"
+                                                     xproc:type="std-step"
+                                                     xproc:default-name="!1.4.2.6">
+                                       <test3/>
+                                       <p:declare-step type="p:add-attribute" xml:id="add-attribute" xproc:support="true">
+                                          <p:input port="source" primary="true"/>
+                                          <p:output port="result" primary="true"/>
+                                          <p:option name="match" required="true"/>
+                                          <p:option name="attribute-name" required="true"/>
+                                          <p:option name="attribute-prefix"/>                          
+                                          <p:option name="attribute-namespace"/>                       
+                                          <p:option name="attribute-value" required="true"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:add-attribute>
-                                    <p:set-attributes xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.7">
-                                       <p:input port="source" primary="true" select="/"/>
-                                       <p:input port="attributes" primary="false" select="/"/>
-                                       <p:outport port="result" primary="true" select="/"/>
-                                       <p:with-option name="match" required="true" select="c:request"/>
+                                    <p:set-attributes match="c:request" xproc:step="true" xproc:type="std-step"
+                                                      xproc:default-name="!1.4.2.7">
+                                       <test3/>
+                                       <p:declare-step type="p:set-attributes" xml:id="set-attributes" xproc:support="true">
+                                          <p:input port="source" primary="true" select="/"/>
+                                          <p:input port="attributes" primary="false" select="/"/>
+                                          <p:output port="result" primary="true" select="/"/>
+                                          <p:option name="match" required="true"/>
+                                       </p:declare-step>
+                                       <test3/>
+                                       <p:declare-step type="p:set-attributes" xml:id="set-attributes" xproc:support="true">
+                                          <p:input port="source" primary="true" select="/"/>
+                                          <p:input port="attributes" primary="false" select="/"/>
+                                          <p:output port="result" primary="true" select="/"/>
+                                          <p:option name="match" required="true"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:set-attributes>
                                     <p:http-request xproc:step="true" xproc:type="std-step" xproc:default-name="!1.4.2.8">
-                                       <p:input port="source" primary="true" select="/"/>
-                                       <p:outport port="result" primary="true" select="/"/>
-                                       <p:with-option name="byte-order-mark" select="/"/>
-                                       <p:with-option name="cdata-section-elements" select="/"/>
-                                       <p:with-option name="doctype-public" select="/"/>
-                                       <p:with-option name="doctype-system" select="/"/>
-                                       <p:with-option name="encoding" select="/"/>
-                                       <p:with-option name="escape-uri-attributes" select="/"/>
-                                       <p:with-option name="include-content-type" select="/"/>
-                                       <p:with-option name="indent" select="/"/>
-                                       <p:with-option name="media-type" select="/"/>
-                                       <p:with-option name="method" select="/"/>
-                                       <p:with-option name="normalization-form" select="/"/>
-                                       <p:with-option name="omit-xml-declaration" select="/"/>
-                                       <p:with-option name="standalone" select="/"/>
-                                       <p:with-option name="undeclare-prefixes" select="/"/>
-                                       <p:with-option name="version" select="/"/>
+                                       <test3/>
+                                       <p:declare-step type="p:http-request" xml:id="http-request" xproc:support="true">
+                                          <p:input port="source" primary="true" select="/"/>
+                                          <p:output port="result" primary="true" select="/"/>
+                                          <p:option name="byte-order-mark"/>
+                                          <p:option name="cdata-section-elements"/>
+                                          <p:option name="doctype-public"/>
+                                          <p:option name="doctype-system"/>
+                                          <p:option name="encoding"/>
+                                          <p:option name="escape-uri-attributes"/>
+                                          <p:option name="include-content-type"/>
+                                          <p:option name="indent" select="'false'"/>
+                                          <p:option name="media-type"/>
+                                          <p:option name="method" select="'xml'"/>
+                                          <p:option name="normalization-form"/>
+                                          <p:option name="omit-xml-declaration"/>
+                                          <p:option name="standalone"/>
+                                          <p:option name="undeclare-prefixes"/>
+                                          <p:option name="version" select="'1.0'"/>
+                                       </p:declare-step>
+                                       <error/>
+                                       <error/>
                                     </p:http-request>
                                  </p:otherwise>
                               </p:choose>
@@ -1567,7 +1830,7 @@ Congratulations! You've run your first pipeline!
 
 failed: 13 /  success: 9 / total: 24<hr/>
          <p style="text-align:right">
-            <i>2011-05-09T21:03:00.215+02:00</i>
+            <i>2011-06-02T12:42:23.426+02:00</i>
          </p>
       </div>
    </body>
