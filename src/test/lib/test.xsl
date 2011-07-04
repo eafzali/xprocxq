@@ -1,5 +1,6 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:saxon="http://saxon.sf.net/"
+                xmlns:xs="http://www.w3.org/2001/XMLSchema"
                 exclude-result-prefixes="saxon"
                 version="2.0">
 <xsl:strip-space elements="result expected"/> 
@@ -108,7 +109,8 @@
       <body onload="prettyPrint()">
         <h1><xsl:value-of select="$title"/> Results</h1>
         
-        <p> <strong><xsl:value-of select="round(($pass div $total)) * 100"/>% pass rate: </strong><strong class="fail"><xsl:value-of select="$fail"/></strong> failed tests and <strong><xsl:value-of select="$pass"/></strong> passed tests.</p>
+        <p> <strong><xsl:value-of select="round((1 - (xs:integer($fail) div
+        xs:integer($pass + $fail))) * 100)"/>% pass rate: </strong><strong class="fail"><xsl:value-of select="$fail"/></strong> failed tests and <strong><xsl:value-of select="$pass"/></strong> passed tests.</p>
           <xsl:apply-templates/>
         <br/><br/>
         <div class="footer"><p style="text-align:right"><i><xsl:value-of select="current-dateTime()"/></i></p></div>
@@ -120,6 +122,29 @@
     <ol class="results">
       <xsl:apply-templates/>
     </ol>
+  </xsl:template>
+
+  <xsl:template match="*:test">
+    <li class="result pass">
+      <h3><input name="test" value="" type="checkbox" checked="checked"></input>
+      <a href="?test="><xsl:value-of select="@name"/> <span class="namespace"><xsl:value-of select="@desc"/></span></a>
+      <table>
+        <tbody><tr>
+          <td>
+            <pre style="border: 1px solid #888;padding: 2px"
+><textarea rows="5" cols="60"><xsl:copy-of
+                                               select="expected"/></textarea></pre>
+          </td>
+          <td>
+            <pre style="border: 1px solid #888;padding: 2px"
+><textarea rows="5" cols="60"><xsl:copy-of
+                                               select="result"/></textarea></pre>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      </h3><br/>
+    </li>
   </xsl:template>
   <xsl:template match="*:test[expected ne result]">
     <li class="result fail">
@@ -167,4 +192,6 @@
       </h3><br/>
     </li>
   </xsl:template>
+
+<xsl:template match="text()"/>
 </xsl:stylesheet>

@@ -160,9 +160,9 @@ declare boundary-space preserve;
  declare function parse:bindings($step as node()*, $step-definition){
  (: --------------------------------------------------------------------------------------------------------- :)
   (
-    parse:input-port($step//p:input, $step-definition),
+     parse:input-port($step//p:input, $step-definition),
     parse:output-port($step//p:output, $step-definition),
-    parse:options($step//p:with-option,$step-definition) 
+        parse:options($step//p:with-option,$step-definition) 
   )
  };
 
@@ -184,18 +184,13 @@ declare boundary-space preserve;
                    return $node
             case element(p:declare-step) 
                    return element p:declare-step {
-                     $node/@name,
-                     $node/@xproc:step,
-                     $node/@xproc:type,
+                     $node/@*,
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                      parse:bindings($node[@xproc:type eq 'comp'],$step-definition)},
                      parse:AST($node/*[@xproc:type ne 'comp'])}
                    default 
                    return element {node-name($node)}{
-                     $node/@name,
-                     $node/@xproc:step,
-                     $node/@xproc:type,
-                     attribute default-element {'test'},
+                     $node/@*,
                      parse:bindings($node/*[@xproc:type eq 'comp'],$step-definition),
                      parse:AST($node/*[@xproc:type ne 'comp'])}
  };
@@ -275,7 +270,7 @@ declare boundary-space preserve;
                      parse:explicit-type($node/node())}
             case element()
                    return element {node-name($node)} {
-                     $node/@*,                                      (: TODO - this will need to constrain at some point :)
+                     $node/@name,                                      (: TODO - this will need to constrain at some point :)
                      if (fn:contains($type,'step')) then attribute xproc:step {fn:true()} else (),
                      if ($type ne 'error') then attribute xproc:type {$type} else (),
                      if (fn:contains($type,'step')) then

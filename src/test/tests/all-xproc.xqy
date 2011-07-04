@@ -24,27 +24,9 @@ test:html(
   </test>
  
   <test name="xproc2a" desc="test explicit naming parsing">
-    <expected><p:declare-step xmlns:xproc="http://xproc.net/xproc" xmlns:ext="http://xproc.net/xproc/ext" xmlns:c="http://www.w3.org/ns/xproc-step" xmlns:err="http://www.w3.org/ns/xproc-error" xmlns:xxq-error="http://xproc.net/xproc/error" xmlns:p="http://www.w3.org/ns/xproc" version="1.0" xproc:type="comp-step">
-<p:input port="source" xproc:type="comp">
-  <p:inline xproc:type="comp"><doc>
-Congratulations! You've run your first pipeline!
-</doc></p:inline>
-</p:input>
-<p:output port="result" xproc:type="comp"></p:output>
-
-<p:group xproc:step="true" xproc:type="comp-step">
-<p:identity xproc:step="true" xproc:type="std-step"></p:identity>
-</p:group>
-
-<p:identity xproc:step="true" xproc:type="std-step">
-  <p:input port="source" select="/test" xproc:type="comp"><p:inline xproc:type="comp"><test>test</test></p:inline></p:input>
-</p:identity>
-
-<p:count limit="20" xproc:step="true" xproc:type="std-step"><p:with-option name="limit" select="20"></p:with-option></p:count>
-</p:declare-step></expected>
+    <expected>{fn:doc('data/xproc2aresult.xml')}</expected>
     <result>{txproc:parseExplicitNames()}</result>
   </test>
-
  <test name="xproc2b" desc="test explicit naming parsing">
     <expected>{fn:doc('data/xproc2bresult.xml')}</expected>
     <result>{txproc:parseExplicitNames1()}</result>
@@ -85,10 +67,10 @@ Congratulations! You've run your first pipeline!
     <expected>true</expected>
     <result>{txproc:testParseType6()}</result>
   </test>
-  <!--test name="xproc7a" desc="test parse:explicit-name">
+  <test name="xproc7a" desc="test parse:explicit-name">
     <expected>{fn:doc('data/xproc7aresult.xml')}</expected>
     <result>{txproc:testExplicitName1()}</result>
-  </test-->
+  </test>
   <test name="xproc7b" desc="test parse:explicit-name with p:choose">
     <expected>{fn:doc('data/xproc7bresult.xml')}</expected>
     <result>{txproc:testExplicitName()}</result>
@@ -106,7 +88,6 @@ Congratulations! You've run your first pipeline!
     <expected>{fn:doc('data/xproc8aresult.xml')}</expected>
     <result>{txproc:testAST1()}</result>
   </test>
-
 
   <test name="xproc9a" desc="test parse:explicit-bindings">
     <expected>{fn:doc('data/xproc9aresult.xml')}</expected>
