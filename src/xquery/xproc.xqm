@@ -18,7 +18,7 @@ module namespace xproc = "http://xproc.net/xproc";
  import module namespace parse = "http://xproc.net/xproc/parse" at "parse.xqm";
 
  (: declare options :)
- declare boundary-space strip;
+ declare boundary-space preserve;
  declare option saxon:output "indent=yes";
 
  (: declare functions :)

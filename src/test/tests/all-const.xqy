@@ -43,9 +43,10 @@ test:html(
   </test>
   <test name="const9" desc="check if psvi is supported">
     <expected>true</expected>
-
     <result>{tconst:checkPsviSupported()}</result>
   </test>
+
+<!--
   <test name="const10" desc="check error codes">
     <expected>true</expected>
     <result>{tconst:checkXprocErrorCodes()}</result>
@@ -54,8 +55,13 @@ test:html(
     <expected>true</expected>
     <result>{tconst:checkXprocXQErrorCodes()}</result>
   </test>
-
+//-->
 </testsuite>
 )
 
 
+(:
+-- Local Variables:
+-- compile-command: "../../../bin/test.sh all-const.xqy > ../../../report/all-const.html"
+-- End:
+:)

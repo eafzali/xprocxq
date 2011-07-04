@@ -15,4 +15,9 @@ test:html(
 </testsuite>
 )
 
+(:
+-- Local Variables:
+-- compile-command: "../../../bin/test.sh all-std.xqy > ../../../report/all-std.html"
+-- End:
+:)
 

@@ -15,5 +15,5 @@ Congratulations! You've run your first pipeline!
   <p:input port="source" select="/test"><p:inline><test>test</test></p:inline></p:input>
 </p:identity>
 
-<p:count/>
+<p:count limit="20"/>
 </p:declare-step>

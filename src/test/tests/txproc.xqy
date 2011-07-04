@@ -2,6 +2,8 @@ xquery version "3.0";
 
 module namespace txproc ="txproc";
 
+declare boundary-space strip;
+
 declare namespace p="http://www.w3.org/ns/xproc";
 declare namespace c="http://www.w3.org/ns/xproc-step";
 declare namespace err="http://www.w3.org/ns/xproc-error";
@@ -48,67 +50,23 @@ declare function (:TEST:) txproc:runEntryPointTest2() {
 
 declare function (:TEST:) txproc:parseExplicitNames() { 
   let $pipeline := fn:doc('data/test.xpl')
-  let $expected := <p:declare-step xmlns:xproc="http://xproc.net/xproc" xmlns:ext="http://xproc.net/xproc"
-                                        xmlns:c="http://www.w3.org/ns/xproc-step"
-                                        xmlns:err="http://www.w3.org/ns/xproc-error"
-                                        xmlns:xxq-error="http://xproc.net/xproc/error"
-                                        xmlns:p="http://www.w3.org/ns/xproc"
-                                        version="1.0"
-                                        xproc:type="comp-step"> 
-                           <p:input xproc:type="comp"> 
-                              <p:inline xproc:type="comp"> 
-                                 <doc>Congratulations! You've run your first pipeline!</doc> 
-                              </p:inline> 
-                           </p:input> 
-                           <p:output xproc:type="comp"/> 
- 
-                           <p:group xproc:step="true" xproc:type="comp-step"> 
-                              <p:identity xproc:step="true" xproc:type="std-step"/> 
-                           </p:group> 
- 
-                           <p:identity xproc:step="true" xproc:type="std-step"> 
-                              <p:input select="/test" xproc:type="comp"> 
-                                 <test>test</test> 
-                              </p:input> 
-                           </p:identity> 
- 
-                           <p:count xproc:step="true" xproc:type="std-step"/> 
-                        </p:declare-step>
   let $result   := parse:explicit-type($pipeline)
   return
-(    test:assertXMLEqual( $result, $expected),$result)
+    $result
 };
 
 declare function (:TEST:) txproc:parseExplicitNames1() { 
-  let $pipeline := fn:doc('data/test1.xpl')
+  let $pipeline := fn:doc('data/submit-test-report.xpl')
   let $result   := parse:explicit-type($pipeline)
   return
-    (test:assertXMLEqual( $result,<p:declare-step xmlns:p="http://www.w3.org/ns/xproc" version="1.0" name="pipeline">
-<p:input port="source">
-  <p:inline><doc>
-Congratulations! You've run your first pipeline!
-</doc></p:inline>
-</p:input>
-<p:output port="result"/>
-
-<p:identity/>
-</p:declare-step>), $result)
+    $result
 };
 
 declare function (:TEST:) txproc:parseExplicitNames2() { 
   let $pipeline := fn:doc('data/submit-test-report.xpl')
   let $result   := parse:explicit-type($pipeline)
   return
-    (test:assertXMLEqual( $result,<p:declare-step xmlns:p="http://www.w3.org/ns/xproc" version="1.0" name="pipeline">
-<p:input port="source">
-  <p:inline><doc>
-Congratulations! You've run your first pipeline!
-</doc></p:inline>
-</p:input>
-<p:output port="result"/>
-
-<p:identity/>
-</p:declare-step>), $result)
+    $result
 };
 
 declare function (:TEST:) txproc:addXprocNamespace() { 
@@ -134,7 +92,7 @@ declare function (:TEST:) txproc:testParseType1() {
 declare function (:TEST:) txproc:testParseType2() { 
   let $result   := parse:type(<p:exec/>)
   return
-    test:assertStringContain( $result, 'opt')
+    $result
 };
 declare function (:TEST:) txproc:testParseType3() { 
   let $result   := parse:type(<ext:pre/>)
@@ -151,55 +109,51 @@ declare function (:TEST:) txproc:testParseType5() {
   return
     test:assertStringContain( $result, '')
 };
-
 declare function (:TEST:) txproc:testParseType6() { 
   let $result   := parse:type(<p:adsfadsfasdfadsf/>)
   return
-    (test:assertStringContain( $result, 'error'),$result)
+    (test:assertStringContain( $result, 'error'))
 };
 
 declare function (:TEST:) txproc:testExplicitName() { 
   let $pipeline := fn:doc('data/submit-test-report.xpl')
   let $result   := parse:explicit-name(parse:explicit-type($pipeline))
   return 
-    (test:assertXMLEqual( $result, <test/>),$result)
+    document{$result} 
 };
 
 declare function (:TEST:) txproc:testExplicitName1() { 
   let $pipeline := fn:doc('data/test.xpl')
   let $result   := parse:explicit-name(parse:explicit-type($pipeline))
   return 
-    (test:assertXMLEqual( $result, <p:declare-step xmlns:p="http://www.w3.org/ns/xproc" xmlns:xproc="http://xproc.net/xproc" version="1.0" xproc:type="comp-step" xproc:default-name="!1"><p:input port="source" xproc:type="comp">
-  
-<p:inline xproc:type="comp"><doc>
-Congratulations! You've run your first pipeline!
-</doc></p:inline></p:input><p:output port="result" xproc:type="comp"/><p:identity xproc:step="true" xproc:type="std-step" xproc:defaultname="!1.1"/></p:declare-step>),$result)
+    document{$result} 
 };
 
 declare function (:TEST:) txproc:testAST() { 
   let $pipeline := fn:doc('data/test.xpl')
   let $result   := parse:AST(parse:explicit-name(parse:explicit-type($pipeline)))
   return 
-    (test:assertXMLEqual( $result, <test/>),$result)
+    document{$result} 
 };
 
 declare function (:TEST:) txproc:testAST1() { 
   let $pipeline := fn:doc('data/submit-test-report.xpl')
   let $result   := parse:AST(parse:explicit-name(parse:explicit-type($pipeline)))
   return 
-    (test:assertXMLEqual( $result, <test/>),$result)
+    document{$result} 
 };
 
 declare function (:TEST:) txproc:testExplicitBindings1() { 
-  let $pipeline := fn:doc('data/test.xpl')
+  let $pipeline := fn:doc('data/test1.xpl')
   let $result   := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
   return 
-    (test:assertXMLEqual( $result, <test/>),$result)
+    document{$result} 
 };
 
 declare function (:TEST:) txproc:testExplicitBindings2() { 
   let $pipeline := fn:doc('data/submit-test-report.xpl')
   let $result   := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
   return 
-    (test:assertXMLEqual( $result,<test/>),$result)
+    document{$result} 
+
 };

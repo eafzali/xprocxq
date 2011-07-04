@@ -5,6 +5,8 @@ import module namespace test = "http://www.marklogic.com/test"
 
 import module namespace txproc = "txproc"
     at "txproc.xqy";
+
+declare boundary-space preserve;
     
 test:html(
 <testsuite title="xprocxq main module">
@@ -20,16 +22,35 @@ test:html(
     <expected>true</expected>
     <result>{txproc:runEntryPointTest2()}</result>
   </test>
+ 
   <test name="xproc2a" desc="test explicit naming parsing">
-    <expected>true</expected>
+    <expected><p:declare-step xmlns:xproc="http://xproc.net/xproc" xmlns:ext="http://xproc.net/xproc/ext" xmlns:c="http://www.w3.org/ns/xproc-step" xmlns:err="http://www.w3.org/ns/xproc-error" xmlns:xxq-error="http://xproc.net/xproc/error" xmlns:p="http://www.w3.org/ns/xproc" version="1.0" xproc:type="comp-step">
+<p:input port="source" xproc:type="comp">
+  <p:inline xproc:type="comp"><doc>
+Congratulations! You've run your first pipeline!
+</doc></p:inline>
+</p:input>
+<p:output port="result" xproc:type="comp"></p:output>
+
+<p:group xproc:step="true" xproc:type="comp-step">
+<p:identity xproc:step="true" xproc:type="std-step"></p:identity>
+</p:group>
+
+<p:identity xproc:step="true" xproc:type="std-step">
+  <p:input port="source" select="/test" xproc:type="comp"><p:inline xproc:type="comp"><test>test</test></p:inline></p:input>
+</p:identity>
+
+<p:count limit="20" xproc:step="true" xproc:type="std-step"><p:with-option name="limit" select="20"></p:with-option></p:count>
+</p:declare-step></expected>
     <result>{txproc:parseExplicitNames()}</result>
   </test>
-  <test name="xproc2b" desc="test explicit naming parsing">
-    <expected>true</expected>
+
+ <test name="xproc2b" desc="test explicit naming parsing">
+    <expected>{fn:doc('data/xproc2bresult.xml')}</expected>
     <result>{txproc:parseExplicitNames1()}</result>
   </test>
   <test name="xproc2c" desc="test explicit naming parsing">
-    <expected>true</expected>
+    <expected>{fn:doc('data/xproc2aresult.xml')}</expected>
     <result>{txproc:parseExplicitNames2()}</result>
   </test>
   <test name="xproc3a" desc="test explicit naming parsing adds xproc: namespace">
@@ -40,13 +61,12 @@ test:html(
     <expected>true</expected>
     <result>{txproc:addXprocNamespace1()}</result>
   </test>
-
   <test name="xproc4a" desc="test parse:type returns correct type">
     <expected>true</expected>
     <result>{txproc:testParseType1()}</result>
   </test>
   <test name="xproc4b" desc="test parse:type returns correct type">
-    <expected>true</expected>
+    <expected>error</expected>
     <result>{txproc:testParseType2()}</result>
   </test>
   <test name="xproc4c" desc="test parse:type returns correct type">
@@ -65,42 +85,44 @@ test:html(
     <expected>true</expected>
     <result>{txproc:testParseType6()}</result>
   </test>
-  <test name="xproc7a" desc="test parse:explicit-name">
-    <expected>true</expected>
+  <!--test name="xproc7a" desc="test parse:explicit-name">
+    <expected>{fn:doc('data/xproc7aresult.xml')}</expected>
     <result>{txproc:testExplicitName1()}</result>
-  </test>
+  </test-->
   <test name="xproc7b" desc="test parse:explicit-name with p:choose">
-    <expected>true</expected>
+    <expected>{fn:doc('data/xproc7bresult.xml')}</expected>
     <result>{txproc:testExplicitName()}</result>
   </test>
   <test name="xproc7c" desc="test parse:explicit-name with p:group">
-    <expected>true</expected>
+    <expected>{fn:doc('data/xproc7cresult.xml')}</expected>
     <result>{txproc:testExplicitName()}</result>
   </test>
-  <test name="xproc7b" desc="test parse:explicit-name with p:viewport">
-    <expected>true</expected>
+  <test name="xproc7d" desc="test parse:explicit-name with p:viewport">
+    <expected>{fn:doc('data/xproc7dresult.xml')}</expected>
     <result>{txproc:testExplicitName()}</result>
   </test>
 
   <test name="xproc8a" desc="test parse:AST">
-    <expected>true</expected>
-    <result>{txproc:testAST()}</result>
-  </test>
-  <test name="xproc8b" desc="test parse:AST">
-    <expected>true</expected>
+    <expected>{fn:doc('data/xproc8aresult.xml')}</expected>
     <result>{txproc:testAST1()}</result>
   </test>
 
+
   <test name="xproc9a" desc="test parse:explicit-bindings">
-    <expected>true</expected>
+    <expected>{fn:doc('data/xproc9aresult.xml')}</expected>
     <result>{txproc:testExplicitBindings1()}</result>
   </test>
+
   <test name="xproc9b" desc="test parse:explicit-bindings">
-    <expected>true</expected>
+    <expected>{fn:doc('data/9bresult.xml')}</expected>
     <result>{txproc:testExplicitBindings2()}</result>
   </test>
 
 </testsuite>
 )
 
-
+(:
+-- Local Variables:
+-- compile-command: "../../../bin/test.sh all-xproc.xqy > ../../../report/all-xproc.html"
+-- End:
+:)

@@ -2,6 +2,7 @@
                 xmlns:saxon="http://saxon.sf.net/"
                 exclude-result-prefixes="saxon"
                 version="2.0">
+<xsl:strip-space elements="result expected"/> 
   <xsl:output omit-xml-declaration="yes" method="html" encoding="utf-8" indent="yes" />
   <xsl:output name="default" indent="yes" omit-xml-declaration="yes"/>
   <xsl:param name="title"/>
@@ -38,8 +39,7 @@
           li.result {
           list-style-position: inside;
           list-style: none;
-          height:100px;
-          overflow:visible;
+          height:130;
           }
           .result h3 {
           font-weight: normal;
@@ -107,7 +107,8 @@
       </head>
       <body onload="prettyPrint()">
         <h1><xsl:value-of select="$title"/> Results</h1>
-        <p> <strong><xsl:value-of select="round(($pass div $total) * 100)"/>% pass rate: </strong><strong class="fail"><xsl:value-of select="$fail"/></strong> failed tests and <strong><xsl:value-of select="$pass"/></strong> passed tests.</p>
+        
+        <p> <strong><xsl:value-of select="round(($pass div $total)) * 100"/>% pass rate: </strong><strong class="fail"><xsl:value-of select="$fail"/></strong> failed tests and <strong><xsl:value-of select="$pass"/></strong> passed tests.</p>
           <xsl:apply-templates/>
         <br/><br/>
         <div class="footer"><p style="text-align:right"><i><xsl:value-of select="current-dateTime()"/></i></p></div>
@@ -123,7 +124,8 @@
   <xsl:template match="*:test[expected ne result]">
     <li class="result fail">
       <h3 ><input name="test" value="" type="checkbox" checked="checked"></input>
-      <a href="?test="><xsl:value-of select="@name"/> <span class="namespace"></span></a>
+      <a href="?test="><xsl:value-of select="@name"/><br/> <span
+      > <xsl:value-of select="@desc"/></span></a>
       <table>
         <tbody>
           <tr>
@@ -143,10 +145,10 @@
       </h3><br/>
     </li>
   </xsl:template>
-  <xsl:template match="*:test[expected eq result]">
+  <xsl:template match="*:test[deep-equal(expected/node(),result/node())]">
     <li class="result pass">
       <h3><input name="test" value="" type="checkbox" checked="checked"></input>
-      <a href="?test="><xsl:value-of select="@name"/> <span class="namespace"><xsl:value-of select="namespace-uri(result/node())"/></span></a>
+      <a href="?test="><xsl:value-of select="@name"/> <span class="namespace"><xsl:value-of select="@desc"/></span></a>
       <table>
         <tbody><tr>
           <td>

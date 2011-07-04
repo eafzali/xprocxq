@@ -10,7 +10,6 @@ module namespace test = "http://www.marklogic.com/test";
  declare option saxon:output "omit-xml-declaration=yes";
 
 
-
 (: --------------------------------------------------------------------------------------------------- :)
 declare function test:assertExists($a as item()*) as xs:boolean {
 (: --------------------------------------------------------------------------------------------------- :)
@@ -20,7 +19,7 @@ declare function test:assertExists($a as item()*) as xs:boolean {
 (: --------------------------------------------------------------------------------------------------- :)
 declare function test:assertXMLEqual($a, $b) as xs:boolean {
 (: --------------------------------------------------------------------------------------------------- :)
-    fn:deep-equal($a,$b)
+    fn:deep-equal($a,$b,"http://www.w3.org/2005/xpath-functions/collation/codepoint")
 };
 
 (: --------------------------------------------------------------------------------------------------- :)

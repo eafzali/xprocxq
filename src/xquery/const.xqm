@@ -46,7 +46,7 @@ declare variable $const:NS_XPROC_ERR_EXT := "http://xproc.net/ns/errors";
 (: Error Dictionary lookup :)
 (: -------------------------------------------------------------------------- :)
 declare variable $const:error          := fn:doc("/Users/jfuller/Source/Webcomposite/xprocxq/src/xquery/etc/error-codes.xml");
-declare variable  $const:xprocxq-error := fn:doc("/Users/jfuller/Source/Webcomposite/xprocxq/src/xquery/etc/xprocxq-error-codes.xml");
+declare variable  $const:xprocxq-error := fn:doc("/Users/jfuller/Source/Webcomposite/xprocxq/src/xquery/etc/xproc-error-codes.xml");
 
 (: -------------------------------------------------------------------------- :)
 (: Step Definition lookup :)

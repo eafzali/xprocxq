@@ -7,6 +7,8 @@ xquery version "3.0"  encoding "UTF-8";
 
 module namespace parse = "http://xproc.net/xproc/parse";
 
+declare boundary-space preserve;
+
  (: declare namespaces :)
  declare namespace xproc="http://xproc.net/xproc";
  declare namespace p="http://www.w3.org/ns/xproc";
@@ -54,7 +56,6 @@ module namespace parse = "http://xproc.net/xproc/parse";
      'error'      (: check if unknown p: element else throw error XS0044:)
  };
 
-
  (: sorts pipeline based on input port dependencies :)
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:pipeline-step-sort($unsorted as node()*, $sorted as node()) as node()*{
@@ -75,7 +76,7 @@ module namespace parse = "http://xproc.net/xproc/parse";
  declare function parse:explicit-bindings($pipeline){
  (: --------------------------------------------------------------------------------------------------------- :)
  element p:declare-step {$pipeline/@*,
-  parse:explicit-bindings($pipeline/*,'!1')
+   parse:explicit-bindings($pipeline/*,'!1')
  }
  };
 
@@ -95,7 +96,7 @@ module namespace parse = "http://xproc.net/xproc/parse";
              $input
            else
              element p:input {$input/@*,
-             <p:pipe step="{$unique_before}" port=""/>
+             <p:pipe step="{$unique_before}" port="result"/>
              }
        ,$node/*[name(.) ne 'p:input']
       }
@@ -110,38 +111,48 @@ module namespace parse = "http://xproc.net/xproc/parse";
   for $input in $step-definition//p:input
   let $s := $node//*[@port eq $input/@port]
   return 
-    (<test3/>,$step-definition,$node)
+    element p:input {
+        $input/@*[name(.) ne 'select'],
+        ($s/@select, $input/@select)[1],
+        $s/*
+    }
 };
 
  (: parse output bindings:)  
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:output-port($node as element(p:output)*, $step-definition){
  (: --------------------------------------------------------------------------------------------------------- :)
-  for $input in $step-definition//p:output
-  let $s := $node[@port eq $input/@port]
+  for $output in $step-definition//p:output
+  let $s := $node[@port eq $output/@port]
   return
-    if ($input/@required eq 'true' and fn:empty($s)) then
-       fn:error(xs:QName('err:XS0027'),'option required')   (: error XS0027:)
+    if ($output/@required eq 'true' and fn:empty($s)) then
+       fn:error(xs:QName('err:XS0027'),'output required')   (: error XS0027:)
     else
       element p:outport {
-        $input/@*[name(.) ne 'select'],
-        ($s/@select, attribute select {'/'})[1],
+        $output/@*[name(.) ne 'select'],
+        ($s/@select,  $output/@select)[1],
         $s/*
       }
  };
-
 
  (: parse options :)  
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:options($node as element(p:with-option)*, $step-definition){
  (: --------------------------------------------------------------------------------------------------------- :)
- for $option in $step-definition/p:option
-  let $s := $node[@name eq $option/@name]
-  return
-   element p:with-option {
-     $option/@*[name(.) ne 'select'],
-     ($s/@select, attribute select {'/'})[1]
-   }
+ for $option in $step-definition//p:option
+ let $name as xs:string := fn:string($option/@name)
+ let $defined-option := $node[@name eq $name]
+ return
+   if ($defined-option) then
+     element p:with-option {
+       ($defined-option/@name)[1],
+       ($defined-option/@select)[1]
+     }
+   else
+     element p:with-option {
+       ($option/@name)[1],
+       ($option/@select)[1]
+     }
  };
 
  (: parse options :)  
@@ -150,8 +161,8 @@ module namespace parse = "http://xproc.net/xproc/parse";
  (: --------------------------------------------------------------------------------------------------------- :)
   (
     parse:input-port($step//p:input, $step-definition),
-    if ($step//p:output) then parse:output-port($step//p:output, $step-definition) else <error/>,
-    if ($step//p:with-option) then parse:options($step//p:with-option,$step-definition) else <error/>
+    parse:output-port($step//p:output, $step-definition),
+    parse:options($step//p:with-option,$step-definition) 
   )
  };
 
@@ -172,30 +183,22 @@ module namespace parse = "http://xproc.net/xproc/parse";
             case text()
                    return $node
             case element(p:declare-step) 
-                   return element p:declare-step {$node/@*,
-                     element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
+                   return element p:declare-step {
+                     $node/@name,
+                     $node/@xproc:step,
                      $node/@xproc:type,
+                     element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                      parse:bindings($node[@xproc:type eq 'comp'],$step-definition)},
                      parse:AST($node/*[@xproc:type ne 'comp'])}
-(:
-            case element(p:group) 
-                   return element p:group {$node/@*,               
-                     element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
+                   default 
+                   return element {node-name($node)}{
+                     $node/@name,
+                     $node/@xproc:step,
                      $node/@xproc:type,
-                     parse:bindings($node/*[@xproc:type eq 'comp'],$step-definition)},
+                     attribute default-element {'test'},
+                     parse:bindings($node/*[@xproc:type eq 'comp'],$step-definition),
                      parse:AST($node/*[@xproc:type ne 'comp'])}
-            case element(p:choose) 
-                   return element p:choose {$node/@*,
-                     element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
-                     $node/@xproc:type,
-                     parse:bindings($node/*[@xproc:type eq 'comp'],$step-definition)},
-                     parse:AST($node/*[@xproc:type ne 'comp'])}
-  :)
-           default return element {node-name($node)}{$node/@*,
-parse:bindings($node/*[@xproc:type eq 'comp'],$step-definition),
-                     parse:AST($node/*[@xproc:type ne 'comp'])}
-                     
-};
+ };
 
  (: entry point for parse:explicit-name() :)
  (: --------------------------------------------------------------------------------------------------------- :)
@@ -272,20 +275,20 @@ parse:bindings($node/*[@xproc:type eq 'comp'],$step-definition),
                      parse:explicit-type($node/node())}
             case element()
                    return element {node-name($node)} {
-                     $node/@*,
+                     $node/@*,                                      (: TODO - this will need to constrain at some point :)
                      if (fn:contains($type,'step')) then attribute xproc:step {fn:true()} else (),
                      if ($type ne 'error') then attribute xproc:type {$type} else (),
-                       if (fn:contains($type,'step')) then
-                       for $option in $node[fn:not(@name)]/@*   (: normalize all options to be represented as p:with-option :)
+                     if (fn:contains($type,'step')) then
+                       for $option in $node/@*[name(.) ne 'name']   (: normalize all step attribute options to be represented as p:with-option elements :)
                        return
                          element p:with-option {
                            attribute name {name($option)},
-                           attribute select {$option}
+                           attribute select {data($option)}
                          }
                        else
                          ()
                          ,
-                     parse:explicit-type($node/node())} 
+                         parse:explicit-type($node/node())} 
             default 
                    return parse:explicit-type($node/node())
  };

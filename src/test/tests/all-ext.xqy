@@ -16,3 +16,8 @@ test:html(
 )
 
 
+(:
+-- Local Variables:
+-- compile-command: "../../../bin/test.sh all-ext.xqy > ../../../report/all-ext.html"
+-- End:
+:)
