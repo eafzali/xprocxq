@@ -80,6 +80,7 @@ declare boundary-space preserve;
  }
  };
 
+ (: make all p:input and p:output ports explicit :)
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:explicit-bindings($steps,$unique_id){
  (: --------------------------------------------------------------------------------------------------------- :)
@@ -93,7 +94,9 @@ declare boundary-space preserve;
        for $input in $node/p:input
          return
            if ($input/*) then
-             $input
+             element p:input {$input/@*,
+             <p:pipe step="{$unique_before}" port="result"/>
+             }
            else
              element p:input {$input/@*,
              <p:pipe step="{$unique_before}" port="result"/>
@@ -108,13 +111,15 @@ declare boundary-space preserve;
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:input-port($node as element(p:input)*, $step-definition){
  (: --------------------------------------------------------------------------------------------------------- :)
-  for $input in $step-definition//p:input
-  let $s := $node//*[@port eq $input/@port]
+  for $input in $step-definition/p:input
+  let $name as xs:string := fn:string($input/@port)  
+  let $s := $node[@port eq $name]
   return 
     element p:input {
-        $input/@*[name(.) ne 'select'],
-        ($s/@select, $input/@select)[1],
-        $s/*
+      attribute xproc:type {'comp'},
+      $input/@*[name(.) ne 'select'],
+      ($s/@select, $input/@select)[1],
+      $s/*
     }
 };
 
@@ -122,13 +127,15 @@ declare boundary-space preserve;
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:output-port($node as element(p:output)*, $step-definition){
  (: --------------------------------------------------------------------------------------------------------- :)
-  for $output in $step-definition//p:output
-  let $s := $node[@port eq $output/@port]
+  for $output in $step-definition/p:output
+  let $name as xs:string := fn:string($output/@port)  
+  let $s := $node[@port eq $name]
   return
     if ($output/@required eq 'true' and fn:empty($s)) then
        fn:error(xs:QName('err:XS0027'),'output required')   (: error XS0027:)
     else
       element p:outport {
+        attribute xproc:type {'comp'},
         $output/@*[name(.) ne 'select'],
         ($s/@select,  $output/@select)[1],
         $s/*
@@ -139,17 +146,19 @@ declare boundary-space preserve;
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:options($node as element(p:with-option)*, $step-definition){
  (: --------------------------------------------------------------------------------------------------------- :)
- for $option in $step-definition//p:option
+ for $option in $step-definition/p:option
  let $name as xs:string := fn:string($option/@name)
  let $defined-option := $node[@name eq $name]
  return
    if ($defined-option) then
      element p:with-option {
+       attribute xproc:type {'comp'},
        ($defined-option/@name)[1],
        ($defined-option/@select)[1]
      }
    else
      element p:with-option {
+       attribute xproc:type {'comp'},
        ($option/@name)[1],
        ($option/@select)[1]
      }
@@ -160,9 +169,9 @@ declare boundary-space preserve;
  declare function parse:bindings($step as node()*, $step-definition){
  (: --------------------------------------------------------------------------------------------------------- :)
   (
-     parse:input-port($step//p:input, $step-definition),
-    parse:output-port($step//p:output, $step-definition),
-        parse:options($step//p:with-option,$step-definition) 
+     parse:input-port($step, $step-definition),
+    parse:output-port($step/p:output, $step-definition),
+        parse:options($step/p:with-option,$step-definition) 
   )
  };
 
@@ -186,12 +195,18 @@ declare boundary-space preserve;
                    return element p:declare-step {
                      $node/@*,
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
-                     parse:bindings($node[@xproc:type eq 'comp'],$step-definition)},
+                       parse:input-port($node/p:input, $step-definition),
+                       parse:output-port($node/p:output, $step-definition),
+                       parse:options($node/p:with-option,$step-definition) 
+                     },
                      parse:AST($node/*[@xproc:type ne 'comp'])}
-                   default 
+            default 
                    return element {node-name($node)}{
                      $node/@*,
-                     parse:bindings($node/*[@xproc:type eq 'comp'],$step-definition),
+                     parse:input-port($node/p:input, $step-definition),
+                     parse:output-port($node/p:output, $step-definition),
+                     parse:options($node/p:with-option,$step-definition), 
+
                      parse:AST($node/*[@xproc:type ne 'comp'])}
  };
 
@@ -236,7 +251,6 @@ declare boundary-space preserve;
  )
 };
 
-
  (: add namespace declarations and explicitly type each step :)
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:explicit-type($pipeline as node()*) as node()*{
@@ -246,6 +260,12 @@ declare boundary-space preserve;
     return 
         typeswitch($node)
             case text()
+                   return $node
+            case element(p:documentation)
+                   return $node
+            case element(p:inline)
+                   return $node
+            case element(p:pipeinfo)
                    return $node
             case document-node() 
                    return
@@ -270,13 +290,14 @@ declare boundary-space preserve;
                      parse:explicit-type($node/node())}
             case element()
                    return element {node-name($node)} {
-                     $node/@name,                                      (: TODO - this will need to constrain at some point :)
+                     $node/@*,
                      if (fn:contains($type,'step')) then attribute xproc:step {fn:true()} else (),
-                     if ($type ne 'error') then attribute xproc:type {$type} else (),
+                     attribute xproc:type {$type},
                      if (fn:contains($type,'step')) then
-                       for $option in $node/@*[name(.) ne 'name']   (: normalize all step attribute options to be represented as p:with-option elements :)
+                       for $option in $node/@*[name(.) ne 'name']      (: normalize all step attribute options to be represented as p:with-option elements :)
                        return
                          element p:with-option {
+                           attribute xproc:type {'comp'},
                            attribute name {name($option)},
                            attribute select {data($option)}
                          }
@@ -287,3 +308,6 @@ declare boundary-space preserve;
             default 
                    return parse:explicit-type($node/node())
  };
+
+
+

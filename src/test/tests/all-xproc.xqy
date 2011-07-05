@@ -22,7 +22,6 @@ test:html(
     <expected>true</expected>
     <result>{txproc:runEntryPointTest2()}</result>
   </test>
- 
   <test name="xproc2a" desc="test explicit naming parsing">
     <expected>{fn:doc('data/xproc2aresult.xml')}</expected>
     <result>{txproc:parseExplicitNames()}</result>
@@ -32,7 +31,7 @@ test:html(
     <result>{txproc:parseExplicitNames1()}</result>
   </test>
   <test name="xproc2c" desc="test explicit naming parsing">
-    <expected>{fn:doc('data/xproc2aresult.xml')}</expected>
+    <expected>{fn:doc('data/xproc2cresult.xml')}</expected>
     <result>{txproc:parseExplicitNames2()}</result>
   </test>
   <test name="xproc3a" desc="test explicit naming parsing adds xproc: namespace">
@@ -86,6 +85,11 @@ test:html(
 
   <test name="xproc8a" desc="test parse:AST">
     <expected>{fn:doc('data/xproc8aresult.xml')}</expected>
+    <result>{txproc:testAST()}</result>
+  </test>
+
+  <test name="xproc8b" desc="test parse:AST1">
+    <expected>{fn:doc('data/xproc8aresult.xml')}</expected>
     <result>{txproc:testAST1()}</result>
   </test>
 
@@ -97,6 +101,11 @@ test:html(
   <test name="xproc9b" desc="test parse:explicit-bindings">
     <expected>{fn:doc('data/9bresult.xml')}</expected>
     <result>{txproc:testExplicitBindings2()}</result>
+  </test>
+
+  <test name="xproc9c" desc="test parse:explicit-bindings">
+    <expected>{fn:doc('data/xproc9cresult.xml')}</expected>
+    <result>{txproc:testExplicitBindings3()}</result>
   </test>
 
 </testsuite>

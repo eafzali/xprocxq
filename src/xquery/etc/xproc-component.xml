@@ -44,7 +44,7 @@
     <xproc:element type="p:documentation" xproc:support="true"/>
     <xproc:element type="p:serialization"  xproc:support="true"/>
     <xproc:element type="p:log"/>
-    <xproc:element type="p:pipeinfo"/>
+    <xproc:element type="p:pipeinfo" xproc:support="true"/>
    
 <!-- Input alternatives //-->    
 

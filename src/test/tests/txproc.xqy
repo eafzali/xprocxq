@@ -155,5 +155,11 @@ declare function (:TEST:) txproc:testExplicitBindings2() {
   let $result   := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
   return 
     document{$result} 
+};
 
+declare function (:TEST:) txproc:testExplicitBindings3() { 
+  let $pipeline := fn:doc('data/test.xpl')
+  let $result   := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
+  return 
+    document{$result} 
 };

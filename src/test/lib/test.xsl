@@ -125,7 +125,7 @@
   </xsl:template>
 
   <xsl:template match="*:test">
-    <li class="result pass">
+    <li class="result {if (expected eq result) then 'pass' else 'fail'}">
       <h3><input name="test" value="" type="checkbox" checked="checked"></input>
       <a href="?test="><xsl:value-of select="@name"/> <span class="namespace"><xsl:value-of select="@desc"/></span></a>
       <table>
