@@ -108,6 +108,16 @@ test:html(
     <result>{txproc:testExplicitBindings3()}</result>
   </test>
 
+  <test name="xproc9d" desc="test parse:explicit-bindings with explicit ports">
+    <expected>{fn:doc('data/xproc9dresult.xml')}</expected>
+    <result>{txproc:testExplicitBindings4()}</result>
+  </test>
+
+  <test name="xproc10a" desc="test step sorting">
+    <expected>{fn:doc('data/xproc10aresult.xml')}</expected>
+    <result>{txproc:testStepSort1()}</result>
+  </test>
+
 </testsuite>
 )
 

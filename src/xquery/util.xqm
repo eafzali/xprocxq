@@ -21,8 +21,8 @@ declare namespace xxq-error = "http://xproc.net/xproc/error";
 
 
 (: Module Imports :)
-import module namespace const = "http://xproc.net/xproc/const" at "resource:net/xproc/xprocxq/src/xquery/const.xqm";
-(: import module namespace p1 = "http://xproc.net/xproc/functions" at "resource:net/xproc/xprocxq/src/xquery/functions.xqm"; :)
+import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
+
 
 (: set to 1 to enable debugging :)
 declare variable $u:NDEBUG :=1;
@@ -39,7 +39,7 @@ declare function u:declarens($element){
 declare function u:declare-ns($namespaces){
     for $ns in $namespaces//ns
     return
-        util:catch("*",util:declare-namespace($ns/@prefix,xs:anyURI($ns/@URI)),())
+        ()
 };
 
 
@@ -61,6 +61,8 @@ else
                   ()
 )
 };
+
+(:
 
 (: -------------------------------------------------------------------------- :)
 (: generate unique id														  :)
@@ -1033,3 +1035,4 @@ declare function u:step-fold( $pipeline,
 };
 
 
+:)

@@ -58,12 +58,16 @@ declare boundary-space preserve;
 
  (: sorts pipeline based on input port dependencies :)
  (: --------------------------------------------------------------------------------------------------------- :)
- declare function parse:pipeline-step-sort($unsorted as node()*, $sorted as node()) as node()*{
+ declare function parse:pipeline-step-sort($unsorted, $sorted) as node()*{
  (: --------------------------------------------------------------------------------------------------------- :)
     if (empty($unsorted)) then
-        ($sorted)
+       ($sorted,                
+       <ext:post xproc:default-name="{$sorted[1]/@xproc:default-name}!">
+         <p:input port="source" primary="true"/>
+         <p:output primary="true" port="stdout" select="/"/>
+       </ext:post>)
     else
-        let $allnodes := $unsorted [ every $id in p:input[@primary eq 'true'][@port eq 'source']/p:pipe/@step satisfies ($id = $sorted/@xproc-defaultname)]
+        let $allnodes := $unsorted [ every $id in p:input[@primary eq 'true'][@port eq 'source']/p:pipe/@xproc:default-step-name satisfies ($id = $sorted/@xproc:default-name)]
     return
         if ($allnodes) then
           parse:pipeline-step-sort( $unsorted except $allnodes, ($sorted, $allnodes ))
@@ -76,15 +80,15 @@ declare boundary-space preserve;
  declare function parse:explicit-bindings($pipeline){
  (: --------------------------------------------------------------------------------------------------------- :)
  element p:declare-step {$pipeline/@*,
-   parse:explicit-bindings($pipeline/*,'!1')
+   parse:explicit-bindings($pipeline,'!1')
  }
  };
 
  (: make all p:input and p:output ports explicit :)
  (: --------------------------------------------------------------------------------------------------------- :)
- declare function parse:explicit-bindings($steps,$unique_id){
+ declare function parse:explicit-bindings($pipeline,$unique_id){
  (: --------------------------------------------------------------------------------------------------------- :)
-  for $node at $count in $steps
+  for $node at $count in $pipeline/*
   let $unique_before  := fn:concat($unique_id,'.',$count - 2)
   let $unique_current := fn:concat($unique_id,'.',$count)
   let $unique_after   := fn:concat($unique_id,'.',$count + 2)
@@ -93,16 +97,24 @@ declare boundary-space preserve;
       element {node-name($node)} {$node/@*,
        for $input in $node/p:input
          return
-           if ($input/*) then
-             element p:input {$input/@*,
-             <p:pipe step="{$unique_before}" port="result"/>
-             }
+           element p:input {$input/@*,
+           if ($input/p:pipe) then
+               element p:pipe {
+                 $input/p:pipe/@port,
+                 $input/p:pipe/@step,
+                 attribute xproc:default-step-name {($pipeline[@name eq $input/p:pipe/@step]/@xproc:default-name,$pipeline//*[@name eq $input/p:pipe/@step]/@xproc:default-name)[1]}
+                 }
+           else if ($input/p:inline) then
+             $input/*
            else
-             element p:input {$input/@*,
-             <p:pipe step="{$unique_before}" port="result"/>
-             }
-       ,$node/*[name(.) ne 'p:input']
-      }
+               element p:pipe {
+                 attribute port {"result"},
+                 attribute step {$unique_before},
+                 attribute xproc:default-step-name {$unique_before}
+               }
+               ,$node/*[name(.) ne 'p:input']
+           }
+     }
     else
       $node
 };
@@ -164,17 +176,6 @@ declare boundary-space preserve;
      }
  };
 
- (: parse options :)  
- (: --------------------------------------------------------------------------------------------------------- :)
- declare function parse:bindings($step as node()*, $step-definition){
- (: --------------------------------------------------------------------------------------------------------- :)
-  (
-     parse:input-port($step, $step-definition),
-    parse:output-port($step/p:output, $step-definition),
-        parse:options($step/p:with-option,$step-definition) 
-  )
- };
-
  (: generate abstract syntax tree :)
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:AST($pipeline as node()*){
@@ -199,15 +200,16 @@ declare boundary-space preserve;
                        parse:output-port($node/p:output, $step-definition),
                        parse:options($node/p:with-option,$step-definition) 
                      },
-                     parse:AST($node/*[@xproc:type ne 'comp'])}
+                     parse:AST($node/*[@xproc:type ne 'comp'])
+                   }
             default 
                    return element {node-name($node)}{
                      $node/@*,
                      parse:input-port($node/p:input, $step-definition),
                      parse:output-port($node/p:output, $step-definition),
                      parse:options($node/p:with-option,$step-definition), 
-
-                     parse:AST($node/*[@xproc:type ne 'comp'])}
+                     parse:AST($node/*[@xproc:type ne 'comp'])
+                   }
  };
 
  (: entry point for parse:explicit-name() :)
@@ -305,9 +307,10 @@ declare boundary-space preserve;
                          ()
                          ,
                          parse:explicit-type($node/node())} 
+            case element(p:when)
+                   return element p:when {$node/@*,
+                     attribute xproc:type {$type}, 
+                     parse:explicit-type($node/node())}                 
             default 
                    return parse:explicit-type($node/node())
  };
-
-
-

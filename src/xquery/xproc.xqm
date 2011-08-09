@@ -14,8 +14,10 @@ module namespace xproc = "http://xproc.net/xproc";
  declare namespace err="http://www.w3.org/ns/xproc-error";
 
  (: module imports :)
+(:  import module namespace util = "http://xproc.net/xproc/util" at "util1.xqm"; :)
  import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
  import module namespace parse = "http://xproc.net/xproc/parse" at "parse.xqm";
+ import module namespace u = "http://xproc.net/xproc/util" at "util.xqm";
 
  (: declare options :)
  declare boundary-space preserve;
@@ -36,28 +38,33 @@ module namespace xproc = "http://xproc.net/xproc";
  declare variable $xproc:variable       := ();
 
 
+ (: list all declared namespaces :)
+ (: -------------------------------------------------------------------------- :)
+ declare function xproc:enum-namespaces($pipeline){
+ (: -------------------------------------------------------------------------- :)
+    <namespace name="{$pipeline/@name}">{u:enum-ns(<dummy>{$pipeline}</dummy>)}</namespace>
+ };
+
  (: entry point :)
  (: -------------------------------------------------------------------------- :)
  declare function xproc:run($pipeline,$stdin,$dflag,$tflag,$bindings,$options){
  (: -------------------------------------------------------------------------- :)
 
-     (: STEP I: preprocess :)
-     let $validate       := ()
-     let $namespaces     := ()
-     let $explicit-type  := parse:explicit-type($pipeline)
-     let $explicit-name  := parse:explicit-name($explicit-type,'!1')
+ (: STEP I: preprocess :)
+ let $validate   := ()
+ let $namespaces := xproc:enum-namespaces($pipeline)
+ let $parse      := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
+ let $ast        := element p:declare-step {$parse/@*,
+       parse:pipeline-step-sort( $parse/*, () )
+     }
 
-     let $xproc-binding   := ()
+ (: STEP II: eval AST :)
+ let $eval_result := ()
 
-     (: STEP II: eval AST :)
-     let $eval_result := ()
+ (: STEP III: serialize and return results :)
+ let $serialized_result := $pipeline
 
-     (: STEP III: serialize and return results :)
-     let $serialized_result := $pipeline
-
-     return 
-       $serialized_result
-
-         
+ return 
+   $serialized_result
  };
 

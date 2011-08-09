@@ -163,3 +163,20 @@ declare function (:TEST:) txproc:testExplicitBindings3() {
   return 
     document{$result} 
 };
+
+declare function (:TEST:) txproc:testExplicitBindings4() { 
+  let $pipeline := fn:doc('data/test2.xpl')
+  let $result   := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
+  return 
+    document{$result} 
+};
+
+declare function (:TEST:) txproc:testStepSort1() { 
+  let $pipeline := fn:doc('data/test2.xpl')
+  let $parse    := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
+  let $result   := element p:declare-step {$parse/@*,
+      parse:pipeline-step-sort( $parse/*, () )
+    }
+  return 
+    $result
+};
