@@ -13,6 +13,7 @@
   <xsl:template match="/">
     <html>
       <head>
+        <meta http-equiv="Pragma" content="No-cache"/>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <title><xsl:value-of select="$title"/></title> 
         <style type="text/css">
@@ -40,7 +41,7 @@
           li.result {
           list-style-position: inside;
           list-style: none;
-          height:130;
+          height:340;
           }
           .result h3 {
           font-weight: normal;
@@ -132,12 +133,12 @@
         <tbody><tr>
           <td>
             <pre style="border: 1px solid #888;padding: 2px"
-><textarea rows="5" cols="60"><xsl:copy-of
+><textarea rows="20" cols="60"><xsl:copy-of
                                                select="expected"/></textarea></pre>
           </td>
           <td>
             <pre style="border: 1px solid #888;padding: 2px"
-><textarea rows="5" cols="60"><xsl:copy-of
+><textarea rows="20" cols="60"><xsl:copy-of
                                                select="result"/></textarea></pre>
           </td>
         </tr>
@@ -156,12 +157,12 @@
           <tr>
           <td>
             <pre style="border: 1px solid #888;padding: 2px"
-><textarea rows="5" cols="60"><xsl:copy-of
+><textarea rows="20" cols="60"><xsl:copy-of
                                                select="expected"/></textarea></pre>
           </td>
           <td>
             <pre style="border: 1px solid #888;padding: 2px"
-><textarea rows="5" cols="60"><xsl:copy-of
+><textarea rows="20" cols="60"><xsl:copy-of
                                                select="result"/></textarea></pre>
           </td>
         </tr>
@@ -178,12 +179,12 @@
         <tbody><tr>
           <td>
             <pre style="border: 1px solid #888;padding: 2px"
-><textarea rows="5" cols="60"><xsl:copy-of
+><textarea rows="20" cols="60"><xsl:copy-of
                                                select="expected"/></textarea></pre>
           </td>
           <td>
             <pre style="border: 1px solid #888;padding: 2px"
-><textarea rows="5" cols="60"><xsl:copy-of
+><textarea rows="20" cols="60"><xsl:copy-of
                                                select="result"/></textarea></pre>
           </td>
         </tr>

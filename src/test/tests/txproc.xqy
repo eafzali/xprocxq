@@ -117,7 +117,7 @@ declare function (:TEST:) txproc:testParseType6() {
 
 declare function (:TEST:) txproc:testExplicitName() { 
   let $pipeline := fn:doc('data/submit-test-report.xpl')
-  let $result   := parse:explicit-name(parse:explicit-type($pipeline))
+  let $result   := parse:explicit-type($pipeline)
   return 
     document{$result} 
 };

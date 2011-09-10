@@ -226,31 +226,31 @@ declare boundary-space preserve;
  (: applies default naming (ex. !1) to all step elements :)
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:explicit-name($pipeline as node()*,$cname as xs:string) as node()*{
- (: --------------------------------------------------------------------------------------------------------- :)
- ( 
- for $step in $pipeline/*[@xproc:type eq 'comp']
+ (: --------------------------------------------------------------------------------------------------------- :) 
+ for $node at $count in $pipeline/*
+ let $name := fn:concat($cname,".",$count)
  return
-   element {node-name($step)} {
-     $step/@*,
-     $step/text(),
-     parse:explicit-name($step, $cname)
-   },
- for $step at $count in $pipeline/*[@xproc:step eq  'true']
- return
-   element {node-name($step)} {
-     $step/@*,
-     attribute xproc:default-name { fn:concat($cname,".",$count)},
-     $step/text(),
-     parse:explicit-name($step, fn:concat($cname,".",$count))
-   },
- for $step at $count in $pipeline/*[fn:not(@xproc:step eq  'true')][fn:not(@xproc:type eq 'comp')]
- return
-   element {node-name($step)} {
-     $step/@*,
-     $step/text(),
-     parse:explicit-name($step,$cname)
-   }
- )
+        typeswitch($node)
+            case text()
+                   return $node
+            case element(p:documentation)
+                   return element p:documentation {
+                     $node/@*,
+                     $node/node()
+                   }
+
+            case element()
+                   return element {node-name($node)} {
+                     $node/@*,
+                     if($node/@xproc:step eq 'true') then
+                       attribute xproc:default-name {$name}
+                     else
+                       (),
+                     $node/node() except $node/p:*,
+                     parse:explicit-name($node/node(),  if($node/@xproc:step eq 'true') then $name else $cname)}
+           default
+                 return ()
+
 };
 
  (: add namespace declarations and explicitly type each step :)
@@ -264,14 +264,17 @@ declare boundary-space preserve;
             case text()
                    return $node
             case element(p:documentation)
-                   return $node
+                   return element p:documentation {
+                     attribute xproc:type {'comp'}, 
+                     $node/node()
+                     }
             case element(p:inline)
-                   return $node
+                   return element p:inline {
+                     attribute xproc:type {'comp'}, 
+                     $node/node()
+                     }
             case element(p:pipeinfo)
                    return $node
-            case document-node() 
-                   return
-                     parse:explicit-type($node/node()) 
             case element(p:pipeline)
                    return element p:declare-step {$node/@*,
                      namespace xproc {"http://xproc.net/xproc"},

@@ -66,6 +66,10 @@ test:html(
     <expected>true</expected>
     <result>{txproc:testParseType6()}</result>
   </test>
+  <test name="xproc7" desc="test parse:explicit-type">
+    <expected>{fn:doc('data/xproc7aresult.xml')}</expected>
+    <result>{txproc:parseExplicitNames()}</result>2
+  </test>
   <test name="xproc7a" desc="test parse:explicit-name">
     <expected>{fn:doc('data/xproc7aresult.xml')}</expected>
     <result>{txproc:testExplicitName1()}</result>
