@@ -6,14 +6,11 @@ Congratulations! You've run your first pipeline!
 </doc></p:inline>
 </p:input>
 <p:output port="result"/>
-
 <p:group>
 <p:identity/>
 </p:group>
-
 <p:identity>
   <p:input port="source" select="/test"><p:inline><test>test</test></p:inline></p:input>
 </p:identity>
-
 <p:count limit="20"/>
 </p:declare-step>

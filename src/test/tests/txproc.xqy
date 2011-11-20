@@ -159,7 +159,7 @@ declare function (:TEST:) txproc:testExplicitBindings2() {
 
 declare function (:TEST:) txproc:testExplicitBindings3() { 
   let $pipeline := fn:doc('data/test.xpl')
-  let $result   := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
+  let $result   := parse:explicit-bindings(parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
   return 
     document{$result} 
 };
@@ -173,9 +173,14 @@ declare function (:TEST:) txproc:testExplicitBindings4() {
 
 declare function (:TEST:) txproc:testStepSort1() { 
   let $pipeline := fn:doc('data/test2.xpl')
-  let $parse    := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
-  let $result   := element p:declare-step {$parse/@*,
-      parse:pipeline-step-sort( $parse/*, () )
+  let $parse   := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
+ let $result   := element p:declare-step {$parse/@*,
+    namespace xproc {"http://xproc.net/xproc"},
+    namespace ext {"http://xproc.net/xproc/ext"},
+    namespace c {"http://www.w3.org/ns/xproc-step"},
+    namespace err {"http://www.w3.org/ns/xproc-error"},
+    namespace xxq-error {"http://xproc.net/xproc/error"},
+    parse:pipeline-step-sort( $parse/*, () )
     }
   return 
     $result

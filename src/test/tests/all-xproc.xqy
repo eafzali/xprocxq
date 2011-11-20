@@ -67,25 +67,27 @@ test:html(
     <result>{txproc:testParseType6()}</result>
   </test>
   <test name="xproc7" desc="test parse:explicit-type">
-    <expected>{fn:doc('data/xproc7aresult.xml')}</expected>
+    <expected>{fn:doc('data/xproc7result.xml')}</expected>
     <result>{txproc:parseExplicitNames()}</result>2
   </test>
-  <test name="xproc7a" desc="test parse:explicit-name">
+  <test name="xproc7a" desc="test parse:explicit-type">
     <expected>{fn:doc('data/xproc7aresult.xml')}</expected>
     <result>{txproc:testExplicitName1()}</result>
   </test>
-  <test name="xproc7b" desc="test parse:explicit-name with p:choose">
+  <test name="xproc7b" desc="test parse:explicit-type with p:choose">
     <expected>{fn:doc('data/xproc7bresult.xml')}</expected>
     <result>{txproc:testExplicitName()}</result>
   </test>
-  <test name="xproc7c" desc="test parse:explicit-name with p:group">
+
+  <!--test name="xproc7c" desc="test parse:explicit-name with p:group">
     <expected>{fn:doc('data/xproc7cresult.xml')}</expected>
     <result>{txproc:testExplicitName()}</result>
   </test>
+
   <test name="xproc7d" desc="test parse:explicit-name with p:viewport">
     <expected>{fn:doc('data/xproc7dresult.xml')}</expected>
     <result>{txproc:testExplicitName()}</result>
-  </test>
+  </test-->
 
   <test name="xproc8a" desc="test parse:AST">
     <expected>{fn:doc('data/xproc8aresult.xml')}</expected>
@@ -93,7 +95,7 @@ test:html(
   </test>
 
   <test name="xproc8b" desc="test parse:AST1">
-    <expected>{fn:doc('data/xproc8aresult.xml')}</expected>
+    <expected>{fn:doc('data/xproc8bresult.xml')}</expected>
     <result>{txproc:testAST1()}</result>
   </test>
 
