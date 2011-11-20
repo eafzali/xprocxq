@@ -1,0 +1,203 @@
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta http-equiv="Generator" content="xquerydoc - https://github.com/xquery/xquerydoc"/><meta http-equiv="Authors" content="Copyright 2011 - John Snelson, James Fuller"/><title>xqDoc - </title><style type="text/css">
+          body {
+          font-family: Helvetica;
+          padding: 0.5em  1em;
+          }
+          pre {
+          font-family: Inconsolata, Consolas, monospace;
+          }
+          ol.results {
+          padding-left: 0;
+          }
+          .footer {
+          text-align:right;
+          border-top: solid 4px;
+          padding: 0.25em 0.5em;
+          font-size: 85%;
+          color: #999;
+          }
+          li.result {
+          list-style-position: inside;
+          list-style: none;
+          height:140px;
+          }
+          h2 {
+          display: inline-block;
+          margin: 0;
+          }
+
+          h2 a,
+          .result h3 a {
+          text-decoration: inherit;
+          color: inherit;
+          }
+          h3{
+	  font-size: 140%;
+	  background-color: #aaa;
+	  border-bottom: 1px solid #000;
+	  width: 100%;
+	  }
+          h4{
+	  font-size: 100%;
+	  background-color: #ddd;
+	  width: 90%;
+	  }
+
+          .namespace {
+          color: #999;
+          }
+          .namespace:before {
+          content: "{";
+          }
+          .namespace:after {
+          content: "}";
+          }
+          table{
+          width:75%;
+          float:right;
+          }
+          td {
+          height:100px;
+          width:50%;
+          vertical-align:text-top;
+          }
+        </style><script src="lib/prettify.js" type="text/javascript"> </script><script src="lib/lang-xq.js" type="text/javascript"> </script><link rel="stylesheet" type="text/css" href="lib/prettify.css"/></head><body class="home"><div style="text-align:right;"><a href="index.html">XQuery API index</a></div><div id="main"><h1><span class="namespace">http://xproc.net/xproc/const</span>  library module </h1><div><h3>Variables</h3><ul><li>NS_XPROC</li><li>NS_XPROC_STEP</li><li>NS_XPROC_ERR</li><li>DEFAULT_SERIALIZE</li><li>TRACE_SERIALIZE</li><li>XINCLUDE_SERIALIZE</li><li>TEXT_SERIALIZE</li><li>ESCAPE_SERIALIZE</li><li>NS_XPROC_EXT</li><li>NS_XPROC_ERR_EXT</li><li>error</li><li>xprocxq-error</li><li>ext-steps</li><li>std-steps</li><li>opt-steps</li><li>comp-steps</li><li>version</li><li>product-version</li><li>product-name</li><li>vendor</li><li>language</li><li>vendor-uri</li><li>xpath-version</li><li>psvi-supported</li><li>episode</li><li>init_unique_id</li><li>pdf-mimetype</li><li>directory-list-xslt</li><li>xproc-rng-schema</li><li>default-ns-imports</li><li>default-imports</li><li>xpath-imports</li><li>alt-imports</li></ul></div><div><h3>Functions</h3></div><div><h3>Original Source Code</h3><pre class="prettyprint lang-xq">(: ------------------------------------------------------------------------------------- &#xD;
+ &#xD;
+	const.xqm - contains all constants used by xprocxq.&#xD;
+	&#xD;
+---------------------------------------------------------------------------------------- :)&#xD;
+xquery version "3.0" encoding "UTF-8";&#xD;
+&#xD;
+module namespace const = "http://xproc.net/xproc/const";&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+(: XProc Namespace Declaration :)&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare namespace xproc = "http://xproc.net/xproc";&#xD;
+declare namespace p="http://www.w3.org/ns/xproc";&#xD;
+declare namespace c="http://www.w3.org/ns/xproc-step";&#xD;
+declare namespace err="http://www.w3.org/ns/xproc-error";&#xD;
+declare namespace xsl="http://www.w3.org/1999/XSL/Transform";&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+(: XProc Namespace Constants :)&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare variable $const:NS_XPROC      := "http://www.w3.org/ns/xproc";&#xD;
+declare variable $const:NS_XPROC_STEP := "http://www.w3.org/ns/xproc-step";&#xD;
+declare variable $const:NS_XPROC_ERR  := "http://www.w3.org/ns/xproc-error";&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+(: Serialization Constants :)&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare variable $const:DEFAULT_SERIALIZE := 'method=xml indent=yes';&#xD;
+declare variable $const:TRACE_SERIALIZE := 'method=xml';&#xD;
+declare variable $const:XINCLUDE_SERIALIZE := 'expand-xincludes=yes';&#xD;
+declare variable $const:TEXT_SERIALIZE := 'method=text';&#xD;
+declare variable $const:ESCAPE_SERIALIZE := 'method=xml indent=no';&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+(: XProc Extension Namespaces :)&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare variable $const:NS_XPROC_EXT := "http://xproc.net/ns/xproc/ex";&#xD;
+declare variable $const:NS_XPROC_ERR_EXT := "http://xproc.net/ns/errors";&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+(: Error Dictionary lookup :)&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare variable $const:error          := fn:doc("/Users/jfuller/Source/Webcomposite/xprocxq/src/xquery/etc/error-codes.xml");&#xD;
+declare variable  $const:xprocxq-error := fn:doc("/Users/jfuller/Source/Webcomposite/xprocxq/src/xquery/etc/xproc-error-codes.xml");&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+(: Step Definition lookup :)&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare variable $const:ext-steps  := fn:doc("/Users/jfuller/Source/Webcomposite/xprocxq/src/xquery/etc/pipeline-extension.xml")/p:library;&#xD;
+declare variable $const:std-steps  := fn:doc("/Users/jfuller/Source/Webcomposite/xprocxq/src/xquery/etc/pipeline-standard.xml")/p:library;&#xD;
+declare variable $const:opt-steps  := fn:doc("/Users/jfuller/Source/Webcomposite/xprocxq/src/xquery/etc/pipeline-optional.xml")/p:library;&#xD;
+declare variable $const:comp-steps := fn:doc("/Users/jfuller/Source/Webcomposite/xprocxq/src/xquery/etc/xproc-component.xml")/xproc:components;&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+(: System Property :)&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare variable $const:version :="0.9";&#xD;
+declare variable $const:product-version :="0.9";&#xD;
+declare variable $const:product-name :="xprocxq";&#xD;
+declare variable $const:vendor :="James Fuller";&#xD;
+declare variable $const:language :="en";&#xD;
+declare variable $const:vendor-uri :="http://www.xproc.net";&#xD;
+declare variable $const:xpath-version :="2.0";&#xD;
+declare variable $const:psvi-supported :="false";&#xD;
+declare variable $const:episode :="somerandomnumber";&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+(: XProc default naming prefix :)&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare variable $const:init_unique_id :="!1";&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+(: Mime types :)&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare variable $const:pdf-mimetype := 'application/pdf';&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+(: XSLT to transform eXist specific file listing :)&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare variable $const:directory-list-xslt := 'resource:net/xproc/xprocxq/etc/directory-list.xsl';&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+(: RELAXNG Schema for XPROC :)&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare variable $const:xproc-rng-schema := 'resource:net/xproc/xprocxq/etc/xproc.rng';&#xD;
+&#xD;
+&#xD;
+&#xD;
+&#xD;
+&#xD;
+&#xD;
+&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+(: DEPRECATION LIKELY :)&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare variable $const:default-ns-imports :='&#xD;
+    declare namespace p="http://www.w3.org/ns/xproc";&#xD;
+    declare namespace c="http://www.w3.org/ns/xproc-step";&#xD;
+    declare namespace err="http://www.w3.org/ns/xproc-error";&#xD;
+    declare namespace xsl="http://www.w3.org/1999/XSL/Transform";&#xD;
+    declare namespace t="http://xproc.org/ns/testsuite";&#xD;
+&#xD;
+    import module namespace func   = "http://xproc.net/xproc/functions" at "resource:net/xproc/xprocxq/src/xquery/functions.xqm";&#xD;
+&#xD;
+';&#xD;
+&#xD;
+declare variable $const:default-imports :='&#xD;
+&#xD;
+    import module namespace xproc = "http://xproc.net/xproc";&#xD;
+    import module namespace const = "http://xproc.net/xproc/const" at "resource:net/xproc/xprocxq/src/xquery/const.xqm";&#xD;
+    import module namespace u     = "http://xproc.net/xproc/util" at "resource:net/xproc/xprocxq/src/xquery/util.xqm";&#xD;
+    import module namespace opt   = "http://xproc.net/xproc/opt" at "resource:net/xproc/xprocxq/src/xquery/opt.xqm";&#xD;
+    import module namespace std   = "http://xproc.net/xproc/std" at "resource:net/xproc/xprocxq/src/xquery/std.xqm";&#xD;
+    import module namespace ext   = "http://xproc.net/xproc/ext" at "resource:net/xproc/xprocxq/src/xquery/ext.xqm";&#xD;
+    import module namespace func   = "http://xproc.net/xproc/functions" at "resource:net/xproc/xprocxq/src/xquery/functions.xqm";&#xD;
+&#xD;
+    declare namespace xsl="http://www.w3.org/1999/XSL/Transform";&#xD;
+    declare option exist:serialize "expand-xincludes=no";&#xD;
+&#xD;
+';&#xD;
+&#xD;
+declare variable $const:xpath-imports :='&#xD;
+    declare copy-namespaces preserve, inherit;&#xD;
+';&#xD;
+&#xD;
+declare variable $const:alt-imports :=' declare copy-namespaces no-preserve, no-inherit; import module namespace p = "http://xproc.net/xproc/functions";';&#xD;
+&#xD;
+</pre></div><br/><div class="footer"><p style="text-align:right"><i/> |
+          generated by xquerydoc <a href="https://github.com/xquery/xquerydoc" target="xquerydoc">https://github.com/xquery/xquerydoc</a></p></div></div><script type="application/javascript">
+	  window.onload = function(){ prettyPrint(); }
+	</script></body></html>

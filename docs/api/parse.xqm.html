@@ -1,0 +1,386 @@
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta http-equiv="Generator" content="xquerydoc - https://github.com/xquery/xquerydoc"/><meta http-equiv="Authors" content="Copyright 2011 - John Snelson, James Fuller"/><title>xqDoc - </title><style type="text/css">
+          body {
+          font-family: Helvetica;
+          padding: 0.5em  1em;
+          }
+          pre {
+          font-family: Inconsolata, Consolas, monospace;
+          }
+          ol.results {
+          padding-left: 0;
+          }
+          .footer {
+          text-align:right;
+          border-top: solid 4px;
+          padding: 0.25em 0.5em;
+          font-size: 85%;
+          color: #999;
+          }
+          li.result {
+          list-style-position: inside;
+          list-style: none;
+          height:140px;
+          }
+          h2 {
+          display: inline-block;
+          margin: 0;
+          }
+
+          h2 a,
+          .result h3 a {
+          text-decoration: inherit;
+          color: inherit;
+          }
+          h3{
+	  font-size: 140%;
+	  background-color: #aaa;
+	  border-bottom: 1px solid #000;
+	  width: 100%;
+	  }
+          h4{
+	  font-size: 100%;
+	  background-color: #ddd;
+	  width: 90%;
+	  }
+
+          .namespace {
+          color: #999;
+          }
+          .namespace:before {
+          content: "{";
+          }
+          .namespace:after {
+          content: "}";
+          }
+          table{
+          width:75%;
+          float:right;
+          }
+          td {
+          height:100px;
+          width:50%;
+          vertical-align:text-top;
+          }
+        </style><script src="lib/prettify.js" type="text/javascript"> </script><script src="lib/lang-xq.js" type="text/javascript"> </script><link rel="stylesheet" type="text/css" href="lib/prettify.css"/></head><body class="home"><div style="text-align:right;"><a href="index.html">XQuery API index</a></div><div id="main"><h1><span class="namespace">http://xproc.net/xproc/parse</span>  library module </h1><div><h3>Variables</h3><ul/></div><div><h3>Functions</h3><h4><pre class="prettyprint lang-xq"><u>Function:</u> get-step($node)</pre></h4><h5>Params</h5><ul><li>: </li></ul><h4><pre class="prettyprint lang-xq"><u>Function:</u> type($node) as  xs:string</pre></h4><h5>Params</h5><ul><li>: </li></ul><h5>Returns</h5><ul><li>:  xs:string</li></ul><h4><pre class="prettyprint lang-xq"><u>Function:</u> pipeline-step-sort($unsorted, $sorted) as  node()*</pre></h4><h5>Params</h5><ul><li>unsorted: </li><li>sorted: </li></ul><h5>Returns</h5><ul><li>:  node()</li></ul><h4><pre class="prettyprint lang-xq"><u>Function:</u> explicit-bindings($pipeline)</pre></h4><h5>Params</h5><ul><li>pipeline: </li></ul><h4><pre class="prettyprint lang-xq"><u>Function:</u> explicit-bindings($pipeline,$unique_id)</pre></h4><h5>Params</h5><ul><li>pipeline: </li><li>unique_id: </li></ul><h4><pre class="prettyprint lang-xq"><u>Function:</u> input-port($node as element(p:input)*, $step-definition)</pre></h4><h5>Params</h5><ul><li>:  element(p:input)</li><li>step-definition: </li></ul><h4><pre class="prettyprint lang-xq"><u>Function:</u> output-port($node as element(p:output)*, $step-definition)</pre></h4><h5>Params</h5><ul><li>:  element(p:output)</li><li>step-definition: </li></ul><h4><pre class="prettyprint lang-xq"><u>Function:</u> options($node as element(p:with-option)*, $step-definition)</pre></h4><h5>Params</h5><ul><li>:  element(p:with-option)</li><li>step-definition: </li></ul><h4><pre class="prettyprint lang-xq"><u>Function:</u> AST($pipeline as node()*)</pre></h4><h5>Params</h5><ul><li>pipeline:  node()</li></ul><h4><pre class="prettyprint lang-xq"><u>Function:</u> explicit-name($pipeline as element(p:declare-step))</pre></h4><h5>Params</h5><ul><li>pipeline:  element(p:declare-step)</li></ul><h4><pre class="prettyprint lang-xq"><u>Function:</u> explicit-name($pipeline as node()*,$cname as xs:string) as  node()*</pre></h4><h5>Params</h5><ul><li>pipeline:  node()</li><li>cname:  xs:string</li></ul><h5>Returns</h5><ul><li>:  node()</li></ul><h4><pre class="prettyprint lang-xq"><u>Function:</u> explicit-type($pipeline as node()*) as  node()*</pre></h4><h5>Params</h5><ul><li>pipeline:  node()</li></ul><h5>Returns</h5><ul><li>:  node()</li></ul></div><div><h3>Original Source Code</h3><pre class="prettyprint lang-xq">(: -------------------------------------------------------------------------------------
+
+    parse.xqm - 
+
+ ---------------------------------------------------------------------------------------- :)
+xquery version "3.0"  encoding "UTF-8";
+
+module namespace parse = "http://xproc.net/xproc/parse";
+
+declare boundary-space preserve;
+
+ (: declare namespaces :)
+ declare namespace xproc="http://xproc.net/xproc";
+ declare namespace p="http://www.w3.org/ns/xproc";
+ declare namespace c="http://www.w3.org/ns/xproc-step";
+ declare namespace err="http://www.w3.org/ns/xproc-error";
+ declare namespace ext="http://xproc.net/xproc/ext";
+
+ (: module imports :)
+ import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
+
+
+ (: returns step definition :)
+ (: -------------------------------------------------------------------------- :)
+ declare function parse:get-step($node){
+ (: -------------------------------------------------------------------------- :)
+ let $name := name($node)
+ return
+   ($const:std-steps/p:declare-step[@type=$name][@xproc:support eq 'true']   
+   ,$const:opt-steps/p:declare-step[@type=$name][@xproc:support eq 'true']
+   ,$const:ext-steps/p:declare-step[@type=$name][@xproc:support eq 'true']
+   ,$const:comp-steps/xproc:element[@type=$name][@xproc:support eq 'true'][@xproc:step eq "true"])[1]
+   (: throw err:XS0044 ?:)
+ };
+
+
+ (: determines xproc type of element:)
+ (: -------------------------------------------------------------------------- :)
+ declare function parse:type($node) as xs:string{
+ (: -------------------------------------------------------------------------- :)
+ let $name := name($node)
+ return
+   if ($const:std-steps/p:declare-step[@type=$name][@xproc:support eq 'true']) then
+     'std-step'
+   else if($const:opt-steps/p:declare-step[@type=$name][@xproc:support eq 'true']) then
+     'opt-step'
+   else if($const:ext-steps/p:declare-step[@type=$name][@xproc:support eq 'true']) then
+     'ext-step'
+   else if($node/@type) then
+     'declare-step'
+   else if($const:comp-steps/xproc:element[@type=$name][@xproc:support eq 'true'][@xproc:step eq "true"]) then
+     'comp-step'
+   else if($const:comp-steps/xproc:element[@type=$name][@xproc:support eq 'true']) then
+     'comp'
+   else
+     'error'      (: check if unknown p: element else throw error XS0044:)
+ };
+
+ (: sorts pipeline based on input port dependencies :)
+ (: --------------------------------------------------------------------------------------------------------- :)
+ declare function parse:pipeline-step-sort($unsorted, $sorted) as node()*{
+ (: --------------------------------------------------------------------------------------------------------- :)
+    if (empty($unsorted)) then
+       ($sorted,                
+       &lt;ext:post xproc:default-name="{$sorted[1]/@xproc:default-name}!"&gt;
+         &lt;p:input port="source" primary="true"/&gt;
+         &lt;p:output primary="true" port="stdout" select="/"/&gt;
+       &lt;/ext:post&gt;)
+    else
+        let $allnodes := $unsorted [ every $id in p:input[@primary eq 'true'][@port eq 'source']/p:pipe/@xproc:default-step-name satisfies ($id = $sorted/@xproc:default-name)]
+    return
+        if ($allnodes) then
+          parse:pipeline-step-sort( $unsorted except $allnodes, ($sorted, $allnodes ))
+        else
+          ()
+ };
+
+ (: entry point for parse:explicit-bindings:)
+ (: --------------------------------------------------------------------------------------------------------- :)
+ declare function parse:explicit-bindings($pipeline){
+ (: --------------------------------------------------------------------------------------------------------- :)
+ element p:declare-step {$pipeline/@*,
+   parse:explicit-bindings($pipeline,'!1')
+ }
+ };
+
+ (: make all p:input and p:output ports explicit :)
+ (: --------------------------------------------------------------------------------------------------------- :)
+ declare function parse:explicit-bindings($pipeline,$unique_id){
+ (: --------------------------------------------------------------------------------------------------------- :)
+  for $node at $count in $pipeline/*
+  let $unique_before  := fn:concat($unique_id,'.',$count - 2)
+  let $unique_current := fn:concat($unique_id,'.',$count)
+  let $unique_after   := fn:concat($unique_id,'.',$count + 2)
+  return   
+    if(fn:contains($node/@xproc:type,'step')) then
+      element {node-name($node)} {$node/@*,
+       for $input in $node/p:input
+         return
+           element p:input {$input/@*,
+           if ($input/p:pipe) then
+               element p:pipe {
+                 $input/p:pipe/@port,
+                 $input/p:pipe/@step,
+                 attribute xproc:default-step-name {($pipeline[@name eq $input/p:pipe/@step]/@xproc:default-name,$pipeline//*[@name eq $input/p:pipe/@step]/@xproc:default-name)[1]}
+                 }
+           else if ($input/p:inline) then
+             $input/*
+           else
+               element p:pipe {
+                 attribute port {"result"},
+                 attribute step {$unique_before},
+                 attribute xproc:default-step-name {$unique_before}
+               }
+               ,$node/*[name(.) ne 'p:input']
+           }
+     }
+    else
+      $node
+};
+
+ (: parse input bindings:)  
+ (: --------------------------------------------------------------------------------------------------------- :)
+ declare function parse:input-port($node as element(p:input)*, $step-definition){
+ (: --------------------------------------------------------------------------------------------------------- :)
+  for $input in $step-definition/p:input
+  let $name as xs:string := fn:string($input/@port)  
+  let $s := $node[@port eq $name]
+  return 
+    element p:input {
+      attribute xproc:type {'comp'},
+      $input/@*[name(.) ne 'select'],
+      ($s/@select, $input/@select)[1],
+      $s/*
+    }
+};
+
+ (: parse output bindings:)  
+ (: --------------------------------------------------------------------------------------------------------- :)
+ declare function parse:output-port($node as element(p:output)*, $step-definition){
+ (: --------------------------------------------------------------------------------------------------------- :)
+  for $output in $step-definition/p:output
+  let $name as xs:string := fn:string($output/@port)  
+  let $s := $node[@port eq $name]
+  return
+    if ($output/@required eq 'true' and fn:empty($s)) then
+       fn:error(xs:QName('err:XS0027'),'output required')   (: error XS0027:)
+    else
+      element p:outport {
+        attribute xproc:type {'comp'},
+        $output/@*[name(.) ne 'select'],
+        ($s/@select,  $output/@select)[1],
+        $s/*
+      }
+ };
+
+ (: parse options :)  
+ (: --------------------------------------------------------------------------------------------------------- :)
+ declare function parse:options($node as element(p:with-option)*, $step-definition){
+ (: --------------------------------------------------------------------------------------------------------- :)
+ for $option in $step-definition/p:option
+ let $name as xs:string := fn:string($option/@name)
+ let $defined-option := $node[@name eq $name]
+ return
+   if ($defined-option) then
+     element p:with-option {
+       attribute xproc:type {'comp'},
+       ($defined-option/@name)[1],
+       ($defined-option/@select)[1]
+     }
+   else
+     element p:with-option {
+       attribute xproc:type {'comp'},
+       ($option/@name)[1],
+       ($option/@select)[1]
+     }
+ };
+
+ (: generate abstract syntax tree :)
+ (: --------------------------------------------------------------------------------------------------------- :)
+ declare function parse:AST($pipeline as node()*){
+ (: --------------------------------------------------------------------------------------------------------- :)
+ (: generate ext:post :)
+ (: sort :)
+ (: make fully explicit all port names :)
+ (: resolve imports or throw XD0002:)
+ (: generate ext:xproc if p:declare-step/@type :)
+    for $node in $pipeline
+    let $type := parse:type($node)
+    let $step-definition := parse:get-step($node)
+    return 
+        typeswitch($node)
+            case text()
+                   return $node
+            case element(p:declare-step) 
+                   return element p:declare-step {
+                     $node/@*,
+                     element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
+                       parse:input-port($node/p:input, $step-definition),
+                       parse:output-port($node/p:output, $step-definition),
+                       parse:options($node/p:with-option,$step-definition) 
+                     },
+                     parse:AST($node/*[@xproc:type ne 'comp'])
+                   }
+            default 
+                   return element {node-name($node)}{
+                     $node/@*,
+                     parse:input-port($node/p:input, $step-definition),
+                     parse:output-port($node/p:output, $step-definition),
+                     parse:options($node/p:with-option,$step-definition), 
+                     parse:AST($node/*[@xproc:type ne 'comp'])
+                   }
+ };
+
+ (: entry point for parse:explicit-name() :)
+ (: --------------------------------------------------------------------------------------------------------- :)
+ declare function parse:explicit-name($pipeline as element(p:declare-step)){
+ (: --------------------------------------------------------------------------------------------------------- :)
+  element p:declare-step {
+    $pipeline/@*,
+    attribute xproc:default-name {'!1'},
+    parse:explicit-name($pipeline, '!1')
+  }
+ };
+
+ (: applies default naming (ex. !1) to all step elements :)
+ (: --------------------------------------------------------------------------------------------------------- :)
+ declare function parse:explicit-name($pipeline as node()*,$cname as xs:string) as node()*{
+ (: --------------------------------------------------------------------------------------------------------- :) 
+ for $node at $count in $pipeline/*
+ let $name := fn:concat($cname,".",$count)
+ return
+        typeswitch($node)
+            case text()
+                   return $node
+            case element(p:documentation)
+                   return element p:documentation {
+                     $node/@*,
+                     $node/node()
+                   }
+
+            case element()
+                   return element {node-name($node)} {
+                     $node/@*,
+                     if($node/@xproc:step eq 'true') then
+                       attribute xproc:default-name {$name}
+                     else
+                       (),
+                     $node/node() except $node/p:*,
+                     parse:explicit-name($node/node(),  if($node/@xproc:step eq 'true') then $name else $cname)}
+           default
+                 return ()
+
+};
+
+ (: add namespace declarations and explicitly type each step :)
+ (: --------------------------------------------------------------------------------------------------------- :)
+ declare function parse:explicit-type($pipeline as node()*) as node()*{
+ (: --------------------------------------------------------------------------------------------------------- :)
+    for $node at $count in $pipeline
+    let $type := parse:type($node)
+    return 
+        typeswitch($node)
+            case text()
+                   return $node
+            case element(p:documentation)
+                   return element p:documentation {
+                     attribute xproc:type {'comp'}, 
+                     $node/node()
+                     }
+            case element(p:inline)
+                   return element p:inline {
+                     attribute xproc:type {'comp'}, 
+                     $node/node()
+                     }
+            case element(p:pipeinfo)
+                   return $node
+            case element(p:pipeline)
+                   return element p:declare-step {$node/@*,
+                     namespace xproc {"http://xproc.net/xproc"},
+                     namespace ext {"http://xproc.net/xproc/ext"},
+                     namespace c {"http://www.w3.org/ns/xproc-step"},
+                     namespace err {"http://www.w3.org/ns/xproc-error"},
+                     namespace xxq-error {"http://xproc.net/xproc/error"},
+                     attribute xproc:type {$type}, 
+                     parse:explicit-type($node/node())}
+            case element(p:declare-step) 
+                   return element p:declare-step {$node/@*,
+                     namespace xproc {"http://xproc.net/xproc"},
+                     namespace ext {"http://xproc.net/xproc/ext"},
+                     namespace c {"http://www.w3.org/ns/xproc-step"},
+                     namespace err {"http://www.w3.org/ns/xproc-error"},
+                     namespace xxq-error {"http://xproc.net/xproc/error"},
+                     attribute xproc:type {$type}, 
+                     parse:explicit-type($node/node())}
+            case element()
+                   return element {node-name($node)} {
+                     $node/@*,
+                     if (fn:contains($type,'step')) then attribute xproc:step {fn:true()} else (),
+                     attribute xproc:type {$type},
+                     if (fn:contains($type,'step')) then
+                       for $option in $node/@*[name(.) ne 'name']      (: normalize all step attribute options to be represented as p:with-option elements :)
+                       return
+                         element p:with-option {
+                           attribute xproc:type {'comp'},
+                           attribute name {name($option)},
+                           attribute select {data($option)}
+                         }
+                       else
+                         ()
+                         ,
+                         parse:explicit-type($node/node())} 
+            case element(p:when)
+                   return element p:when {$node/@*,
+                     attribute xproc:type {$type}, 
+                     parse:explicit-type($node/node())}                 
+            default 
+                   return parse:explicit-type($node/node())
+ };
+</pre></div><br/><div class="footer"><p style="text-align:right"><i/> |
+          generated by xquerydoc <a href="https://github.com/xquery/xquerydoc" target="xquerydoc">https://github.com/xquery/xquerydoc</a></p></div></div><script type="application/javascript">
+	  window.onload = function(){ prettyPrint(); }
+	</script></body></html>

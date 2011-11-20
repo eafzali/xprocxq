@@ -1,0 +1,131 @@
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta http-equiv="Generator" content="xquerydoc - https://github.com/xquery/xquerydoc"/><meta http-equiv="Authors" content="Copyright 2011 - John Snelson, James Fuller"/><title>xqDoc - </title><style type="text/css">
+          body {
+          font-family: Helvetica;
+          padding: 0.5em  1em;
+          }
+          pre {
+          font-family: Inconsolata, Consolas, monospace;
+          }
+          ol.results {
+          padding-left: 0;
+          }
+          .footer {
+          text-align:right;
+          border-top: solid 4px;
+          padding: 0.25em 0.5em;
+          font-size: 85%;
+          color: #999;
+          }
+          li.result {
+          list-style-position: inside;
+          list-style: none;
+          height:140px;
+          }
+          h2 {
+          display: inline-block;
+          margin: 0;
+          }
+
+          h2 a,
+          .result h3 a {
+          text-decoration: inherit;
+          color: inherit;
+          }
+          h3{
+	  font-size: 140%;
+	  background-color: #aaa;
+	  border-bottom: 1px solid #000;
+	  width: 100%;
+	  }
+          h4{
+	  font-size: 100%;
+	  background-color: #ddd;
+	  width: 90%;
+	  }
+
+          .namespace {
+          color: #999;
+          }
+          .namespace:before {
+          content: "{";
+          }
+          .namespace:after {
+          content: "}";
+          }
+          table{
+          width:75%;
+          float:right;
+          }
+          td {
+          height:100px;
+          width:50%;
+          vertical-align:text-top;
+          }
+        </style><script src="lib/prettify.js" type="text/javascript"> </script><script src="lib/lang-xq.js" type="text/javascript"> </script><link rel="stylesheet" type="text/css" href="lib/prettify.css"/></head><body class="home"><div style="text-align:right;"><a href="index.html">XQuery API index</a></div><div id="main"><h1><span class="namespace">http://xproc.net/xproc/functions</span>  library module </h1><div><h3>Variables</h3><ul/></div><div><h3>Functions</h3><h4><pre class="prettyprint lang-xq"><u>Function:</u> system-property($property)</pre></h4><h5>Params</h5><ul><li>: </li></ul><h4><pre class="prettyprint lang-xq"><u>Function:</u> version-available($version as xs:decimal)</pre></h4><h5>Params</h5><ul><li>version:  xs:decimal</li></ul><h4><pre class="prettyprint lang-xq"><u>Function:</u> value-available($value)</pre></h4><h5>Params</h5><ul><li>value: </li></ul><h4><pre class="prettyprint lang-xq"><u>Function:</u> step-available($step-name)</pre></h4><h5>Params</h5><ul><li>step-name: </li></ul></div><div><h3>Original Source Code</h3><pre class="prettyprint lang-xq"> xquery version "1.0" encoding "UTF-8";&#xD;
+module namespace func = "http://xproc.net/xproc/functions";&#xD;
+(: ------------------------------------------------------------------------------------- &#xD;
+ &#xD;
+	functions.xqm - defines xproc xpath extensions.&#xD;
+	&#xD;
+---------------------------------------------------------------------------------------- :)&#xD;
+&#xD;
+declare namespace p="http://www.w3.org/ns/xproc";&#xD;
+declare namespace c="http://www.w3.org/ns/xproc-step";&#xD;
+declare namespace err="http://www.w3.org/ns/xproc-error";&#xD;
+declare namespace xproc = "http://xproc.net/xproc";&#xD;
+declare namespace xsl="http://www.w3.org/1999/XSL/Transform";&#xD;
+&#xD;
+(: XProc Namespaces :)&#xD;
+import module namespace const = "http://xproc.net/xproc/const" at "resource:net/xproc/xprocxq/src/xquery/const.xqm";&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+&#xD;
+declare function func:system-property($property){&#xD;
+&#xD;
+if ($property eq 'p:version') then&#xD;
+    $const:version&#xD;
+else if ($property eq 'p:episode') then&#xD;
+    $const:episode&#xD;
+else if ($property eq 'p:language') then&#xD;
+    $const:language&#xD;
+else if ($property eq 'p:product-name') then&#xD;
+    $const:product-name&#xD;
+else if ($property eq 'p:product-version') then&#xD;
+    $const:product-version&#xD;
+else if ($property eq 'p:vendor-uri') then&#xD;
+    $const:vendor-uri&#xD;
+else if ($property eq 'p:vendor') then&#xD;
+    $const:vendor&#xD;
+else if ($property eq 'p:xpath-version') then&#xD;
+    $const:xpath-version&#xD;
+else if ($property eq 'p:psvi-supported') then&#xD;
+    $const:psvi-supported&#xD;
+else&#xD;
+	()&#xD;
+	(:&#xD;
+	should throw a u:dynamicError('err:XD0015',"")&#xD;
+	:)&#xD;
+};&#xD;
+&#xD;
+declare function func:version-available($version as xs:decimal){&#xD;
+  if ($version eq 1.0) then&#xD;
+    "true"&#xD;
+  else&#xD;
+    "false"&#xD;
+};&#xD;
+&#xD;
+declare function func:value-available($value){&#xD;
+let $check := fn:concat('exists($',$value,')')&#xD;
+return&#xD;
+  if (util:eval($check)) then&#xD;
+    "true"&#xD;
+  else&#xD;
+    "false"&#xD;
+};&#xD;
+&#xD;
+declare function func:step-available($step-name){&#xD;
+    "true"&#xD;
+};</pre></div><br/><div class="footer"><p style="text-align:right"><i/> |
+          generated by xquerydoc <a href="https://github.com/xquery/xquerydoc" target="xquerydoc">https://github.com/xquery/xquerydoc</a></p></div></div><script type="application/javascript">
+	  window.onload = function(){ prettyPrint(); }
+	</script></body></html>
