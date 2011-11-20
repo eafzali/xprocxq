@@ -104,12 +104,12 @@ test:html(
     <result>{txproc:testExplicitBindings1()}</result>
   </test>
 
-  <test name="xproc9b" desc="test parse:explicit-bindings">
+  <test name="xproc9b" desc="test parse:explicit-bindings with nested group">
     <expected>{fn:doc('data/9bresult.xml')}</expected>
     <result>{txproc:testExplicitBindings2()}</result>
   </test>
 
-  <test name="xproc9c" desc="test parse:explicit-bindings">
+  <test name="xproc9c" desc="test parse:explicit-bindings with nested group">
     <expected>{fn:doc('data/xproc9cresult.xml')}</expected>
     <result>{txproc:testExplicitBindings3()}</result>
   </test>

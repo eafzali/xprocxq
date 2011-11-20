@@ -126,7 +126,9 @@ declare boundary-space preserve;
     if (empty($unsorted)) then
        ($sorted,                
        &lt;ext:post xproc:default-name="{$sorted[1]/@xproc:default-name}!"&gt;
-         &lt;p:input port="source" primary="true"/&gt;
+         &lt;p:input port="source" primary="true"&gt;
+         (: need to pipe in last step or override from top level p:output :)
+         &lt;/p:input&gt;
          &lt;p:output primary="true" port="stdout" select="/"/&gt;
        &lt;/ext:post&gt;)
     else
@@ -143,7 +145,12 @@ declare boundary-space preserve;
  declare function parse:explicit-bindings($pipeline){
  (: --------------------------------------------------------------------------------------------------------- :)
  element p:declare-step {$pipeline/@*,
-   parse:explicit-bindings($pipeline,'!1')
+    namespace xproc {"http://xproc.net/xproc"},
+    namespace ext {"http://xproc.net/xproc/ext"},
+    namespace c {"http://www.w3.org/ns/xproc-step"},
+    namespace err {"http://www.w3.org/ns/xproc-error"},
+    namespace xxq-error {"http://xproc.net/xproc/error"},
+   parse:explicit-bindings($pipeline/*,'!1')
  }
  };
 
@@ -151,17 +158,24 @@ declare boundary-space preserve;
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:explicit-bindings($pipeline,$unique_id){
  (: --------------------------------------------------------------------------------------------------------- :)
-  for $node at $count in $pipeline/*
+  for $node at $count in $pipeline
   let $unique_before  := fn:concat($unique_id,'.',$count - 2)
   let $unique_current := fn:concat($unique_id,'.',$count)
   let $unique_after   := fn:concat($unique_id,'.',$count + 2)
   return   
     if(fn:contains($node/@xproc:type,'step')) then
+
       element {node-name($node)} {$node/@*,
-       for $input in $node/p:input
+       for $input in $node//p:input
          return
-           element p:input {$input/@*,
-           if ($input/p:pipe) then
+          element p:input {$input/@*,
+    namespace xproc {"http://xproc.net/xproc"},
+    namespace ext {"http://xproc.net/xproc/ext"},
+    namespace c {"http://www.w3.org/ns/xproc-step"},
+    namespace err {"http://www.w3.org/ns/xproc-error"},
+    namespace xxq-error {"http://xproc.net/xproc/error"},
+
+           if ($input//p:pipe) then
                element p:pipe {
                  $input/p:pipe/@port,
                  $input/p:pipe/@step,
@@ -175,11 +189,11 @@ declare boundary-space preserve;
                  attribute step {$unique_before},
                  attribute xproc:default-step-name {$unique_before}
                }
-               ,$node/*[name(.) ne 'p:input']
            }
+           ,parse:explicit-bindings($node/*[name(.) ne 'p:input'],$unique_current) 
      }
-    else
-      $node
+   else
+     $node
 };
 
  (: parse input bindings:)  
@@ -251,38 +265,52 @@ declare boundary-space preserve;
     for $node in $pipeline
     let $type := parse:type($node)
     let $step-definition := parse:get-step($node)
-    return 
+    return
         typeswitch($node)
             case text()
-                   return $node
-            case element(p:declare-step) 
+                   return $node/text()
+            case element(p:declare-step)
                    return element p:declare-step {
+                     namespace xproc {"http://xproc.net/xproc"},
+                     namespace ext {"http://xproc.net/xproc/ext"},
+                     namespace c {"http://www.w3.org/ns/xproc-step"},
+                     namespace err {"http://www.w3.org/ns/xproc-error"},
+                     namespace xxq-error {"http://xproc.net/xproc/error"},
                      $node/@*,
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                        parse:input-port($node/p:input, $step-definition),
                        parse:output-port($node/p:output, $step-definition),
-                       parse:options($node/p:with-option,$step-definition) 
+                       parse:options($node/p:with-option,$step-definition)
                      },
                      parse:AST($node/*[@xproc:type ne 'comp'])
                    }
-            default 
+
+           case element()
                    return element {node-name($node)}{
                      $node/@*,
                      parse:input-port($node/p:input, $step-definition),
                      parse:output-port($node/p:output, $step-definition),
-                     parse:options($node/p:with-option,$step-definition), 
+                     parse:options($node/p:with-option,$step-definition),
                      parse:AST($node/*[@xproc:type ne 'comp'])
                    }
+            default
+            return ()
  };
 
  (: entry point for parse:explicit-name() :)
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:explicit-name($pipeline as element(p:declare-step)){
  (: --------------------------------------------------------------------------------------------------------- :)
-  element p:declare-step {
+ element p:declare-step {
     $pipeline/@*,
+    namespace xproc {"http://xproc.net/xproc"},
+    namespace ext {"http://xproc.net/xproc/ext"},
+    namespace c {"http://www.w3.org/ns/xproc-step"},
+    namespace err {"http://www.w3.org/ns/xproc-error"},
+    namespace xxq-error {"http://xproc.net/xproc/error"},
     attribute xproc:default-name {'!1'},
-    parse:explicit-name($pipeline, '!1')
+    $pipeline/*[not(@xproc:step)],
+    parse:explicit-name($pipeline/*[@xproc:step eq "true"], '!1')
   }
  };
 
@@ -290,18 +318,17 @@ declare boundary-space preserve;
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:explicit-name($pipeline as node()*,$cname as xs:string) as node()*{
  (: --------------------------------------------------------------------------------------------------------- :) 
- for $node at $count in $pipeline/*
- let $name := fn:concat($cname,".",$count)
+ for $node at $count in $pipeline
+ let $name := if($node/@xproc:step eq 'true') then fn:concat($cname,".",$count) else $cname
  return
         typeswitch($node)
             case text()
-                   return $node
+                   return $node/text()
             case element(p:documentation)
                    return element p:documentation {
                      $node/@*,
                      $node/node()
                    }
-
             case element()
                    return element {node-name($node)} {
                      $node/@*,
@@ -313,6 +340,7 @@ declare boundary-space preserve;
                      parse:explicit-name($node/node(),  if($node/@xproc:step eq 'true') then $name else $cname)}
            default
                  return ()
+           
 
 };
 
@@ -325,7 +353,7 @@ declare boundary-space preserve;
     return 
         typeswitch($node)
             case text()
-                   return $node
+                   return $node/text()
             case element(p:documentation)
                    return element p:documentation {
                      attribute xproc:type {'comp'}, 

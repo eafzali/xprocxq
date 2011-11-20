@@ -1,9 +1,15 @@
-(: -------------------------------------------------------------------------------------
-
-    xproc.xqm - core xqm contains entry points, primary eval-step function and
+(:
+: Module Name: xproc
+: Module Version: 1.0
+: Date: Nov 20, 2011
+: Copyright: James Fuller
+: Proprietary 
+: Extensions: None
+: 
+: Specification : XQuery v3.0
+: Module Overview: core xqm contains entry points, primary eval-step function and
     control functions.
-
- ---------------------------------------------------------------------------------------- :)
+:)
 xquery version "3.0"  encoding "UTF-8";
 
 module namespace xproc = "http://xproc.net/xproc";
@@ -55,8 +61,13 @@ module namespace xproc = "http://xproc.net/xproc";
  let $namespaces := xproc:enum-namespaces($pipeline)
  let $parse      := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
  let $ast        := element p:declare-step {$parse/@*,
-       parse:pipeline-step-sort( $parse/*, () )
-     }
+   namespace xproc {"http://xproc.net/xproc"},
+   namespace ext {"http://xproc.net/xproc/ext"},
+   namespace c {"http://www.w3.org/ns/xproc-step"},
+   namespace err {"http://www.w3.org/ns/xproc-error"},
+   namespace xxq-error {"http://xproc.net/xproc/error"},
+   parse:pipeline-step-sort( $parse/*, () )
+ }
 
  (: STEP II: eval AST :)
  let $eval_result := ()
