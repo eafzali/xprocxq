@@ -20,7 +20,10 @@ declare boundary-space preserve;
  import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
 
 
- (: returns step definition :)
+ (:~
+  : looks up std, ext, and opt step definition 
+  : @returns step signature
+  :)
  (: -------------------------------------------------------------------------- :)
  declare function parse:get-step($node){
  (: -------------------------------------------------------------------------- :)
@@ -34,7 +37,19 @@ declare boundary-space preserve;
  };
 
 
- (: determines xproc type of element:)
+ (:~
+  : determines type of xproc element<br/>
+  :
+  : std-step: standard xproc step<br/>
+  : opt-step: optional xproc step<br/>
+  : ext-step: xprocxq proprietary extension step<br/>
+  : declare-step: an author defined step<br/>
+  : comp-step: p:choose, p:viewport, etc<br/>
+  : comp: component (ex. p:input)<br/>
+  : error: means that the element has not been identified<br/>
+  : <br/>
+  : @returns 'std-step|opt-step|ext-step|declare-step|comp-step|comp|error(unknown type)'
+  :)
  (: -------------------------------------------------------------------------- :)
  declare function parse:type($node) as xs:string{
  (: -------------------------------------------------------------------------- :)
@@ -56,13 +71,18 @@ declare boundary-space preserve;
      'error'      (: check if unknown p: element else throw error XS0044:)
  };
 
- (: sorts pipeline based on input port dependencies :)
+
+ (:~
+  : sorts pipeline based on input port dependencies<br/>
+  :
+  : @returns node()*
+  :)
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:pipeline-step-sort($unsorted, $sorted) as node()*{
  (: --------------------------------------------------------------------------------------------------------- :)
     if (empty($unsorted)) then
        ($sorted,                
-       <ext:post xproc:default-name="{$sorted[1]/@xproc:default-name}!">
+       <ext:post xproc:step="true" xproc:default-name="{$sorted[1]/@xproc:default-name}!">
          <p:input port="source" primary="true">
          (: need to pipe in last step or override from top level p:output :)
          </p:input>
@@ -77,9 +97,13 @@ declare boundary-space preserve;
           ()
  };
 
- (: entry point for parse:explicit-bindings:)
+ (:~
+  : entry point for parse:explicit-bindings
+  :
+  : @returns element(p:declare-step)
+  :)
  (: --------------------------------------------------------------------------------------------------------- :)
- declare function parse:explicit-bindings($pipeline){
+ declare function parse:explicit-bindings($pipeline) as element(p:declare-step){
  (: --------------------------------------------------------------------------------------------------------- :)
  element p:declare-step {$pipeline/@*,
     namespace xproc {"http://xproc.net/xproc"},
@@ -91,7 +115,11 @@ declare boundary-space preserve;
  }
  };
 
- (: make all p:input and p:output ports explicit :)
+ (:~
+  : make all p:input and p:output ports explicit
+  :
+  : @returns element()*
+  :)
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:explicit-bindings($pipeline,$unique_id){
  (: --------------------------------------------------------------------------------------------------------- :)
@@ -133,9 +161,13 @@ declare boundary-space preserve;
      $node
 };
 
- (: parse input bindings:)  
+ (:~
+  : parse input bindings
+  :
+  : @returns element(p:input)
+  :)
  (: --------------------------------------------------------------------------------------------------------- :)
- declare function parse:input-port($node as element(p:input)*, $step-definition){
+ declare function parse:input-port($node as element(p:input)*, $step-definition) as element(p:input)*{
  (: --------------------------------------------------------------------------------------------------------- :)
   for $input in $step-definition/p:input
   let $name as xs:string := fn:string($input/@port)  
@@ -149,9 +181,14 @@ declare boundary-space preserve;
     }
 };
 
- (: parse output bindings:)  
+
+ (:~
+  : parse output bindings
+  :
+  : @returns element(p:output)
+  :) 
  (: --------------------------------------------------------------------------------------------------------- :)
- declare function parse:output-port($node as element(p:output)*, $step-definition){
+ declare function parse:output-port($node as element(p:output)*, $step-definition) as element(p:output)*{
  (: --------------------------------------------------------------------------------------------------------- :)
   for $output in $step-definition/p:output
   let $name as xs:string := fn:string($output/@port)  
@@ -160,7 +197,7 @@ declare boundary-space preserve;
     if ($output/@required eq 'true' and fn:empty($s)) then
        fn:error(xs:QName('err:XS0027'),'output required')   (: error XS0027:)
     else
-      element p:outport {
+      element p:output {
         attribute xproc:type {'comp'},
         $output/@*[name(.) ne 'select'],
         ($s/@select,  $output/@select)[1],
@@ -168,9 +205,13 @@ declare boundary-space preserve;
       }
  };
 
- (: parse options :)  
+ (:~
+  : parse a steps options, converting all options to a nested p:with-option element
+  :
+  : @returns element(p:with-option)
+  :)
  (: --------------------------------------------------------------------------------------------------------- :)
- declare function parse:options($node as element(p:with-option)*, $step-definition){
+ declare function parse:options($node as element(p:with-option)*, $step-definition) as element(p:with-option)*{
  (: --------------------------------------------------------------------------------------------------------- :)
  for $option in $step-definition/p:option
  let $name as xs:string := fn:string($option/@name)
@@ -190,15 +231,18 @@ declare boundary-space preserve;
      }
  };
 
- (: generate abstract syntax tree :)
+ (:~
+  : generate abstract syntax tree
+  :
+  : generate ext:post
+  : make fully explicit all port names 
+  : resolve imports or throw XD0002
+  : generate ext:xproc if p:declare-step/@type 
+  : @returns
+  :)
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:AST($pipeline as node()*){
  (: --------------------------------------------------------------------------------------------------------- :)
- (: generate ext:post :)
- (: sort :)
- (: make fully explicit all port names :)
- (: resolve imports or throw XD0002:)
- (: generate ext:xproc if p:declare-step/@type :)
     for $node in $pipeline
     let $type := parse:type($node)
     let $step-definition := parse:get-step($node)
@@ -215,6 +259,7 @@ declare boundary-space preserve;
                      namespace xxq-error {"http://xproc.net/xproc/error"},
                      $node/@*,
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
+                       attribute xproc:step {"true"},
                        parse:input-port($node/p:input, $step-definition),
                        parse:output-port($node/p:output, $step-definition),
                        parse:options($node/p:with-option,$step-definition)
@@ -251,7 +296,11 @@ declare boundary-space preserve;
   }
  };
 
- (: applies default naming (ex. !1) to all step elements :)
+ (:~
+  : inject xproc:default-name attribute to all step elements
+  :
+  : @returns node()*
+  :)
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:explicit-name($pipeline as node()*,$cname as xs:string) as node()*{
  (: --------------------------------------------------------------------------------------------------------- :) 
@@ -281,7 +330,11 @@ declare boundary-space preserve;
 
 };
 
- (: add namespace declarations and explicitly type each step :)
+ (:~
+  : add namespace declarations and explicitly type each step
+  :
+  : @returns node()*
+  :)
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:explicit-type($pipeline as node()*) as node()*{
  (: --------------------------------------------------------------------------------------------------------- :)

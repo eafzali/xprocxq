@@ -25,16 +25,42 @@ declare function (:TEST:) txproc:loadModuleTest() {
 };
 
 
+declare function (:TEST:) txproc:enumNSTest() { 
+  let $pipeline := fn:doc('data/submit-test-report.xpl')
+  let $result := xproc:enum-namespaces($pipeline)
+
+  return
+    $result
+};
+
+
+declare function (:TEST:) txproc:stepNamesTest() { 
+  let $pipeline := fn:doc('data/test2.xpl')
+  let $parse      := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
+  let $ast        := element p:declare-step {$parse/@*,
+   namespace xproc {"http://xproc.net/xproc"},
+   namespace ext {"http://xproc.net/xproc/ext"},
+   namespace c {"http://www.w3.org/ns/xproc-step"},
+   namespace err {"http://www.w3.org/ns/xproc-error"},
+   namespace xxq-error {"http://xproc.net/xproc/error"},
+   parse:pipeline-step-sort( $parse/*, () )
+ }
+
+  let $result := xproc:genstepnames($ast)
+  return
+   $result
+};
+
 declare function (:TEST:) txproc:runEntryPointTest() { 
-  let $pipeline := fn:doc('data/test.xpl')
+  let $pipeline := fn:doc('data/test2.xpl')
   let $stdin    := <test/>
   let $dflag    := 1
   let $tflag    := 1
   let $bindings := ()
   let $options  := ()
-  let $result   := xproc:run($pipeline,$stdin,$dflag,$tflag,$bindings,$options)
+  let $result   := xproc:run($pipeline,$stdin,$dflag,$tflag,$bindings,$options,())
   return
-    test:assertXMLEqual( $result, $pipeline)
+    $result
 };
 
 declare function (:TEST:) txproc:runEntryPointTest2() { 
@@ -45,143 +71,6 @@ declare function (:TEST:) txproc:runEntryPointTest2() {
   let $bindings := ()
   let $options  := ()
   return
-    test:assertXMLEqual( $xproc:run-step($pipeline,$stdin,$dflag,$tflag,$bindings,$options), $pipeline)
+   $xproc:run-step($pipeline,$stdin,$dflag,$tflag,$bindings,$options,())
 };
 
-declare function (:TEST:) txproc:parseExplicitNames() { 
-  let $pipeline := fn:doc('data/test.xpl')
-  let $result   := parse:explicit-type($pipeline)
-  return
-    $result
-};
-
-declare function (:TEST:) txproc:parseExplicitNames1() { 
-  let $pipeline := fn:doc('data/submit-test-report.xpl')
-  let $result   := parse:explicit-type($pipeline)
-  return
-    $result
-};
-
-declare function (:TEST:) txproc:parseExplicitNames2() { 
-  let $pipeline := fn:doc('data/submit-test-report.xpl')
-  let $result   := parse:explicit-type($pipeline)
-  return
-    $result
-};
-
-declare function (:TEST:) txproc:addXprocNamespace() { 
-  let $pipeline := fn:doc('data/test1.xpl')
-  let $result   := parse:explicit-type($pipeline)
-  return
-    test:assertStringContain( fn:string-join(distinct-values($result/descendant-or-self::*/(.|@*)/namespace-uri(.)),' '),'http://xproc.net/xproc')
-};
-
-declare function (:TEST:) txproc:addXprocNamespace1() { 
-  let $pipeline := fn:doc('data/test1.xpl')
-  let $result   := parse:explicit-type($pipeline)
-  return
-    test:assertStringContain( fn:string-join(distinct-values($result/descendant-or-self::*/(.|@*)/namespace-uri(.)),' '),'http://www.w3.org/ns/xproc')
-
-};
-
-declare function (:TEST:) txproc:testParseType1() { 
-  let $result   := parse:type(<p:identity/>)
-  return
-    test:assertStringContain( $result, 'std')
-};
-declare function (:TEST:) txproc:testParseType2() { 
-  let $result   := parse:type(<p:exec/>)
-  return
-    $result
-};
-declare function (:TEST:) txproc:testParseType3() { 
-  let $result   := parse:type(<ext:pre/>)
-  return
-    test:assertStringContain( $result, 'ext')
-};
-declare function (:TEST:) txproc:testParseType4() { 
-  let $result   := parse:type(<p:input/>)
-  return
-    test:assertStringContain( $result, 'comp')
-};
-declare function (:TEST:) txproc:testParseType5() { 
-  let $result   := ''
-  return
-    test:assertStringContain( $result, '')
-};
-declare function (:TEST:) txproc:testParseType6() { 
-  let $result   := parse:type(<p:adsfadsfasdfadsf/>)
-  return
-    (test:assertStringContain( $result, 'error'))
-};
-
-declare function (:TEST:) txproc:testExplicitName() { 
-  let $pipeline := fn:doc('data/submit-test-report.xpl')
-  let $result   := parse:explicit-type($pipeline)
-  return 
-    document{$result} 
-};
-
-declare function (:TEST:) txproc:testExplicitName1() { 
-  let $pipeline := fn:doc('data/test.xpl')
-  let $result   := parse:explicit-name(parse:explicit-type($pipeline))
-  return 
-    document{$result} 
-};
-
-declare function (:TEST:) txproc:testAST() { 
-  let $pipeline := fn:doc('data/test.xpl')
-  let $result   := parse:AST(parse:explicit-name(parse:explicit-type($pipeline)))
-  return 
-    document{$result} 
-};
-
-declare function (:TEST:) txproc:testAST1() { 
-  let $pipeline := fn:doc('data/submit-test-report.xpl')
-  let $result   := parse:AST(parse:explicit-name(parse:explicit-type($pipeline)))
-  return 
-    document{$result} 
-};
-
-declare function (:TEST:) txproc:testExplicitBindings1() { 
-  let $pipeline := fn:doc('data/test1.xpl')
-  let $result   := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
-  return 
-    document{$result} 
-};
-
-declare function (:TEST:) txproc:testExplicitBindings2() { 
-  let $pipeline := fn:doc('data/submit-test-report.xpl')
-  let $result   := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
-  return 
-    document{$result} 
-};
-
-declare function (:TEST:) txproc:testExplicitBindings3() { 
-  let $pipeline := fn:doc('data/test.xpl')
-  let $result   := parse:explicit-bindings(parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
-  return 
-    document{$result} 
-};
-
-declare function (:TEST:) txproc:testExplicitBindings4() { 
-  let $pipeline := fn:doc('data/test2.xpl')
-  let $result   := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
-  return 
-    document{$result} 
-};
-
-declare function (:TEST:) txproc:testStepSort1() { 
-  let $pipeline := fn:doc('data/test2.xpl')
-  let $parse   := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
- let $result   := element p:declare-step {$parse/@*,
-    namespace xproc {"http://xproc.net/xproc"},
-    namespace ext {"http://xproc.net/xproc/ext"},
-    namespace c {"http://www.w3.org/ns/xproc-step"},
-    namespace err {"http://www.w3.org/ns/xproc-error"},
-    namespace xxq-error {"http://xproc.net/xproc/error"},
-    parse:pipeline-step-sort( $parse/*, () )
-    }
-  return 
-    $result
-};

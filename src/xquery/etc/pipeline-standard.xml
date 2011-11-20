@@ -84,7 +84,8 @@
       <p:option name="undeclare-prefixes"/>
       <p:option name="version" select="'1.0'"/>
    </p:declare-step>
-   <p:declare-step type="p:identity" xml:id="identity" xproc:support="true">
+   <p:declare-step type="p:identity" xml:id="identity"
+                   xproc:support="true" xproc:func="std:identity#3">
       <p:input port="source" sequence="true" primary="true" select="/"/>
       <p:output port="result" sequence="true" primary="true" select="/"/>
    </p:declare-step>

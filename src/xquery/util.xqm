@@ -43,8 +43,19 @@ declare function u:declare-ns($namespaces){
 };
 
 
+declare function u:namespaces-in-use( $root as node()? )  {
+       
+for $ns in distinct-values(
+      $root/descendant-or-self::*/(.)/in-scope-prefixes(.))
+
+return
+  <ns prefix="{$ns}" URI="{namespace-uri-for-prefix($ns,$root)}"/>
+
+ } ;
+
 declare function u:enum-ns($element){
-(
+(:
+let $ns := (
 let $prefixes := in-scope-prefixes($element)
 for $prefix in $prefixes
 return
@@ -53,13 +64,15 @@ if ($prefix eq 'xml' or $prefix eq '' or $prefix eq 'xproc' or $prefix eq 'ext' 
 else
 <ns prefix="{$prefix}" URI="{namespace-uri-for-prefix($prefix,$element)}"/>
 ,
+
+:)
        for $child in $element/node()
             return
               if ($child instance of element() or $child instance of document-node()) then
-               	 u:enum-ns($child)
+               	 u:namespaces-in-use($child)
                 else
-                  ()
-)
+                  <ns/>
+
 };
 
 (:
@@ -159,6 +172,7 @@ else
 
 (: -------------------------------------------------------------------------- :)
 declare function u:assert($booleanexp as item(), $why as xs:string,$error)  {
+(: -------------------------------------------------------------------------- :)
 if(not($booleanexp) and boolean($u:NDEBUG)) then 
     error(QName('http://www.w3.org/ns/xproc-error',$error),concat("XProc Assert Error: ",$why))
 else
@@ -168,6 +182,7 @@ else
 
 (: -------------------------------------------------------------------------- :)
 declare function u:boolean($test as xs:string)  {
+(: -------------------------------------------------------------------------- :)
 if(contains($test,'false') ) then 
     false()
 else
@@ -177,11 +192,13 @@ else
 
 (: -------------------------------------------------------------------------- :)
 declare function u:uuid()  {
+(: -------------------------------------------------------------------------- :)
 	util:uuid()
 };
 
 (: -------------------------------------------------------------------------- :)
 declare function u:hash($data,$algorithm)  {
+(: -------------------------------------------------------------------------- :)
 	if (contains($algorithm, "md"))then
 	  util:hash($data, 'md5')
 	 else
@@ -190,6 +207,7 @@ declare function u:hash($data,$algorithm)  {
 
 (: -------------------------------------------------------------------------- :)
 declare function u:unparsed-data($uri as xs:string, $mediatype as xs:string)  {
+(: -------------------------------------------------------------------------- :)
 	util:binary-to-string(util:binary-doc($uri))
 };
 
@@ -197,28 +215,35 @@ declare function u:unparsed-data($uri as xs:string, $mediatype as xs:string)  {
 (: -------------------------------------------------------------------------- :)
 (: TODO: consider combining error throwing functions :)
 (: consider adding saxon:line-number()  :)
+(: -------------------------------------------------------------------------- :)
 declare function u:dynamicError($error,$string) {
+(: -------------------------------------------------------------------------- :)
     let $info := $const:error//err:error[@code=substring-after($error,':')]
     return
         error(QName('http://www.w3.org/ns/xproc-error',$error),concat($error,": XProc Dynamic Error - ",$string," ",$info/text(),'&#10;'))
 };
 
-
+(: -------------------------------------------------------------------------- :)
 declare function u:staticError($error,$string) {
+(: -------------------------------------------------------------------------- :)
 let $info := $const:error//err:error[@code=substring-after($error,':')]
     return
         error(QName('http://www.w3.org/ns/xproc-error',$error),concat($error,": XProc Static Error - ",$string," ",$info/text(),'&#10;'))
 };
 
 
+(: -------------------------------------------------------------------------- :)
 declare function u:stepError($error,$string) {
+(: -------------------------------------------------------------------------- :)
 let $info := $const:error//err:error[@code=substring-after($error,':')]
     return
         error(QName('http://www.w3.org/ns/xproc-error',$error),concat($error,": XProc Step Error - ",$string," ",$info/text(),'&#10;'))
 };
 
 
+(: -------------------------------------------------------------------------- :)
 declare function u:xprocxqError($error,$string) {
+(: -------------------------------------------------------------------------- :)
 let $info := $const:xprocxq-error//xxq-error:error[@code=substring-after($error,':')]
     return
         error(QName('http://xproc.net/xproc/error',$error),concat($error,": xprocxq error - ",$string," ",$info/text(),'&#10;'))};
@@ -226,12 +251,14 @@ let $info := $const:xprocxq-error//xxq-error:error[@code=substring-after($error,
 
 (: -------------------------------------------------------------------------- :)
 declare function u:outputResultElement($exp){
+(: -------------------------------------------------------------------------- :)
     <c:result>{$exp}</c:result>
 };
 
 
 (: -------------------------------------------------------------------------- :)
 declare function u:get-option($option-name as xs:string,$options,$v){
+(: -------------------------------------------------------------------------- :)
 
 let $option := xs:string($options/*[@name=$option-name]/@select)
 return
@@ -1001,14 +1028,16 @@ declare function u:uniqueid($unique_id,$count){
     concat($unique_id,'.',$count)
 };
 
+:)
+
 (: -------------------------------------------------------------------------- :)
 declare function u:final-result($pipeline,$resulttree){
     ($pipeline,$resulttree)
 };
 
 
-(: -------------------------------------------------------------------------- :)
-declare function u:step-fold( $pipeline,
+
+declare function u:step-fold( $pipeline as element(p:declare-step),
                               $namespaces,
                               $steps,
                               $evalstep-function,
@@ -1019,12 +1048,13 @@ declare function u:step-fold( $pipeline,
         u:final-result($pipeline,$outputs)
 
     else
-        let $result:= u:call($evalstep-function,
+        let $result :=  $evalstep-function(
                                 $steps[1],
                                 $namespaces,
                                 $primary,
                                 $pipeline,
                                 $outputs)
+
     return
         u:step-fold($pipeline,
                     $namespaces,
@@ -1034,5 +1064,26 @@ declare function u:step-fold( $pipeline,
                     ($outputs,$result))
 };
 
+(: -------------------------------------------------------------------------- :)
+declare function u:dynamicError($error,$string) {
+(: -------------------------------------------------------------------------- :)
+    let $info := $const:error//err:error[@code=substring-after($error,':')]
+    return
+        error(QName('http://www.w3.org/ns/xproc-error',$error),concat($error,": XProc Dynamic Error - ",$string," ",$info/text(),'&#10;'))
+};
 
-:)
+declare function u:binary-doc($uri){
+()
+};
+
+declare function u:binary-to-string($data){
+()
+};
+
+declare function u:serialize($xml,$options){
+	$xml
+};
+
+declare function u:evalXPATH($xpath, $xml){
+  saxon:evaluate($xml,$xpath)
+};

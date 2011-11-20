@@ -2,7 +2,8 @@
 	xmlns:xproc="http://xproc.net/xproc"
                     name="xproc-optional-library">
     
-   <p:declare-step type="p:exec" xml:id="exec" xmlns:xproc="http://xproc.net/xproc">
+   <p:declare-step type="p:exec" xml:id="exec"
+                   xmlns:xproc="http://xproc.net/xproc" xproc:step-name="opt:exec">
       <p:input port="source" primary="true" sequence="true" select="/"/>
       <p:output port="result" primary="true" select="/"/>
       <p:output port="errors" select="/"/>
