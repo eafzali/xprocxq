@@ -185,14 +185,14 @@ module namespace xproc = "http://xproc.net/xproc";
        return xproc:resolve-data-binding($input)
      case element(p:pipe)
        return
-         <pipe/>
+         $result[@xproc:default-name eq $input/@xproc:default-step-name][@port eq $input/@port]/node()
 (:
          if ($input/@port eq 'stdin' and $input/@step eq $ast/@name) then
            xproc:resolve-stdin-binding($result,$currentstep/@name)
          else if ($input/@primary eq 'true' and $input/@step eq $ast/@name) then
-           xproc:resolve-primary-input-binding($result,$ast/@name)
+           xproc:resolve-primary-input-binding($result,$ast/@xproc:default-name)
          else if ($input/@step eq $ast/@name) then
-           xproc:resolve-non-primary-input-binding($result,$input,$ast/@name)
+           xproc:resolve-non-primary-input-binding($result,$input,$ast/@xproc:default-name)
          else if ($input/@port and $input/@step) then
            xproc:resolve-pipe-binding($result,$input)
          else
@@ -209,7 +209,7 @@ module namespace xproc = "http://xproc.net/xproc";
  declare function xproc:eval-options($pipeline,$step){
  (: -------------------------------------------------------------------------- :)
      <xproc:options>
-         {$pipeline/*[@name=$step]/p:with-option}
+         {$pipeline/*[@xproc:default-name=$step]/p:with-option}
      </xproc:options>
  };
 
@@ -218,7 +218,7 @@ module namespace xproc = "http://xproc.net/xproc";
  declare function xproc:eval-outputs($pipeline,$step){
  (: -------------------------------------------------------------------------- :)
      <xproc:outputs>
-         {$pipeline/*[@name=$step]/p:output}
+         {$pipeline/*[@xproc:default-name=$step]/p:output}
      </xproc:outputs>
  };
 
@@ -298,7 +298,8 @@ module namespace xproc = "http://xproc.net/xproc";
      $result
    else
      <empty/>
-(:     u:dynamicError('err:XD0016',concat("xproc step ",$step-name, "did not select anything from p:input")) :)
+     (: TEMPORARILY DISABLED
+     u:dynamicError('err:XD0016',concat("xproc step ",$step-name, "did not select anything from p:input")) :)
 };
 
 
@@ -338,7 +339,7 @@ module namespace xproc = "http://xproc.net/xproc";
            (
              (: primary input port :)
              <xproc:output step="{$step}"
-             xproc:defaultname="{$step}"
+             xproc:default-name="{$step}"
              port-type="input"
              primary="true"
              select="{$currentstep/p:input[1][@primary='true']/@select}"
@@ -349,7 +350,7 @@ module namespace xproc = "http://xproc.net/xproc";
              (  for $child in $secondary/xproc:input
              return
              <xproc:output step="{$step}"
-             xproc:defaultname="{$step}"
+             xproc:default-name="{$step}"
              port-type="input"
              primary="false"
              select="{$child/@select}"
@@ -362,16 +363,16 @@ module namespace xproc = "http://xproc.net/xproc";
              <xproc:output step="{$step}"
              port-type="output"
              primary="true"
-             xproc:defaultname="{$step}"
+             xproc:default-name="{$step}"
              select="{$currentstep/p:output[@primary='true']/@select}"
              port="{$currentstep/p:output[@primary='true']/@port}"
-             func="{$stepfunc}">{$stepfunction($primary,(),(),())}</xproc:output>
+             func="{$stepfunc}">{$stepfunction($primary,$secondary,$options,$variables)}</xproc:output>
            else
              (: all other primary output ports @TODO - needs to be handled :)
              <xproc:output step="{$step}"
              port-type="output"
              primary="false"
-             xproc:defaultname="{$step}"
+             xproc:default-name="{$step}"
              select="{$currentstep/p:output[@primary='false']/@select}"
              port="{if (empty($currentstep/p:output[@primary='false']/@port)) then 'result' else $currentstep/p:output[@primary='false']/@port}"
              func="{$stepfunc}"/>
@@ -547,6 +548,7 @@ module namespace xproc = "http://xproc.net/xproc";
  let $namespaces := xproc:enum-namespaces($pipeline)
  let $parse      := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
  let $ast        := element p:declare-step {$parse/@*,
+   namespace p {"http://www.w3.org/ns/xproc"},
    namespace xproc {"http://xproc.net/xproc"},
    namespace ext {"http://xproc.net/xproc/ext"},
    namespace opt {"http://xproc.net/xproc/opt"},
@@ -578,11 +580,11 @@ declare function xproc:getstep($stepname as xs:string){
 if ($stepname eq 'p:identity') then
   $std:identity
 else if($stepname eq 'p:count') then
-  $std:identity
+  $std:count
 else if($stepname eq 'ext:pre') then
-  $std:identity
+  $ext:pre
 else if($stepname eq 'ext:post') then
-  $std:identity
+  $ext:post
 else
  $std:identity
 };

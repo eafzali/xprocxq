@@ -28,6 +28,22 @@ import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
 declare variable $u:NDEBUG :=$const:NDEBUG;
 
 (: -------------------------------------------------------------------------- :)
+declare function u:outputResultElement($exp){
+(: -------------------------------------------------------------------------- :)
+    <c:result>{$exp}</c:result>
+};
+
+(: -------------------------------------------------------------------------- :)
+declare function u:get-option($option-name as xs:string,$options as element(xproc:options),$primary) as xs:string*{
+(: -------------------------------------------------------------------------- :)
+let $value as xs:string := string($options//p:with-option[@name eq $option-name]/@select)
+return
+  $value
+};
+
+
+
+(: -------------------------------------------------------------------------- :)
 (: PRIMARY UTILITIES                                                          :)
 (: -------------------------------------------------------------------------- :)
 
@@ -283,28 +299,6 @@ let $info := $const:xprocxq-error//xxq-error:error[@code=substring-after($error,
         error(QName('http://xproc.net/xproc/error',$error),concat($error,": xprocxq error - ",$string," ",$info/text(),'&#10;'))};
 
 
-(: -------------------------------------------------------------------------- :)
-declare function u:outputResultElement($exp){
-(: -------------------------------------------------------------------------- :)
-    <c:result>{$exp}</c:result>
-};
-
-
-(: -------------------------------------------------------------------------- :)
-declare function u:get-option($option-name as xs:string,$options,$v){
-(: -------------------------------------------------------------------------- :)
-
-let $option := xs:string($options/*[@name=$option-name]/@select)
-return
-	(: TODO - if required this could be an error :)
-    if (empty($option)) then
-        ()
-    (: TODO- need to remove this branch at some point :)
-    else if(contains($option,"'")) then
-    	string(replace($option,"'",""))
-    else
-    	string(u:evalXPATH(string($option),$v))
-};
 
 
 (: -------------------------------------------------------------------------- :)

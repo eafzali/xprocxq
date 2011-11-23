@@ -25,19 +25,14 @@ declare variable $ext:xsltforms := ext:xsltforms#4;
 (: -------------------------------------------------------------------------- :)
 declare function ext:pre($primary,$secondary,$options,$variables){
 (: -------------------------------------------------------------------------- :)
-()
-(:
-let $v := u:get-primary($primary)
-return
-	$v
-:)
+$primary
 };
 
 
 (: -------------------------------------------------------------------------- :)
 declare function ext:post($primary,$secondary,$options,$variables){
 (: -------------------------------------------------------------------------- :)
-()
+$primary
 };
 
 
