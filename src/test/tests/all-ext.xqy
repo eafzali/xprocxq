@@ -12,6 +12,14 @@ test:html(
     <expected>true</expected>
     <result>{textensions:loadModuleTest()}</result>
   </test>
+  <test name="ext2" desc="ext:pre step">
+    <expected><test/></expected>
+    <result>{textensions:testPre()}</result>
+  </test>
+  <test name="ext3" desc="ext:post step">
+    <expected><test/></expected>
+    <result>{textensions:testPost()}</result>
+  </test>
 </testsuite>
 )
 

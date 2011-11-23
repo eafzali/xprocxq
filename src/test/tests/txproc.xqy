@@ -54,8 +54,8 @@ declare function (:TEST:) txproc:stepNamesTest() {
 declare function (:TEST:) txproc:runEntryPointTest() { 
   let $pipeline := fn:doc('data/test2.xpl')
   let $stdin    := <test/>
-  let $dflag    := 1
-  let $tflag    := 1
+  let $dflag    := 0
+  let $tflag    := 0
   let $bindings := ()
   let $options  := ()
   let $result   := xproc:run($pipeline,$stdin,$bindings,$options,(),$dflag,$tflag)
@@ -64,10 +64,10 @@ declare function (:TEST:) txproc:runEntryPointTest() {
 };
 
 declare function (:TEST:) txproc:runEntryPointTest2() { 
-  let $pipeline := fn:doc('data/test.xpl')
+  let $pipeline := fn:doc('data/test2.xpl')
   let $stdin    := <test/>
-  let $dflag    := 1
-  let $tflag    := 1
+  let $dflag    := 0
+  let $tflag    := 0
   let $bindings := ()
   let $options  := ()
   return

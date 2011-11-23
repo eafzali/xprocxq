@@ -14,14 +14,6 @@ test:html(
     <expected>true</expected>
     <result>{tparse:loadModuleTest()}</result>
   </test>
-  <test name="parse1a" desc="test entry point">
-    <expected>true</expected>
-    <result>{tparse:runEntryPointTest()}</result>
-  </test>
-  <test name="parse1b" desc="test entry point via HOX invoke">
-    <expected>true</expected>
-    <result>{tparse:runEntryPointTest2()}</result>
-  </test>
   <test name="parse2a" desc="test explicit naming parsing">
     <expected>{fn:doc('data/parse2aresult.xml')}</expected>
     <result>{tparse:parseExplicitNames()}</result>

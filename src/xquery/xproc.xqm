@@ -411,28 +411,31 @@ module namespace xproc = "http://xproc.net/xproc";
  (: -------------------------------------------------------------------------- :)
  let $pipeline :=subsequence($result,1,1)
  let $output := <xproc:outputs>{ subsequence($result,2) } </xproc:outputs>
-     return
-         if($dflag eq 1) then
-             <xproc:debug
-             xmlns:p="http://www.w3.org/ns/xproc"
-             xmlns:ext="http://xproc.net/xproc/ext"
-             xmlns:c="http://www.w3.org/ns/xproc-step"
-             xmlns:err="http://www.w3.org/ns/xproc-error"
-             xmlns:xxq-error="http://xproc.net/xproc/error"
-             xmlns:opt="http://xproc.net/xproc/opt"
-             >
-                 <xproc:pipeline>{$pipeline}</xproc:pipeline>
-                {$output}
-             </xproc:debug>
-         else
-            (: TODO - define default p:serialization options here:)
-            let $stdout := $output//*[@port eq 'stdout']/node()
-            let $count := count ($result)
-         return
-               if (empty($stdout)) then
-                subsequence($result,$count - 2,1)/node()
-               else
-                  $stdout
+ return
+   if($dflag eq 1) then
+   <xproc:debug
+   xmlns:p="http://www.w3.org/ns/xproc"
+   xmlns:ext="http://xproc.net/xproc/ext"
+   xmlns:c="http://www.w3.org/ns/xproc-step"
+   xmlns:err="http://www.w3.org/ns/xproc-error"
+   xmlns:xxq-error="http://xproc.net/xproc/error"
+   xmlns:opt="http://xproc.net/xproc/opt"
+   >
+     <xproc:pipeline>{$pipeline}</xproc:pipeline>
+     {$output}
+   </xproc:debug>
+ else
+   (: TODO - define default p:serialization options here:)
+   subsequence($result,count($result) - 3,1)/node()
+(:
+   let $stdout := $output//*[@port eq 'stdout']/node()
+   let $count := count ($result)
+   return
+     if (empty($stdout)) then
+       subsequence($result,$count - 2,1)/node()
+     else
+       $stdout
+:)
  };
 
 
@@ -573,7 +576,18 @@ module namespace xproc = "http://xproc.net/xproc";
 
 
 
-
+(:~ waiting for fn:function-lookup() 
+ :
+ : This is a temporary function as a dynamic function constructor
+ : it eventually will be replaced by the new fn:function-lookup() 
+ : function which will make its way into the final xquery/xpath 3.0
+ : specs
+ :
+ : @param $stepname - string containing name of element
+ :
+ : @returns function
+ :
+ :)
 (: -------------------------------------------------------------------------- :)
 declare function xproc:getstep($stepname as xs:string){
 (: -------------------------------------------------------------------------- :)

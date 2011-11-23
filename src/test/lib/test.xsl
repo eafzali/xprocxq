@@ -108,7 +108,6 @@
         <script type="text/javascript" src="resource/prettify/prettify.js">&#160;</script>
       </head>
       <body onload="prettyPrint()">
-        <h1><xsl:value-of select="$title"/> Results</h1>
         
         <p> <strong><xsl:value-of select="round((1 - (xs:integer($fail) div
         xs:integer($pass + $fail))) * 100)"/>% pass rate: </strong><strong class="fail"><xsl:value-of select="$fail"/></strong> failed tests and <strong><xsl:value-of select="$pass"/></strong> passed tests.</p>

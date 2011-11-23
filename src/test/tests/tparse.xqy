@@ -25,29 +25,6 @@ declare function (:TEST:) tparse:loadModuleTest() {
 };
 
 
-declare function (:TEST:) tparse:runEntryPointTest() { 
-  let $pipeline := fn:doc('data/test.xpl')
-  let $stdin    := <test/>
-  let $dflag    := 1
-  let $tflag    := 1
-  let $bindings := ()
-  let $options  := ()
-  let $result   := xproc:run($pipeline,$stdin,$dflag,$tflag,$bindings,$options)
-  return
-    test:assertXMLEqual( $result, $pipeline)
-};
-
-declare function (:TEST:) tparse:runEntryPointTest2() { 
-  let $pipeline := fn:doc('data/test.xpl')
-  let $stdin    := <test/>
-  let $dflag    := 1
-  let $tflag    := 1
-  let $bindings := ()
-  let $options  := ()
-  return
-    test:assertXMLEqual( $xproc:run-step($pipeline,$stdin,$dflag,$tflag,$bindings,$options), $pipeline)
-};
-
 declare function (:TEST:) tparse:parseExplicitNames() { 
   let $pipeline := fn:doc('data/test.xpl')
   let $result   := parse:explicit-type($pipeline)

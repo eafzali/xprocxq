@@ -13,3 +13,16 @@ declare function (:TEST:) textensions:loadModuleTest() {
   return
     test:assertXMLEqual($actual,<test/>) 
 };
+
+declare function (:TEST:) textensions:testPre() { 
+  let $actual := $ext:pre(<test/>,(),(),())
+  return
+    $actual
+};
+
+declare function (:TEST:) textensions:testPost() { 
+  let $actual := $ext:post(<test/>,(),(),())
+  return
+    $actual
+
+};
