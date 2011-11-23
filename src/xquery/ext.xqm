@@ -17,10 +17,10 @@ declare namespace xproc = "http://xproc.net/xproc";
 
 
 (: declare functions :)
-declare variable $ext:pre       := ();
-declare variable $ext:post      := ();
-declare variable $ext:xproc     := ();
-declare variable $ext:xsltforms := ();
+declare variable $ext:pre       := ext:pre#4;
+declare variable $ext:post      := ext:post#4;
+declare variable $ext:xproc     := ext:xproc#4;
+declare variable $ext:xsltforms := ext:xsltforms#4;
 
 (: -------------------------------------------------------------------------- :)
 declare function ext:pre($primary,$secondary,$options,$variables){

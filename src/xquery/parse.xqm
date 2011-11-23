@@ -15,6 +15,7 @@ declare boundary-space preserve;
  declare namespace c="http://www.w3.org/ns/xproc-step";
  declare namespace err="http://www.w3.org/ns/xproc-error";
  declare namespace ext="http://xproc.net/xproc/ext";
+ declare namespace opt="http://xproc.net/xproc/opt";
 
  (: module imports :)
  import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";

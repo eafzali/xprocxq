@@ -27,7 +27,7 @@ declare variable $std:filter             := ();
 declare variable $std:directory-list     := ();
 declare variable $std:escape-markup      := ();
 declare variable $std:http-request       := ();
-declare variable $std:identity           := ();
+declare variable $std:identity           := std:identity#4;
 declare variable $std:insert             := ();
 declare variable $std:label-elements     := ();
 declare variable $std:load               := ();
@@ -123,7 +123,7 @@ declare function std:http-request($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 declare function std:identity($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+$primary
 };
 
 

@@ -96,6 +96,7 @@ declare variable $const:xproc-rng-schema := 'resource:net/xproc/xprocxq/etc/xpro
 
 
 
+declare variable $const:NDEBUG :=1;
 
 
 

@@ -58,7 +58,7 @@ declare function (:TEST:) txproc:runEntryPointTest() {
   let $tflag    := 1
   let $bindings := ()
   let $options  := ()
-  let $result   := xproc:run($pipeline,$stdin,$dflag,$tflag,$bindings,$options,())
+  let $result   := xproc:run($pipeline,$stdin,$bindings,$options,(),$dflag,$tflag)
   return
     $result
 };
@@ -71,6 +71,7 @@ declare function (:TEST:) txproc:runEntryPointTest2() {
   let $bindings := ()
   let $options  := ()
   return
-   $xproc:run-step($pipeline,$stdin,$dflag,$tflag,$bindings,$options,())
+   $xproc:run-step($pipeline,$stdin,$bindings,$options,(),$dflag,$tflag)
+
 };
 

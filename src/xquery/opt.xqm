@@ -18,16 +18,16 @@ import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
 (: import module namespace xslfo = "http://exist-db.org/xquery/xslfo"; (: for p:xsl-formatter :) :)
 
 (: declare functions :)
-declare variable $opt:exec := ();
-declare variable $opt:hash := ();
-declare variable $opt:uuid := ();
-declare variable $opt:www-form-urldecode := ();
-declare variable $opt:www-form-urlencode := ();
-declare variable $opt:validate-with-xml-schema := ();
-declare variable $opt:validate-with-schematron := ();
-declare variable $opt:validate-with-relax-ng := ();
-declare variable $opt:xquery := ();
-declare variable $opt:xsl-formatter := ();
+declare variable $opt:exec := opt:exec#4;
+declare variable $opt:hash := opt:hash#4;
+declare variable $opt:uuid := opt:uuid#4;
+declare variable $opt:www-form-urldecode := opt:www-form-urldecode#4;
+declare variable $opt:www-form-urlencode := opt:www-form-urlencode#4;
+declare variable $opt:validate-with-xml-schema := opt:validate#4;
+declare variable $opt:validate-with-schematron := opt:validate#4;
+declare variable $opt:validate-with-relax-ng := opt:validate#4;
+declare variable $opt:xquery := opt:xquery#4;
+declare variable $opt:xsl-formatter := opt:xsl-formatter#4;
 
 
 (: -------------------------------------------------------------------------- :)

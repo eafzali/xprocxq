@@ -25,7 +25,83 @@ import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
 
 
 (: set to 1 to enable debugging :)
-declare variable $u:NDEBUG :=1;
+declare variable $u:NDEBUG :=$const:NDEBUG;
+
+(: -------------------------------------------------------------------------- :)
+(: PRIMARY UTILITIES                                                          :)
+(: -------------------------------------------------------------------------- :)
+
+(: -------------------------------------------------------------------------- :)
+declare function u:dynamicError($error,$string) {
+(: -------------------------------------------------------------------------- :)
+    let $info := $const:error//err:error[@code=substring-after($error,':')]
+    return
+        error(QName('http://www.w3.org/ns/xproc-error',$error),concat($error,": XProc Dynamic Error - ",$string," ",$info/text(),'&#10;'))
+};
+
+declare function u:lambda($string as xs:string, $arity as xs:integer) as function(*){
+  saxon:compile-query("std:identity#4")
+};
+
+declare function u:binary-doc($uri){
+()
+};
+
+declare function u:binary-to-string($data){
+()
+};
+
+declare function u:serialize($xml,$options){
+	$xml
+};
+
+declare function u:evalXPATH($xpath, $xml){
+  if ($xpath eq '/' or $xpath eq '' or empty($xml)) then
+    $xml
+  else
+    saxon:evaluate($xml,$xpath)
+};
+
+(: -------------------------------------------------------------------------- :)
+(: ASSERTIONS, DEBUG TOOLS                                                    :)
+(: -------------------------------------------------------------------------- :)
+
+(: -------------------------------------------------------------------------- :)
+declare function u:trace($value as item()*, $what as xs:string)  {
+if(boolean($const:NDEBUG)) then
+    trace($value,$what)
+else
+    ()
+};
+
+
+(: -------------------------------------------------------------------------- :)
+declare function u:asserterror($errortype as xs:string, $booleanexp as item(), $why as xs:string)  {
+if(not($booleanexp) and boolean($const:NDEBUG)) then
+    u:dynamicError(fn:QName('http://www.w3.org/ns/xproc-error',$errortype),$why)
+else
+    ()
+};
+
+
+(: -------------------------------------------------------------------------- :)
+declare function u:assert($booleanexp as item(), $why as xs:string)  {
+if(not($booleanexp) and boolean($const:NDEBUG)) then 
+    u:dynamicError('err:XC0020',$why)
+else
+    ()
+};
+
+
+(: -------------------------------------------------------------------------- :)
+declare function u:assert($booleanexp as item(), $why as xs:string,$error)  {
+(: -------------------------------------------------------------------------- :)
+if(not($booleanexp) and boolean($u:NDEBUG)) then 
+    error(QName('http://www.w3.org/ns/xproc-error',$error),concat("XProc Assert Error: ",$why))
+else
+    ()
+};
+
 
 (: -------------------------------------------------------------------------- :)
 (: manage namespaces                                                          :)
@@ -54,18 +130,6 @@ return
  } ;
 
 declare function u:enum-ns($element){
-(:
-let $ns := (
-let $prefixes := in-scope-prefixes($element)
-for $prefix in $prefixes
-return
-if ($prefix eq 'xml' or $prefix eq '' or $prefix eq 'xproc' or $prefix eq 'ext' or $prefix eq 'opt' or $prefix eq 'p' or $prefix eq 'c') then
- ()
-else
-<ns prefix="{$prefix}" URI="{namespace-uri-for-prefix($prefix,$element)}"/>
-,
-
-:)
        for $child in $element/node()
             return
               if ($child instance of element() or $child instance of document-node()) then
@@ -75,7 +139,12 @@ else
 
 };
 
-(:
+
+
+
+
+
+(: DEPRECATED 
 
 (: -------------------------------------------------------------------------- :)
 (: generate unique id														  :)
@@ -143,41 +212,6 @@ declare function u:type($stepname as xs:string,$is_declare-step) as xs:string {
 };
 
 
-(: -------------------------------------------------------------------------- :)
-declare function u:trace($value as item()*, $what as xs:string)  {
-if(boolean($u:NDEBUG)) then
-    trace($value,$what)
-else
-    ()
-};
-
-
-(: -------------------------------------------------------------------------- :)
-declare function u:asserterror($errortype as xs:string, $booleanexp as item(), $why as xs:string)  {
-if(not($booleanexp) and boolean($u:NDEBUG)) then
-    u:dynamicError(fn:QName('http://www.w3.org/ns/xproc-error',$errortype),$why)
-else
-    ()
-};
-
-
-(: -------------------------------------------------------------------------- :)
-declare function u:assert($booleanexp as item(), $why as xs:string)  {
-if(not($booleanexp) and boolean($u:NDEBUG)) then 
-    u:dynamicError('err:XC0020',$why)
-else
-    ()
-};
-
-
-(: -------------------------------------------------------------------------- :)
-declare function u:assert($booleanexp as item(), $why as xs:string,$error)  {
-(: -------------------------------------------------------------------------- :)
-if(not($booleanexp) and boolean($u:NDEBUG)) then 
-    error(QName('http://www.w3.org/ns/xproc-error',$error),concat("XProc Assert Error: ",$why))
-else
-    ()
-};
 
 
 (: -------------------------------------------------------------------------- :)
@@ -1030,60 +1064,3 @@ declare function u:uniqueid($unique_id,$count){
 
 :)
 
-(: -------------------------------------------------------------------------- :)
-declare function u:final-result($pipeline,$resulttree){
-    ($pipeline,$resulttree)
-};
-
-
-
-declare function u:step-fold( $pipeline as element(p:declare-step),
-                              $namespaces,
-                              $steps,
-                              $evalstep-function,
-                              $primary,
-                              $outputs) {
-
-    if (empty($steps)) then
-        u:final-result($pipeline,$outputs)
-
-    else
-        let $result :=  $evalstep-function(
-                                $steps[1],
-                                $namespaces,
-                                $primary,
-                                $pipeline,
-                                $outputs)
-
-    return
-        u:step-fold($pipeline,
-                    $namespaces,
-                    remove($steps, 1),
-                    $evalstep-function,
-                    $result[last()],
-                    ($outputs,$result))
-};
-
-(: -------------------------------------------------------------------------- :)
-declare function u:dynamicError($error,$string) {
-(: -------------------------------------------------------------------------- :)
-    let $info := $const:error//err:error[@code=substring-after($error,':')]
-    return
-        error(QName('http://www.w3.org/ns/xproc-error',$error),concat($error,": XProc Dynamic Error - ",$string," ",$info/text(),'&#10;'))
-};
-
-declare function u:binary-doc($uri){
-()
-};
-
-declare function u:binary-to-string($data){
-()
-};
-
-declare function u:serialize($xml,$options){
-	$xml
-};
-
-declare function u:evalXPATH($xpath, $xml){
-  saxon:evaluate($xml,$xpath)
-};

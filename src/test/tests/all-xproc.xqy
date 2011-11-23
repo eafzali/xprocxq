@@ -26,7 +26,7 @@ test:html(
     <expected>true</expected>
     <result>{txproc:runEntryPointTest()}</result>
   </test>
-  <!--test name="xproc4cb" desc="test entry point via HOX invoke">
+  <!--test name="xproc4b" desc="test entry point via HOX invoke">
     <expected>true</expected>
     <result>{txproc:runEntryPointTest2()}</result>
   </test-->
