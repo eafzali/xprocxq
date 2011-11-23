@@ -147,7 +147,7 @@ declare boundary-space preserve;
                  $input/p:pipe/@step,
                  attribute xproc:default-step-name {($pipeline[@name eq $input/p:pipe/@step]/@xproc:default-name,$pipeline//*[@name eq $input/p:pipe/@step]/@xproc:default-name)[1]}
                  }
-           else if ($input/p:inline) then
+           else if ($input/(p:inline|p:empty|p:data|p:document)) then
              $input/*
            else
                element p:pipe {

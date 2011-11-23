@@ -35,6 +35,10 @@ test:html(
     <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step" xmlns:xproc="http://xproc.net/xproc">1</c:result></expected>
     <result>{txproc:runEntryPointTest2()}</result>
   </test>
+  <test name="xproc5" desc="test">
+    <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step" xmlns:xproc="http://xproc.net/xproc">1</c:result></expected>
+    <result>{txproc:runEntryPointTest3()}</result>
+  </test>
 </testsuite>
 )
 

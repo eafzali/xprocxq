@@ -48,13 +48,11 @@ module namespace xproc = "http://xproc.net/xproc";
  (: declare options :)
  declare option saxon:output "indent=yes";
 
-
  (: --------------------------------------------------------------------------- :)
- declare function xproc:resolve-external-bindings($bindings,$pipeline-name) {
+ declare function xproc:resolve-external-bindings($a,$b) {
  (: -------------------------------------------------------------------------- :)
- () 
+() 
  };
-
 
  (: --------------------------------------------------------------------------- :)
  declare function xproc:genstepnames($element) as xs:string* {
@@ -79,95 +77,27 @@ module namespace xproc = "http://xproc.net/xproc";
 
 
  (: -------------------------------------------------------------------------- :)
- declare function xproc:resolve-empty-binding(){
+ declare function xproc:resolve-document-binding($href as xs:string){
  (: -------------------------------------------------------------------------- :)
-    ()
- };
-
-
- (: -------------------------------------------------------------------------- :)
- declare function xproc:resolve-inline-binding($child){
- (: -------------------------------------------------------------------------- :)
-    $child/node()
- };
-
-
- (: -------------------------------------------------------------------------- :)
- declare function xproc:resolve-document-binding($child){
- (: -------------------------------------------------------------------------- :)
-    if (doc-available(string($child/@href))) then
-        doc(string($child/@href))
+    if (doc-available($href)) then
+        doc($href)
     else
-        u:dynamicError('err:XD0002',concat(" cannot access document ",$child/@href))
+        u:dynamicError('err:XD0002',concat(" cannot access document ",$href))
  };
 
 
  (: -------------------------------------------------------------------------- :)
- declare function xproc:resolve-data-binding($child){
+ declare function xproc:resolve-data-binding($href as xs:string,$wrapper as xs:string){
  (: -------------------------------------------------------------------------- :)
-    if ($child/@href) then
-    element {
-    if ($child/@wrapper) then
-        string($child/@wrapper)
-    else
-        'c:data'
-    } {
-    
-        if ($child/@xproc:escape eq 'true') then
-            attribute xproc:escape{'true'}
-        else
-            (),
-        if (starts-with($child/@href,'file:')) then
-              u:binary-doc($child/@href)
-        else if (ends-with($child/@href,'.xml')) then
-        let $result :=  doc($child/@href)
-        let $namespaces := u:declare-ns(xproc:enum-namespaces($result))
-        return
-          $result
-        
-        else
-	        u:binary-to-string(u:binary-doc($child/@href))
-
-
-(:          u:unparsed-data($child/@href,'text/plain')
+<c:data
+  content-type =""
+  charset = ""
+  encoding = "">
+    string
+</c:data>
+(:
+    u:dynamicError('err:XD0002',concat("cannot access file:  ",$href))
 :)
-    }
-  else
-     u:dynamicError('err:XD0002',concat("cannot access document:  ",$child/@href))
- };
-
-
- (: -------------------------------------------------------------------------- :)
- declare function xproc:resolve-stdin-binding($result,$current-step-name){
- (: -------------------------------------------------------------------------- :)
-    $result/xproc:output[@port eq 'stdin'][@step eq $current-step-name]/node()
- };
-
-
- (: -------------------------------------------------------------------------- :)
- declare function xproc:resolve-primary-input-binding($result,$pipeline-name){
- (: -------------------------------------------------------------------------- :)
-    $result/xproc:output[@step eq concat('!',$pipeline-name)][@port eq '' or @port eq 'result']/node()
- };
-
-
- (: -------------------------------------------------------------------------- :)
- declare function xproc:resolve-non-primary-input-binding($result,$child,$pipeline-name){
- (: -------------------------------------------------------------------------- :)
-    $result/xproc:output[@port eq $child/@port][@step eq concat('!',$pipeline-name)]/node()
- };
-
-
- (: -------------------------------------------------------------------------- :)
- declare function xproc:resolve-pipe-binding($result,$child){
- (: -------------------------------------------------------------------------- :)
-
-    if ($result/xproc:output[@port=$child/@port][@step eq $child/@step]) then
-        $result/xproc:output[@port=$child/@port][@step eq $child/@step]/node()
-    else if ($result/xproc:output[@port=$child/@port][@xproc:defaultname eq $child/@step]) then 
-        $result/xproc:output[@port=$child/@port][@xproc:defaultname eq $child/@step]/node()
-    else
-        $result/xproc:output[last()]/node()
  };
 
 
@@ -176,33 +106,19 @@ module namespace xproc = "http://xproc.net/xproc";
  (: -------------------------------------------------------------------------- :)
    typeswitch($input)
      case element(p:empty)
-       return xproc:resolve-empty-binding()
+       return <empty/>
      case element(p:inline)
-       return xproc:resolve-inline-binding($input)
+       return $input/node()
      case element(p:document)
-       return xproc:resolve-document-binding($input)
+       return xproc:resolve-document-binding($input/@href)
      case element(p:data)
-       return xproc:resolve-data-binding($input)
+       return xproc:resolve-data-binding($input/@href,'')
      case element(p:pipe)
-       return
-         $result[@xproc:default-name eq $input/@xproc:default-step-name][@port eq $input/@port]/node()
-(:
-         if ($input/@port eq 'stdin' and $input/@step eq $ast/@name) then
-           xproc:resolve-stdin-binding($result,$currentstep/@name)
-         else if ($input/@primary eq 'true' and $input/@step eq $ast/@name) then
-           xproc:resolve-primary-input-binding($result,$ast/@xproc:default-name)
-         else if ($input/@step eq $ast/@name) then
-           xproc:resolve-non-primary-input-binding($result,$input,$ast/@xproc:default-name)
-         else if ($input/@port and $input/@step) then
-           xproc:resolve-pipe-binding($result,$input)
-         else
-           u:dynamicError('err:XD0001',concat("cannot bind to pipe in port: ",$input/@port," step: ",$input/@step,' ',u:serialize($currentstep,$const:TRACE_SERIALIZE)))
-:)
+       return $result[@xproc:default-name eq $input/@xproc:default-step-name][@port eq $input/@port]/node()
      default 
-      return
-        u:dynamicError('err:XD0001',concat("cannot bind to port: ",$input/@port," step: ",$input/@step,' ',u:serialize($currentstep,$const:TRACE_SERIALIZE)))
-
-};
+       return
+         u:dynamicError('err:XD0001',concat("cannot bind to port: ",$input/@port," step: ",$input/@step,' ',u:serialize($currentstep,$const:TRACE_SERIALIZE)))
+ };
 
 
  (: -------------------------------------------------------------------------- :)
@@ -341,6 +257,7 @@ module namespace xproc = "http://xproc.net/xproc";
              <xproc:output step="{$step}"
              xproc:default-name="{$step}"
              port-type="input"
+             href="{if ($log-port eq $currentstep/p:input[1][@primary='true']/@port) then $log-href else ()}"
              primary="true"
              select="{$currentstep/p:input[1][@primary='true']/@select}"
              port="{$currentstep/p:input[1][@primary='true']/@port}"
@@ -352,6 +269,7 @@ module namespace xproc = "http://xproc.net/xproc";
              <xproc:output step="{$step}"
              xproc:default-name="{$step}"
              port-type="input"
+             href="{if ($log-port eq $child/@port) then $log-href else ()}"
              primary="false"
              select="{$child/@select}"
              port="{$child/@port}"
@@ -362,6 +280,7 @@ module namespace xproc = "http://xproc.net/xproc";
              if($currentstep/p:output[@primary='true']) then
              <xproc:output step="{$step}"
              port-type="output"
+             href="{if ($log-port eq $currentstep/p:output[1][@primary='true']/@port) then $log-href else ()}"
              primary="true"
              xproc:default-name="{$step}"
              select="{$currentstep/p:output[@primary='true']/@select}"
@@ -371,10 +290,11 @@ module namespace xproc = "http://xproc.net/xproc";
              (: all other primary output ports @TODO - needs to be handled :)
              <xproc:output step="{$step}"
              port-type="output"
+             href="{if ($log-port eq $currentstep/p:output[1][@primary='false']/@port) then $log-href else ()}"
              primary="false"
              xproc:default-name="{$step}"
              select="{$currentstep/p:output[@primary='false']/@select}"
-             port="{if (empty($currentstep/p:output[@primary='false']/@port)) then 'result' else $currentstep/p:output[@primary='false']/@port}"
+             port="{$currentstep/p:output[@primary='false']/@port}"
              func="{$stepfunc}"/>
          )
  };
