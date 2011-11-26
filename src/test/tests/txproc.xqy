@@ -75,9 +75,20 @@ declare function (:TEST:) txproc:runEntryPointTest2() {
 };
 
 declare function (:TEST:) txproc:runEntryPointTest3() { 
-  let $pipeline := fn:doc('data/test3.xpl')
+  let $pipeline := fn:doc('data/test2.xpl')
   let $stdin    := <test/>
-  let $dflag    := 1
+  let $dflag    := 0
+  let $tflag    := 0
+  let $bindings := ()
+  let $options  := ()
+  return
+   $xproc:run-step($pipeline,$stdin,$bindings,$options,(),$dflag,$tflag)
+};
+
+declare function (:TEST:) txproc:runDynamicError() { 
+  let $pipeline := fn:doc('data/error.xpl')
+  let $stdin    := <test/>
+  let $dflag    := 0
   let $tflag    := 0
   let $bindings := ()
   let $options  := ()
@@ -85,3 +96,4 @@ declare function (:TEST:) txproc:runEntryPointTest3() {
   return
    $xproc:run-step($pipeline,$stdin,$bindings,$options,$output,$dflag,$tflag)
 };
+

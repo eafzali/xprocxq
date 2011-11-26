@@ -32,7 +32,10 @@ test:html(
     <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">2</c:result></expected>
     <result>{tstd:testCount4()}</result>
   </test>
-
+  <!--test name="std5" desc="std:error step, need to run on standalone">
+    <expected></expected>
+    <result>{tstd:testError()}</result>
+  </test-->
 </testsuite>
 )
 

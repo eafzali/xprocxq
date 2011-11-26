@@ -47,6 +47,17 @@ return
 (: PRIMARY UTILITIES                                                          :)
 (: -------------------------------------------------------------------------- :)
 
+
+
+(: -------------------------------------------------------------------------- :)
+declare function u:result-document($href as xs:string, $doc as item()){
+(: -------------------------------------------------------------------------- :)
+let $writelog :=  saxon:result-document($href, $doc, <xsl:output method="xml" indent="yes"/>)
+return
+  $href
+};
+
+
 (: -------------------------------------------------------------------------- :)
 declare function u:dynamicError($error,$string) {
 (: -------------------------------------------------------------------------- :)
@@ -55,9 +66,7 @@ declare function u:dynamicError($error,$string) {
         error(QName('http://www.w3.org/ns/xproc-error',$error),concat($error,": XProc Dynamic Error - ",$string," ",$info/text(),'&#10;'))
 };
 
-declare function u:lambda($string as xs:string, $arity as xs:integer) as function(*){
-  saxon:compile-query("std:identity#4")
-};
+
 
 declare function u:binary-doc($uri){
 ()

@@ -23,7 +23,7 @@ declare variable $std:add-xml-base       := ();
 declare variable $std:count              := std:count#4;
 declare variable $std:compare            := ();
 declare variable $std:delete             := ();
-declare variable $std:error              := ();
+declare variable $std:error              := std:error#4;
 declare variable $std:filter             := ();
 declare variable $std:directory-list     := ();
 declare variable $std:escape-markup      := ();
@@ -109,7 +109,14 @@ declare function std:escape-markup($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 declare function std:error($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+let $code := u:get-option('code',$options,$primary)
+let $err := <c:errors>
+<c:error href="" column="" offset="" name="step-name" type="p:error" code="{$code}">
+  <message>{$primary}</message>
+</c:error>
+</c:errors>
+return
+  u:dynamicError('err:XD0030',concat(": p:error throw custom error code - ",$code))
 };
 
 

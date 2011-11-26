@@ -24,4 +24,11 @@
   <p:log port="result" href="/tmp/test.txt"/>
 </p:identity>
 
+<p:identity name="step4">
+  <p:input port="source">
+    <p:document href="/Users/jfuller/Source/Webcomposite/xprocxq/src/test/tests/data/test1.xml"/>
+  </p:input>
+  <p:log port="source" href="/test.txt"/>
+</p:identity>
+
 </p:declare-step>

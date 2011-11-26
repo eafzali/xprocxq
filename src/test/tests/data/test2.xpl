@@ -5,7 +5,9 @@
 Congratulations! You've run your first pipeline!
 </doc></p:inline>
 </p:input>
-<p:output port="result"/>
+<p:output port="result">
+  <p:pipe step="step3" port="result"/>
+</p:output>
 
 <p:identity name="step1"/>
 
@@ -14,6 +16,8 @@ Congratulations! You've run your first pipeline!
     <p:pipe port="result" step="step2"/>
   </p:input>
 </p:identity>
+
+<!--p:sink/-->
 
 <p:count limit="20" name="step2">
 <p:input port="source">

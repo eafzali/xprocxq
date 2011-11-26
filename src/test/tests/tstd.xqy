@@ -52,3 +52,11 @@ declare function (:TEST:) tstd:testCount4() {
   return
     $actual
 };
+
+declare function (:TEST:) tstd:testError() { 
+  let $input  := <test/>
+  let $actual := $std:error($input,(),<xproc:options><p:with-option name='code' select='9999'/></xproc:options>,())
+  return
+    $actual
+};
+

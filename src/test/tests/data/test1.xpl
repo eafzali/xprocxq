@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<p:pipeline version="1.0" xmlns:p="http://www.w3.org/ns/xproc">
+<p:declare-step version="1.0" xmlns:p="http://www.w3.org/ns/xproc">
 <p:input port="source">
   <p:inline><doc>
 Congratulations! You've run your first pipeline!
@@ -8,5 +8,5 @@ Congratulations! You've run your first pipeline!
 <p:output port="result"/>
 
 <p:identity/>
-</p:pipeline>
+</p:declare-step>
 

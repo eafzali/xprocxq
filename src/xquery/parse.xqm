@@ -271,6 +271,7 @@ declare boundary-space preserve;
            case element()
                    return element {node-name($node)}{
                      $node/@*,
+                     $node/p:log,
                      parse:input-port($node/p:input, $step-definition),
                      parse:output-port($node/p:output, $step-definition),
                      parse:options($node/p:with-option,$step-definition),
