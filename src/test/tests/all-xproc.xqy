@@ -39,10 +39,10 @@ test:html(
     <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step" xmlns:xproc="http://xproc.net/xproc">1</c:result></expected>
     <result>{txproc:runEntryPointTest3()}</result>
   </test>
-  <test name="xproc6" desc="test throwing dynamic error">
+  <!--test name="xproc6" desc="test throwing dynamic error">
     <expected></expected>
     <result>{txproc:runDynamicError()}</result>
-  </test>
+  </test-->
   <test name="xproc7" desc="run more complex single branch pipeline (complex-single-branch.xpl)">
     <expected><c xmlns:xproc="http://xproc.net/xproc">aaa<a id="1">test</a></c></expected>
     <result>{txproc:runComplexSingleBranch()}</result>

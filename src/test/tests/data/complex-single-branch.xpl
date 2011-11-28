@@ -7,7 +7,7 @@
 <p:filter select="/c/a"/>
 <p:wrap match="/" wrapper="newwrapper"/>
 <p:unwrap match="b"/>
-<p:rename match="//@id" new-name="new-id"/>
-<p:string-replace match="@new-id" replace="'this is new text'"/>
+<!--p:rename match="//@id" new-name="new-id"/-->
+<!--p:string-replace match="@new-id" replace="'this is new text'"/-->
 
 </p:declare-step>

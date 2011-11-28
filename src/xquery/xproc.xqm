@@ -22,7 +22,6 @@ module namespace xproc = "http://xproc.net/xproc";
 
  (: declare steps :)
  declare variable $xproc:run-step       := xproc:run#7;
- declare variable $xproc:parse-and-eval := ();
  declare variable $xproc:declare-step   := ();
  declare variable $xproc:choose         := ();
  declare variable $xproc:try            := ();
@@ -534,9 +533,9 @@ module namespace xproc = "http://xproc.net/xproc";
  };
 
 
-(:~ waiting for fn:function-lookup() 
+(:~ waiting for fn:function-lookup() to be supported by XQuery implementations
  :
- : This is a temporary function as a dynamic function constructor
+ : This is a *temporary* function as a dynamic function constructor
  : it eventually will be replaced by the new fn:function-lookup() 
  : function which will make its way into the final xquery/xpath 3.0
  : specs
@@ -553,6 +552,12 @@ if ($stepname eq 'p:identity') then
   $std:identity
 else if($stepname eq 'p:count') then
   $std:count
+else if($stepname eq 'p:delete') then
+  $std:delete
+else if($stepname eq 'p:add-attribute') then
+  $std:add-attribute
+else if($stepname eq 'p:error') then
+  $std:error
 else if($stepname eq 'ext:pre') then
   $ext:pre
 else if($stepname eq 'p:rename') then

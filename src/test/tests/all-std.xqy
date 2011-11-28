@@ -85,6 +85,10 @@ test:html(
     <expected><c>aaa<a newid="1"><b newid="2">test</b><b>alternate</b></a></c></expected>
     <result>{tstd:testRename1()}</result>
   </test>
+  <test name="std14" desc="std:label-elements">
+    <expected><c>aaa<a newid="1"><b newid="2">test</b><b>alternate</b></a></c></expected>
+    <result>{tstd:testLabelElements()}</result>
+  </test>
 </testsuite>
 )
 

@@ -146,3 +146,10 @@ declare function (:TEST:) tstd:testRename1() {
   return
     $actual
 };
+
+declare function (:TEST:) tstd:testLabelElements() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b><b>alternate</b></a></c>
+  let $actual := $std:label-elements($input,(),<xproc:options><p:with-option name='match' select='*'/><p:with-option name='attribute' select='id'/><p:with-option name='replace' select='"true"'/><p:with-option name='label' select='"somevalue"'/></xproc:options>,())
+  return
+    $actual
+};

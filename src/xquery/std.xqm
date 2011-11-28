@@ -31,7 +31,7 @@ declare variable $std:escape-markup      := ();
 declare variable $std:http-request       := ();
 declare variable $std:identity           := std:identity#4;
 declare variable $std:insert             := ();
-declare variable $std:label-elements     := ();
+declare variable $std:label-elements     := std:label-elements#4;
 declare variable $std:load               := ();
 declare variable $std:make-absolute-uris := ();
 declare variable $std:namespace-rename   := ();
@@ -49,7 +49,7 @@ declare variable $std:xinclude           := ();
 declare variable $std:wrap               := std:wrap#4;
 declare variable $std:wrap-sequence      := std:wrap-sequence#4;
 declare variable $std:unwrap             := std:unwrap#4;
-declare variable $std:xslt               := ();
+declare variable $std:xslt               := std:xslt#4;
 
 
 (: -------------------------------------------------------------------------- :)
@@ -78,11 +78,8 @@ let $template := <xsl:stylesheet version="2.0">
     <xsl:apply-templates/>
   </xsl:copy>
 </xsl:template>
-
 </xsl:stylesheet>      
-
 return
-
   u:transform($template,$primary)
 };
 
@@ -203,7 +200,43 @@ declare function std:insert($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 declare function std:label-elements($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+let $match  := u:get-option('match',$options,$primary)
+let $attribute  := u:get-option('attribute',$options,$primary)
+let $attribute-prefix  := u:get-option('attribute-prefix',$options,$primary)
+let $attribute-namespace  := u:get-option('attribute-namespace',$options,$primary)
+
+let $label  := u:get-option('label',$options,$primary)
+let $replace  := u:get-option('replace',$options,$primary)
+
+let $template := <xsl:stylesheet version="2.0">
+<xsl:template match=".">
+    <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="{$match}">
+  <xsl:copy>
+    <xsl:apply-templates select="@*"/>
+    <xsl:choose>
+      <xsl:when test="not(@{$attribute}) or 'true' = '{$replace}'">
+        <xsl:attribute name="{$attribute}"><xsl:value-of select="{$label}"/></xsl:attribute>
+      </xsl:when>
+      <xsl:otherwise>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:apply-templates/>
+  </xsl:copy>
+</xsl:template>
+
+<xsl:template match="@*|node()">
+    <xsl:copy>
+        <xsl:apply-templates select="@*|node()"/>
+    </xsl:copy>
+</xsl:template>
+
+</xsl:stylesheet>      
+
+return
+  u:transform($template,$primary)
 };
 
 
