@@ -12,19 +12,20 @@ declare namespace xproc = "http://xproc.net/xproc";
 declare namespace p="http://www.w3.org/ns/xproc";
 declare namespace c="http://www.w3.org/ns/xproc-step";
 declare namespace err="http://www.w3.org/ns/xproc-error";
+declare namespace xsl="http://www.w3.org/1999/XSL/Transform";
 
 (: module imports :)
 import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
 import module namespace u = "http://xproc.net/xproc/util" at "util.xqm";
 
 (: declare functions :)
-declare variable $std:add-attribute      := ();
+declare variable $std:add-attribute      := std:add-attribute#4;
 declare variable $std:add-xml-base       := ();
 declare variable $std:count              := std:count#4;
 declare variable $std:compare            := ();
-declare variable $std:delete             := ();
+declare variable $std:delete             := std:delete#4;
 declare variable $std:error              := std:error#4;
-declare variable $std:filter             := ();
+declare variable $std:filter             := std:filter#4;
 declare variable $std:directory-list     := ();
 declare variable $std:escape-markup      := ();
 declare variable $std:http-request       := ();
@@ -54,7 +55,36 @@ declare variable $std:xslt               := ();
 (: -------------------------------------------------------------------------- :)
 declare function std:add-attribute($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+
+let $match  := u:get-option('match',$options,$primary)
+let $attribute-name as xs:string := u:get-option('attribute-name',$options,$primary)
+let $attribute-value := u:get-option('attribute-value',$options,$primary)
+let $attribute-prefix := u:get-option('attribute-prefix',$options,$primary)
+let $attribute-namespace := u:get-option('attribute-namespace',$options,$primary)
+let $template := <xsl:stylesheet version="2.0">
+<xsl:template match=".">
+    <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="@*|node()">
+    <xsl:copy>
+        <xsl:apply-templates select="@*|node()"/>
+    </xsl:copy>
+</xsl:template>
+
+<xsl:template match="{$match}">
+  <xsl:copy>
+    <xsl:apply-templates select="@*"/>
+    <xsl:attribute name="{$attribute-name}" select="'{$attribute-value}'"/>
+    <xsl:apply-templates/>
+  </xsl:copy>
+</xsl:template>
+
+</xsl:stylesheet>      
+
+return
+
+  u:transform($template,$primary)
 };
 
 
@@ -88,7 +118,23 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:delete($primary,$secondary,$options,$variables){
 (: -------------------------------------------------------------------------- :)
-()
+let $match  as xs:string := u:get-option('match',$options,$primary)
+let $template := <xsl:stylesheet version="2.0">
+<xsl:template match=".">
+    <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="@*|node()">
+    <xsl:copy>
+        <xsl:apply-templates select="@*|node()"/>
+    </xsl:copy>
+</xsl:template>
+
+<xsl:template match="{$match}"/>
+
+</xsl:stylesheet>
+return
+  u:transform($template,$primary)
 };
 
 
@@ -123,7 +169,14 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:filter($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+let $select := u:get-option('select',$options,$primary)
+return
+  try {
+    u:evalXPATH($select,document{$primary})
+  }
+  catch * {
+    u:dynamicError('err:XD0016',": p:filter did not select anything - ")
+  }
 };
 
 

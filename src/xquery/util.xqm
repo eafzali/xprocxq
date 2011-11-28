@@ -28,6 +28,47 @@ import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
 declare variable $u:NDEBUG :=$const:NDEBUG;
 
 (: -------------------------------------------------------------------------- :)
+declare function u:evalXPATH($xpath, $xml){
+(: -------------------------------------------------------------------------- :)
+  if ($xpath eq '/' or $xpath eq '' or empty($xml)) then
+    $xml
+  else
+    ($xml/.)/saxon:evaluate($xpath)
+};
+
+(: -------------------------------------------------------------------------- :)
+declare function u:transform($stylesheet,$xml){
+(: -------------------------------------------------------------------------- :)
+  let $rendition := saxon:compile-stylesheet(document{$stylesheet})
+  return
+    saxon:transform($rendition, $xml)
+};
+
+
+
+(: -------------------------------------------------------------------------- :)
+declare function u:xsltMatchPattern($xpath,$node){
+(: -------------------------------------------------------------------------- :)
+let $match := document {<xsl:stylesheet version="2.0">
+<xsl:template match="{$xpath}">
+    <xsl:apply-templates mode="m"/>
+</xsl:template>
+
+<xsl:template match="@*|node()" mode="m">
+    <xsl:copy>
+        <xsl:apply-templates select="@*|node()" mode="m"/>
+    </xsl:copy>
+</xsl:template>
+
+<xsl:template match="text()"/>
+
+</xsl:stylesheet>}        
+let $rendition := saxon:compile-stylesheet($match)
+return
+  saxon:transform($rendition, $node)
+};
+
+(: -------------------------------------------------------------------------- :)
 declare function u:outputResultElement($exp){
 (: -------------------------------------------------------------------------- :)
     <c:result>{$exp}</c:result>
@@ -76,16 +117,12 @@ declare function u:binary-to-string($data){
 ()
 };
 
+(: -------------------------------------------------------------------------- :)
 declare function u:serialize($xml,$options){
-	$xml
+(: -------------------------------------------------------------------------- :)
+$xml
 };
 
-declare function u:evalXPATH($xpath, $xml){
-  if ($xpath eq '/' or $xpath eq '' or empty($xml)) then
-    $xml
-  else
-    saxon:evaluate($xml,$xpath)
-};
 
 (: -------------------------------------------------------------------------- :)
 (: ASSERTIONS, DEBUG TOOLS                                                    :)

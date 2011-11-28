@@ -258,7 +258,7 @@ module namespace xproc = "http://xproc.net/xproc";
  let $result :=  u:evalXPATH(string($pinput/@select),$data)
  return
    if ($result) then
-     $result
+     document{$result}
    else
      <empty/>
      (: TEMPORARILY DISABLED

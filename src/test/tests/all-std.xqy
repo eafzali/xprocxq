@@ -5,7 +5,8 @@ import module namespace test = "http://www.marklogic.com/test"
 
 import module namespace tstd = "tstd"
     at "tstd.xqy";
-    
+
+
 test:html(
 <testsuite title="std step module">
   <test name="std1" desc="std module loading">
@@ -36,6 +37,26 @@ test:html(
     <expected></expected>
     <result>{tstd:testError()}</result>
   </test-->
+  <test name="std6" desc="std:filter which uses p:input">
+    <expected><a id="1"><b id="2">test</b></a></expected>
+    <result>{tstd:testFilter()}</result>
+  </test>
+  <test name="std7" desc="std:delete, initial test of xsltmatchpattern">
+    <expected><c>aaa</c></expected>
+    <result>{tstd:testDelete()}</result>
+  </test>
+  <test name="std7a" desc="std:delete">
+    <expected><c>aaa<a id="1"></a></c></expected>
+    <result>{tstd:testDelete1()}</result>
+  </test>
+  <test name="std7b" desc="std:delete remove id attributes">
+    <expected><c>aaa<a><b>test</b></a></c></expected>
+    <result>{tstd:testDelete2()}</result>
+  </test>
+  <test name="std8" desc="std:add-attribute">
+    <expected><c>aaa<a id="1"><b id="2" test=""test"">test</b></a></c></expected>
+    <result>{tstd:testAddAttr()}</result>
+  </test>
 </testsuite>
 )
 

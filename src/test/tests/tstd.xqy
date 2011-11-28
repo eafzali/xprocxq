@@ -60,3 +60,39 @@ declare function (:TEST:) tstd:testError() {
     $actual
 };
 
+declare function (:TEST:) tstd:testFilter() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b></a></c>
+  let $actual := $std:filter($input,(),<xproc:options><p:with-option name='select' select='/c/a'/></xproc:options>,())
+  return
+    $actual
+};
+
+declare function (:TEST:) tstd:testDelete() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b></a></c>
+  let $actual := $std:delete($input,(),<xproc:options><p:with-option name='match' select='a'/></xproc:options>,())
+  return
+    $actual
+};
+
+declare function (:TEST:) tstd:testDelete1() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b></a></c>
+  let $actual := $std:delete($input,(),<xproc:options><p:with-option name='match' select='b'/></xproc:options>,())
+  return
+    $actual
+};
+
+declare function (:TEST:) tstd:testDelete2() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b></a></c>
+  let $actual := $std:delete($input,(),<xproc:options><p:with-option name='match' select='@*'/></xproc:options>,())
+  return
+    $actual
+};
+
+
+declare function (:TEST:) tstd:testAddAttr() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b></a></c>
+  let $actual := $std:add-attribute($input,(),<xproc:options><p:with-option name='match' select='b'/><p:with-option name='attribute-name' select='test'/><p:with-option name='attribute-value' select='"test"'/></xproc:options>,())
+  return
+    $actual
+};
+
