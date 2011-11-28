@@ -350,7 +350,7 @@ declare function std:split-sequence($primary,$secondary,$options,$variables) {
 let $test := u:get-option('test',$options,$primary)
 let $initial-only := u:get-option('initial-only',$options,$primary)
 return
-    for $child at $count in $match
+    for $child at $count in $primary
     return
       try {
         if(u:evalXPATH($test,document{$primary})) then
