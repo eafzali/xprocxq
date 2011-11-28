@@ -43,19 +43,18 @@ declare variable $std:set-attributes     := ();
 declare variable $std:sink               := ();
 declare variable $std:split-sequence     := ();
 declare variable $std:store              := ();
-declare variable $std:string-replace     := ();
+declare variable $std:string-replace     := std:string-replace#4;
 declare variable $std:unescape-markup    := ();
 declare variable $std:xinclude           := ();
-declare variable $std:wrap               := ();
-declare variable $std:wrap-sequence      := ();
-declare variable $std:unwrap             := ();
+declare variable $std:wrap               := std:wrap#4;
+declare variable $std:wrap-sequence      := std:wrap-sequence#4;
+declare variable $std:unwrap             := std:unwrap#4;
 declare variable $std:xslt               := ();
 
 
 (: -------------------------------------------------------------------------- :)
 declare function std:add-attribute($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-
 let $match  := u:get-option('match',$options,$primary)
 let $attribute-name as xs:string := u:get-option('attribute-name',$options,$primary)
 let $attribute-value := u:get-option('attribute-value',$options,$primary)
@@ -289,7 +288,41 @@ declare function std:store($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 declare function std:string-replace($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+let $match  := u:get-option('match',$options,$primary)
+let $replace as xs:string := concat("'",u:get-option('replace',$options,$primary),"'")
+let $template := <xsl:stylesheet version="2.0">
+<xsl:template match=".">
+    <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="@*|node()">
+    <xsl:copy>
+        <xsl:apply-templates select="@*|node()"/>
+    </xsl:copy>
+</xsl:template>
+
+<xsl:template match="{$match}">
+  <xsl:choose>
+    <xsl:when test=". instance of element()">
+      <xsl:element name="{$match}">
+      <xsl:copy-of select="@*"/>
+        <xsl:value-of select="{$replace}"/>
+      </xsl:element>
+    </xsl:when>
+    <xsl:when test=". instance of attribute()">
+      <xsl:attribute name="{$match}">
+        <xsl:value-of select="{$replace}"/>
+      </xsl:attribute>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="{$replace}"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+</xsl:stylesheet>      
+
+return
+  u:transform($template,$primary)
 };
 
 
@@ -310,21 +343,72 @@ declare function std:xinclude($primary,$secondary,$options,$variables){
 (: -------------------------------------------------------------------------- :)
 declare function std:wrap($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+let $match  := u:get-option('match',$options,$primary)
+let $wrapper as xs:string := u:get-option('wrapper',$options,$primary)
+let $wrapper-prefix as xs:string := u:get-option('wrapper-prefix',$options,$primary)
+let $wrapper-namespace as xs:string := u:get-option('wrapper-namespace',$options,$primary)
+let $group-adjacent as xs:string := u:get-option('group-adjacent',$options,$primary)
+
+let $template := <xsl:stylesheet version="2.0">
+<xsl:template match=".">
+    <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="{$match}">
+  <xsl:element name="{$wrapper}">
+    <xsl:copy>
+      <xsl:apply-templates select="@*"/>
+      <xsl:apply-templates/>
+    </xsl:copy>
+  </xsl:element>
+</xsl:template>
+
+<xsl:template match="@*|node()">
+    <xsl:copy>
+        <xsl:apply-templates select="@*|node()"/>
+    </xsl:copy>
+</xsl:template>
+
+</xsl:stylesheet>      
+
+return
+  u:transform($template,$primary)
 };
 
 
 (: -------------------------------------------------------------------------- :)
-declare function std:wrap-sequence($primary,$secondary,$options,$variables){
+declare function std:wrap-sequence($primary,$secondary,$options,$variables) as item()*{
 (: -------------------------------------------------------------------------- :)
-()
+for $v in $primary
+return
+  std:wrap($v,$secondary,$options,$variables)
 };
 
 
 (: -------------------------------------------------------------------------- :)
 declare function std:unwrap($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+let $match  := u:get-option('match',$options,$primary)
+
+let $template := <xsl:stylesheet version="2.0">
+<xsl:template match=".">
+    <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="{$match}">
+  <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="@*|node()">
+    <xsl:copy>
+        <xsl:apply-templates select="@*|node()"/>
+    </xsl:copy>
+</xsl:template>
+
+</xsl:stylesheet>      
+
+return
+  u:transform($template,$primary)
 };
 
 

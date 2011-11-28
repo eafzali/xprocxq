@@ -96,3 +96,40 @@ declare function (:TEST:) tstd:testAddAttr() {
     $actual
 };
 
+
+declare function (:TEST:) tstd:testStringReplace() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b></a></c>
+  let $actual := $std:string-replace($input,(),<xproc:options><p:with-option name='match' select='b'/><p:with-option name='replace' select='aaaa'/></xproc:options>,())
+  return
+    $actual
+};
+
+
+declare function (:TEST:) tstd:testWrap() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b></a></c>
+  let $actual := $std:wrap($input,(),<xproc:options><p:with-option name='match' select='b'/><p:with-option name='wrapper' select='"aaaa"'/></xproc:options>,())
+  return
+    $actual
+};
+
+declare function (:TEST:) tstd:testWrapSequence() { 
+  let $input  := (<c>aaa<a id="1"><b id="2">test</b></a></c>,<a><b>aaa</b></a>)
+  let $actual := $std:wrap-sequence($input,(),<xproc:options><p:with-option name='match' select='b'/><p:with-option name='wrapper' select='"aaaa"'/></xproc:options>,())
+  return
+    $actual
+};
+
+declare function (:TEST:) tstd:testUnwrap() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b></a></c>
+  let $actual := $std:unwrap($input,(),<xproc:options><p:with-option name='match' select='b'/></xproc:options>,())
+  return
+    $actual
+};
+
+
+declare function (:TEST:) tstd:testUnwrap1() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b><b>alternate</b></a></c>
+  let $actual := $std:unwrap($input,(),<xproc:options><p:with-option name='match' select='b'/></xproc:options>,())
+  return
+    $actual
+};

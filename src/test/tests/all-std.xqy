@@ -54,9 +54,30 @@ test:html(
     <result>{tstd:testDelete2()}</result>
   </test>
   <test name="std8" desc="std:add-attribute">
-    <expected><c>aaa<a id="1"><b id="2" test=""test"">test</b></a></c></expected>
+    <expected><c>aaa<a id="1"><b id="2" test="test">test</b></a></c></expected>
     <result>{tstd:testAddAttr()}</result>
   </test>
+  <test name="std9" desc="std:string-replace">
+    <expected><c>aaa<a id="1"><b id="2">aaaa</b></a></c></expected>
+    <result>{tstd:testStringReplace()}</result>
+  </test>
+  <test name="std10" desc="std:wrap">
+    <expected><c>aaa<a id="1"><aaaa><b id="2">test</b></aaaa></a></c></expected>
+    <result>{tstd:testWrap()}</result>
+  </test>
+  <test name="std11" desc="std:wrap-sequence">
+    <expected><c>aaa<a id="1"><aaaa><b id="2">test</b></aaaa></a></c><a><aaaa><b>aaa</b></aaaa></a></expected>
+    <result>{tstd:testWrapSequence()}</result>
+  </test>
+  <test name="std12" desc="std:unwrap">
+    <expected><c>aaa<a id="1">test</a></c></expected>
+    <result>{tstd:testUnwrap()}</result>
+  </test>
+  <test name="std11a" desc="std:unwrap">
+    <expected><c>aaa<a id="1">testalternate</a></c></expected>
+    <result>{tstd:testUnwrap1()}</result>
+  </test>
+
 </testsuite>
 )
 

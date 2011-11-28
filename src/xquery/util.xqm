@@ -77,7 +77,7 @@ declare function u:outputResultElement($exp){
 (: -------------------------------------------------------------------------- :)
 declare function u:get-option($option-name as xs:string,$options as element(xproc:options),$primary) as xs:string*{
 (: -------------------------------------------------------------------------- :)
-let $value as xs:string := string($options//p:with-option[@name eq $option-name]/@select)
+let $value as xs:string := replace(string($options//p:with-option[@name eq $option-name]/@select),'"','')
 return
   $value
 };
