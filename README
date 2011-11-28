@@ -1,23 +1,3 @@
-XPROCXQ $Id$
+XPROCXQ 
 
-
-NOTES
-
-
-explicit-type: add internal type to all elements
-
-explicit-name: add xproc:default-name
-
-AST
-        reconcile with step definition, 
-        resolve imports, 
-        if declare-step type generate ext:xproc
-        add ext:pre, ext:post
-
-explicit-bindings: make all port bindings explicit
-
-sort
-
-
-parse:explicit-bindings(parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
-  
+implementation of xproc in xquery coming soon ....
