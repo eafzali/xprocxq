@@ -37,7 +37,7 @@ declare variable $std:make-absolute-uris := ();
 declare variable $std:namespace-rename   := ();
 declare variable $std:pack               := ();
 declare variable $std:parameters         := ();
-declare variable $std:rename             := ();
+declare variable $std:rename             := std:rename#4;
 declare variable $std:replace            := ();
 declare variable $std:set-attributes     := ();
 declare variable $std:sink               := ();
@@ -246,7 +246,47 @@ declare function std:parameters($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 declare function std:rename($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+
+let $match  := u:get-option('match',$options,$primary)
+let $new-name  := u:get-option('new-name',$options,$primary)
+let $new-prefix  := u:get-option('new-prefix',$options,$primary)
+let $new-namespace  := u:get-option('new-namespace',$options,$primary)
+
+let $template := <xsl:stylesheet version="2.0">
+<xsl:template match=".">
+    <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="{$match}">
+  <xsl:choose>
+    <xsl:when test=". instance of element()">
+      <xsl:element name="{$new-name}">
+        <xsl:apply-templates select="@*"/>
+        <xsl:apply-templates/>
+      </xsl:element>
+    </xsl:when>
+    <xsl:when test=". instance of attribute()">
+      <xsl:attribute name="{$new-name}" select="."/>
+    </xsl:when>
+    <xsl:when test=". instance of processing-instruction()">
+      <xsl:processing-instruction name="{$new-name}" select="."/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:copy-of select="." />
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template match="@*|node()">
+    <xsl:copy>
+        <xsl:apply-templates select="@*|node()"/>
+    </xsl:copy>
+</xsl:template>
+
+</xsl:stylesheet>      
+
+return
+  u:transform($template,$primary)
 };
 
 
@@ -389,7 +429,6 @@ return
 declare function std:unwrap($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 let $match  := u:get-option('match',$options,$primary)
-
 let $template := <xsl:stylesheet version="2.0">
 <xsl:template match=".">
     <xsl:apply-templates/>

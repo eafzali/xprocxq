@@ -73,11 +73,18 @@ test:html(
     <expected><c>aaa<a id="1">test</a></c></expected>
     <result>{tstd:testUnwrap()}</result>
   </test>
-  <test name="std11a" desc="std:unwrap">
+  <test name="std12a" desc="std:unwrap">
     <expected><c>aaa<a id="1">testalternate</a></c></expected>
     <result>{tstd:testUnwrap1()}</result>
   </test>
-
+  <test name="std13" desc="std:rename renaming element b to newname">
+    <expected><c>aaa<a id="1"><newname id="2">test</newname><newname>alternate</newname></a></c></expected>
+    <result>{tstd:testRename()}</result>
+  </test>
+  <test name="std13a" desc="std:rename renaming attribute id to newid">
+    <expected><c>aaa<a newid="1"><b newid="2">test</b><b>alternate</b></a></c></expected>
+    <result>{tstd:testRename1()}</result>
+  </test>
 </testsuite>
 )
 

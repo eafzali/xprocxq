@@ -126,10 +126,23 @@ declare function (:TEST:) tstd:testUnwrap() {
     $actual
 };
 
-
 declare function (:TEST:) tstd:testUnwrap1() { 
   let $input  := <c>aaa<a id="1"><b id="2">test</b><b>alternate</b></a></c>
   let $actual := $std:unwrap($input,(),<xproc:options><p:with-option name='match' select='b'/></xproc:options>,())
+  return
+    $actual
+};
+
+declare function (:TEST:) tstd:testRename() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b><b>alternate</b></a></c>
+  let $actual := $std:rename($input,(),<xproc:options><p:with-option name='match' select='b'/><p:with-option name='new-name' select='newname'/></xproc:options>,())
+  return
+    $actual
+};
+
+declare function (:TEST:) tstd:testRename1() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b><b>alternate</b></a></c>
+  let $actual := $std:rename($input,(),<xproc:options><p:with-option name='match' select='@id'/><p:with-option name='new-name' select='newid'/></xproc:options>,())
   return
     $actual
 };
