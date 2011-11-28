@@ -2,7 +2,8 @@ XPROCXQ
 
 implementation of xproc in xquery coming soon ....
 
-currently requires at least Saxon Professional Edition, 
+currently requires at least Saxon Professional Edition (targeting
+support for MarkLogic, eXist and SAXON)
 
 IMPORTANT: dont expect to download and use just yet, I will make a
 clear announcement when ready for one click type installation!
