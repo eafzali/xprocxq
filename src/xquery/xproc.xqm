@@ -76,6 +76,10 @@ module namespace xproc = "http://xproc.net/xproc";
  };
 
 
+ (:~ resolve input port bindings
+ :
+ : @returns c:data
+ :)
  (: -------------------------------------------------------------------------- :)
  declare function xproc:resolve-document-binding($href as xs:string){
  (: -------------------------------------------------------------------------- :)
@@ -86,8 +90,18 @@ module namespace xproc = "http://xproc.net/xproc";
  };
 
 
+(:~ resolve input port bindings
+ :
+ : Will process p:empty, p:inline, p:document, p:data, p:pipe
+ : or throw err:XD0001 
+ :
+ : @param $href - xs:string
+ : @param $wrapper  - xs:string
+ :
+ : @returns c:data
+ :)
  (: -------------------------------------------------------------------------- :)
- declare function xproc:resolve-data-binding($href as xs:string,$wrapper as xs:string){
+ declare function xproc:resolve-data-binding($href as xs:string,$wrapper as xs:string) as element(c:data){
  (: -------------------------------------------------------------------------- :)
 <c:data
   content-type =""
@@ -101,6 +115,18 @@ module namespace xproc = "http://xproc.net/xproc";
  };
 
 
+(:~ resolve input port bindings
+ :
+ : Will process p:empty, p:inline, p:document, p:data, p:pipe
+ : or throw err:XD0001 
+ :
+ :
+ : @param $input - 
+ : @param $result  - TODO rename to outputs
+ : @param $ast -
+ : @param $currentstep 
+ : @returns 
+ :)
  (: -------------------------------------------------------------------------- :)
  declare function xproc:resolve-port-binding($input,$result,$ast,$currentstep){
  (: -------------------------------------------------------------------------- :)
@@ -121,27 +147,38 @@ module namespace xproc = "http://xproc.net/xproc";
  };
 
 
+(:~ evaluates step options
+ :
+ :
+ : @param $ast - 
+ : @param $stepname - 
+ :
+ : @returns xproc:options
+ :)
  (: -------------------------------------------------------------------------- :)
- declare function xproc:eval-options($pipeline,$step){
+ declare function xproc:eval-options($ast,$stepname as xs:string) as element(xproc:options){
  (: -------------------------------------------------------------------------- :)
      <xproc:options>
-         {$pipeline/*[@xproc:default-name=$step]/p:with-option}
+         {$ast/*[@xproc:default-name=$stepname]/p:with-option}
      </xproc:options>
  };
 
 
+(:~ evaluates secondary input bindings to a step
+ :
+ :
+ : @param $ast - 
+ : @param $currentstep
+ : @param $primaryinput
+ : @param $outputs
+ :
+ : @returns 
+ :)
  (: -------------------------------------------------------------------------- :)
- declare function xproc:eval-outputs($pipeline,$step){
+ declare function xproc:eval-secondary($ast as element(p:declare-step),$currentstep,$primaryinput as item()*,$outputs as item()*){
  (: -------------------------------------------------------------------------- :)
-     <xproc:outputs>
-         {$pipeline/*[@xproc:default-name=$step]/p:output}
-     </xproc:outputs>
- };
-
-
- (: -------------------------------------------------------------------------- :)
- declare function xproc:eval-secondary($pipeline,$step,$currentstep,$primaryinput,$result){
- (: -------------------------------------------------------------------------- :)
+ let $step-name as xs:string := string(($currentstep/@name|$currentstep/@xproc:default-name)[1])
+ return
      <xproc:inputs>{
          for $input in $currentstep/p:input[@primary eq 'false']
              return
@@ -150,29 +187,26 @@ module namespace xproc = "http://xproc.net/xproc";
                  let $primaryresult := document{
                      for $child in $input/node()
                      return
-                         xproc:resolve-port-binding($child,$result,$pipeline,$currentstep)
+                         xproc:resolve-port-binding($child,$outputs,$ast,$currentstep)
                         }
 
-                 let $select := string(
-                            if ($input/@select eq '/' or empty($input/@select) or $input/@select eq ' ') then
-                                 '/'
-                            else
-                                 string($input/@select)
-                             )
+                        let $data :=  if($input/node()) then
+                          (: resolve each nested port binding :)
+                          for $input1 in $input/*
+                          return
+                            xproc:resolve-port-binding($input1,$outputs,$ast,$currentstep)
+                          else
+                            if(name($primaryinput) eq 'xproc:output') then $primaryinput/node() else $primaryinput
 
-                 let $selectval := if ($select eq '/' or empty($select)) then
-                                        $primaryresult
-                                 else
-                                        let $namespaces :=  xproc:enum-namespaces ($primaryresult)
-                                            return
-                                                u:evalXPATH(string($select),$primaryresult)
-                    return
-                         if (empty($selectval)) then
-
-         (: TODO: investigate empty bindings :)
-          u:dynamicError('err:XD0016',concat(string($pipeline/*[@name=$step]/p:input[@primary='true'][@select]/@select)," did not select anything at ",$step," ",name($pipeline/*[@name=$step])))
-                         else
-                             $selectval
+                              let $result :=  u:evalXPATH(string($input/@select),$data)
+  
+                        return
+                          if ($result) then
+                            $result
+                          else
+                          <empty/>
+                          (: TEMPORARILY DISABLED
+                             u:dynamicError('err:XD0016',concat("xproc step ",$step-name, "did not select anything from p:input")) :)
              }
              </xproc:input>
 
@@ -180,7 +214,7 @@ module namespace xproc = "http://xproc.net/xproc";
  };
 
 
- (:~ evaluates primary input to a step
+ (:~ evaluates primary input bindings to a step
   :
   : a) checks to see if there are multiple children to p:input and uses xproc:resolve-port-binding to resolve them
   : b) applies xpath select processesing (if did not select anything this is an error)
@@ -232,16 +266,14 @@ module namespace xproc = "http://xproc.net/xproc";
  (: -------------------------------------------------------------------------- :)
  declare function xproc:evalstep ($step,$namespaces,$primaryinput,$ast,$outputs) {
  (: -------------------------------------------------------------------------- :)
-     let $declarens :=  u:declare-ns($namespaces)
-     let $variables :=  $outputs/xproc:variable
-     let $currentstep := $ast/*[@xproc:default-name eq $step][1]
-     let $stepfunc := name($currentstep)
+     let $declarens    :=  u:declare-ns($namespaces)
+     let $variables    :=  $outputs/xproc:variable
+     let $options      := xproc:eval-options($ast,$step)
+     let $currentstep  := $ast/*[@xproc:default-name eq $step][1]
+     let $stepfunc     := name($currentstep)
      let $stepfunction := xproc:getstep($stepfunc)
-     let $primary :=  xproc:eval-primary($ast,$currentstep,$primaryinput,$outputs)
-     let $secondary := xproc:eval-secondary($ast,$step,$currentstep,$primaryinput,$outputs)
-
-     let $options := xproc:eval-options($ast,$step)
-     let $output := xproc:eval-outputs($ast,$step)
+     let $primary      :=  xproc:eval-primary($ast,$currentstep,$primaryinput,$outputs)
+     let $secondary    := xproc:eval-secondary($ast,$currentstep,$primaryinput,$outputs)
 
      let $log-href := $currentstep/p:log/@href
      let $log-port := $currentstep/p:log/@port
@@ -465,8 +497,6 @@ module namespace xproc = "http://xproc.net/xproc";
  (: ------------------------------------------------------------------------------------------------------------- :)
  declare function xproc:run($pipeline,$stdin,$bindings,$options,$outputs,$dflag as xs:integer ,$tflag as xs:integer) as item()*{
  (: ------------------------------------------------------------------------------------------------------------- :)
-
- (:~ STEP I: preprocess :)
  let $validate   := () (: validation:jing($pipeline,fn:doc($const:xproc-rng-schema)) :)
  let $namespaces := xproc:enum-namespaces($pipeline)
  let $parse      := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
@@ -480,20 +510,12 @@ module namespace xproc = "http://xproc.net/xproc";
    namespace xxq-error {"http://xproc.net/xproc/error"},
    parse:pipeline-step-sort( $parse/*, () )
  }
-
  let $checkAST   :=  u:assert(not(empty($ast)),"AST is empty")
-
- (:~ STEP II: eval AST :)
  let $eval_result := xproc:evalAST($ast,$xproc:eval-step,$namespaces,$stdin,$bindings,$outputs)
-
- (:~ STEP III: serialize and return results :)
  let $serialized_result := xproc:output($eval_result,$dflag)
-
  return 
    $serialized_result
  };
-
-
 
 
 (:~ waiting for fn:function-lookup() 
