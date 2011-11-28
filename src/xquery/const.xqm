@@ -43,13 +43,13 @@ declare variable $const:NS_XPROC_ERR_EXT := "http://xproc.net/ns/errors";
 
 
 (: -------------------------------------------------------------------------- :)
-(: Error Dictionary lookup :)
+(: Error Dictionary lookup :) (:~ @TODO - obviously need to remove these absolute paths :)
 (: -------------------------------------------------------------------------- :)
 declare variable $const:error          := fn:doc("/Users/jfuller/Source/Webcomposite/xprocxq/src/xquery/etc/error-codes.xml");
 declare variable  $const:xprocxq-error := fn:doc("/Users/jfuller/Source/Webcomposite/xprocxq/src/xquery/etc/xproc-error-codes.xml");
 
 (: -------------------------------------------------------------------------- :)
-(: Step Definition lookup :)
+(: Step Definition lookup :) (:~ @TODO - obviously need to remove these absolute paths :)
 (: -------------------------------------------------------------------------- :)
 declare variable $const:ext-steps  := fn:doc("/Users/jfuller/Source/Webcomposite/xprocxq/src/xquery/etc/pipeline-extension.xml")/p:library;
 declare variable $const:std-steps  := fn:doc("/Users/jfuller/Source/Webcomposite/xprocxq/src/xquery/etc/pipeline-standard.xml")/p:library;
@@ -71,6 +71,12 @@ declare variable $const:psvi-supported :="false";
 declare variable $const:episode :="somerandomnumber";
 
 
+
+(: -------------------------------------------------------------------------- :)
+(:  :)
+(: -------------------------------------------------------------------------- :)
+declare variable $const:NDEBUG :=1;
+
 (: -------------------------------------------------------------------------- :)
 (: XProc default naming prefix :)
 (: -------------------------------------------------------------------------- :)
@@ -90,48 +96,3 @@ declare variable $const:directory-list-xslt := 'resource:net/xproc/xprocxq/etc/d
 (: RELAXNG Schema for XPROC :)
 (: -------------------------------------------------------------------------- :)
 declare variable $const:xproc-rng-schema := 'resource:net/xproc/xprocxq/etc/xproc.rng';
-
-
-
-
-
-
-declare variable $const:NDEBUG :=1;
-
-
-
-(: -------------------------------------------------------------------------- :)
-(: DEPRECATION LIKELY :)
-(: -------------------------------------------------------------------------- :)
-declare variable $const:default-ns-imports :='
-    declare namespace p="http://www.w3.org/ns/xproc";
-    declare namespace c="http://www.w3.org/ns/xproc-step";
-    declare namespace err="http://www.w3.org/ns/xproc-error";
-    declare namespace xsl="http://www.w3.org/1999/XSL/Transform";
-    declare namespace t="http://xproc.org/ns/testsuite";
-
-    import module namespace func   = "http://xproc.net/xproc/functions" at "resource:net/xproc/xprocxq/src/xquery/functions.xqm";
-
-';
-
-declare variable $const:default-imports :='
-
-    import module namespace xproc = "http://xproc.net/xproc";
-    import module namespace const = "http://xproc.net/xproc/const" at "resource:net/xproc/xprocxq/src/xquery/const.xqm";
-    import module namespace u     = "http://xproc.net/xproc/util" at "resource:net/xproc/xprocxq/src/xquery/util.xqm";
-    import module namespace opt   = "http://xproc.net/xproc/opt" at "resource:net/xproc/xprocxq/src/xquery/opt.xqm";
-    import module namespace std   = "http://xproc.net/xproc/std" at "resource:net/xproc/xprocxq/src/xquery/std.xqm";
-    import module namespace ext   = "http://xproc.net/xproc/ext" at "resource:net/xproc/xprocxq/src/xquery/ext.xqm";
-    import module namespace func   = "http://xproc.net/xproc/functions" at "resource:net/xproc/xprocxq/src/xquery/functions.xqm";
-
-    declare namespace xsl="http://www.w3.org/1999/XSL/Transform";
-    declare option exist:serialize "expand-xincludes=no";
-
-';
-
-declare variable $const:xpath-imports :='
-    declare copy-namespaces preserve, inherit;
-';
-
-declare variable $const:alt-imports :=' declare copy-namespaces no-preserve, no-inherit; import module namespace p = "http://xproc.net/xproc/functions";';
-
