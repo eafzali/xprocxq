@@ -1,15 +1,4 @@
 xquery version "3.0"  encoding "UTF-8";
-(:
-: Module Name: xproc
-: Module Version: 1.0
-: Date: Nov 20, 2011
-: Copyright: James Fuller
-: Proprietary
-: Extensions: None
-:
-: Specification : XQuery v3.0
-: Module Overview: core xqm contains entry points, primary eval-step function and control functions.
-:)
 
 module namespace xproc = "http://xproc.net/xproc";
 
@@ -48,22 +37,44 @@ module namespace xproc = "http://xproc.net/xproc";
  (: declare options :)
  declare option saxon:output "indent=yes";
 
+ (:~ resolve external bindings
+ :
+ : @param $a -
+ : @param $b -
+ :
+ : @returns 
+ :)
  (: --------------------------------------------------------------------------- :)
  declare function xproc:resolve-external-bindings($a,$b) {
  (: -------------------------------------------------------------------------- :)
 () 
  };
 
+ (:~ generates a sequence of xs:string containing step names
+ :
+ : @param $step - 
+ :
+ : @returns xs:string of xproc:default-name
+ :)
  (: --------------------------------------------------------------------------- :)
- declare function xproc:genstepnames($element) as xs:string* {
+ declare function xproc:genstepnames($step) as xs:string* {
  (: -------------------------------------------------------------------------- :)
-      for $name in  $element/*[@xproc:step eq "true"]
+      for $name in  $step/*[@xproc:step eq "true"]
         return
           $name/@xproc:default-name
- 
  };
 
 
+ (:~ utility function for generating xproc:output
+ :
+ : @param $step - 
+ : @param $port - 
+ : @param $port-type - 
+ : @param $primary - 
+ : @param $content - 
+ :
+ : @returns xproc:output
+ :)
  (: ------------------------------------------------------------------------------------------------------------- :)
  declare function xproc:generate_output($step,$port,$port-type,$primary,$content) as element(xproc:output){
  (: ------------------------------------------------------------------------------------------------------------- :)
@@ -76,12 +87,14 @@ module namespace xproc = "http://xproc.net/xproc";
  };
 
 
- (:~ resolve input port bindings
+ (:~ resolve p:document input port bindings
  :
- : @returns c:data
+ : @param $href - href of document you wish to access
+ :
+ : @returns 
  :)
  (: -------------------------------------------------------------------------- :)
- declare function xproc:resolve-document-binding($href as xs:string){
+ declare function xproc:resolve-document-binding($href as xs:string) as item(){
  (: -------------------------------------------------------------------------- :)
     if (doc-available($href)) then
         doc($href)
