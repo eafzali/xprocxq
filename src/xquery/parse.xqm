@@ -223,11 +223,15 @@ declare boundary-space preserve;
        attribute xproc:type {'comp'},
        ($defined-option/@name)[1],
        ($defined-option/@select)[1]
+
+(:
+       attribute select {concat("'",$defined-option/@select,"'")}
+:)
      }
    else
      element p:with-option {
        attribute xproc:type {'comp'},
-       ($option/@name)[1],
+       ($option/@name)[1], 
        ($option/@select)[1]
      }
  };

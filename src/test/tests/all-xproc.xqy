@@ -43,6 +43,10 @@ test:html(
     <expected></expected>
     <result>{txproc:runDynamicError()}</result>
   </test>
+  <test name="xproc7" desc="run more complex single branch pipeline (complex-single-branch.xpl)">
+    <expected><c xmlns:xproc="http://xproc.net/xproc">aaa<a id="1">test</a></c></expected>
+    <result>{txproc:runComplexSingleBranch()}</result>
+  </test>
 </testsuite>
 )
 

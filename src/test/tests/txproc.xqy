@@ -97,3 +97,14 @@ declare function (:TEST:) txproc:runDynamicError() {
    $xproc:run-step($pipeline,$stdin,$bindings,$options,$output,$dflag,$tflag)
 };
 
+declare function (:TEST:) txproc:runComplexSingleBranch() { 
+  let $pipeline := fn:doc('data/complex-single-branch.xpl')
+  let $stdin    := <c>aaa<a id="1"><b id="2">test</b></a></c>
+  let $dflag    := 0
+  let $tflag    := 0
+  let $bindings := ()
+  let $options  := ()
+  let $output   := ()
+  return
+   $xproc:run-step($pipeline,$stdin,$bindings,$options,$output,$dflag,$tflag)
+};

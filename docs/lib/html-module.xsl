@@ -110,6 +110,9 @@ version="2.0">
                                   href="https://github.com/xquery/xquerydoc"
                                   target="xquerydoc">https://github.com/xquery/xquerydoc</a></p></div>
         </div>
+        <div>
+          <textarea rows="20" cols="100"><xsl:copy-of select="."/></textarea>
+        </div>
 	<script type="application/javascript">
 	  window.onload = function(){ prettyPrint(); }
 	</script>
@@ -178,6 +181,10 @@ version="2.0">
 
   <xsl:template match="*:p" mode="custom">
     <p><xsl:apply-templates/></p>
+  </xsl:template>
+
+  <xsl:template match="*:br">
+    <br/>
   </xsl:template>
 
   <xsl:template match="*:pre" mode="custom">

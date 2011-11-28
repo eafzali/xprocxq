@@ -104,7 +104,7 @@ declare function std:compare($primary,$secondary,$options,$variables) {
 (: --------------------------------------------------------------------------------------- :)
 declare function std:count($primary,$secondary,$options,$variables) as element(c:result){
 (: --------------------------------------------------------------------------------------- :)
-let $limit as xs:integer := xs:integer(u:get-option('limit',$options,$primary))
+let $limit as xs:integer := xs:integer(replace(u:get-option('limit',$options,$primary),"'",""))
 let $count as xs:integer := count($primary)
 return
     if ($limit eq 0 or $count lt $limit ) then

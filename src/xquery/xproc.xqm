@@ -391,7 +391,10 @@ module namespace xproc = "http://xproc.net/xproc";
    </xproc:debug>
  else
    (: TODO - define default p:serialization options here:)
-   subsequence($result,count($result) - 3,1)/node()
+
+   ($result[@func ne 'ext:post']/.)[last()]/node()
+   
+(:   subsequence($result[@func ne 'ext:post'],count($result) - 3,1)/node() :)
 (:
    let $stdout := $output//*[@port eq 'stdout']/node()
    let $count := count ($result)
@@ -552,6 +555,20 @@ else if($stepname eq 'p:count') then
   $std:count
 else if($stepname eq 'ext:pre') then
   $ext:pre
+else if($stepname eq 'p:rename') then
+  $std:rename
+else if($stepname eq 'p:filter') then
+  $std:filter
+else if($stepname eq 'p:string-replace') then
+  $std:string-replace
+else if($stepname eq 'p:rename') then
+  $std:rename
+else if($stepname eq 'p:wrap') then
+  $std:wrap
+else if($stepname eq 'p:wrap-sequence') then
+  $std:wrap-sequence
+else if($stepname eq 'p:unwrap') then
+  $std:unwrap
 else if($stepname eq 'ext:post') then
   $ext:post
 else
