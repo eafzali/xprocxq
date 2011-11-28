@@ -41,7 +41,7 @@ declare variable $std:rename             := std:rename#4;
 declare variable $std:replace            := ();
 declare variable $std:set-attributes     := ();
 declare variable $std:sink               := ();
-declare variable $std:split-sequence     := ();
+declare variable $std:split-sequence     := std:split-sequence#4;
 declare variable $std:store              := ();
 declare variable $std:string-replace     := std:string-replace#4;
 declare variable $std:unescape-markup    := ();
@@ -347,7 +347,21 @@ declare function std:sink($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 declare function std:split-sequence($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+let $test := u:get-option('test',$options,$primary)
+let $initial-only := u:get-option('initial-only',$options,$primary)
+return
+    for $child at $count in $match
+    return
+      try {
+        if(u:evalXPATH($test,document{$primary})) then
+          $child
+        else
+          ()
+      }
+      catch * {
+        u:dynamicError('err:XD0016',": p:filter did not select anything - ")
+      }
+
 };
 
 
@@ -487,7 +501,9 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:xslt($primary,$secondary,$options,$variables){
 (: -------------------------------------------------------------------------- :)
-()
+let $stylesheet := u:get-secondary('stylesheet',$secondary)
+return
+  u:transform($stylesheet,$primary)
 };
 
 
