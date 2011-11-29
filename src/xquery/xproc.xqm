@@ -568,6 +568,8 @@ else if($stepname eq 'p:directory-list') then
   $std:directory-list
 else if($stepname eq 'p:load') then
   $std:load
+else if($stepname eq 'p:make-absolute-uris') then
+  $std:make-absolute-uris
 else if($stepname eq 'p:compare') then
   $std:compare
 else if($stepname eq 'p:label-elements') then

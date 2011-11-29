@@ -124,6 +124,14 @@ test:html(
     <expected><document>test</document></expected>
     <result>{tstd:testLoad()}</result>
   </test>
+  <test name="std22" desc="std:make-absolute-uris">
+    <expected></expected>
+    <result>{tstd:testMakeAbsoluteUris()}</result>
+  </test>
+  <test name="std23" desc="std:pack">
+    <expected><packed><c>aaa<a id="1"><b id="2">test</b><b>alternate</b></a></c><d xmlns:xproc="http://xproc.net/xproc">pack me along</d></packed></expected>
+    <result>{tstd:testPack()}</result>
+  </test>
 </testsuite>
 )
 

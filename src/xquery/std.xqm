@@ -33,9 +33,9 @@ declare variable $std:identity           := std:identity#4;
 declare variable $std:insert             := ();
 declare variable $std:label-elements     := std:label-elements#4;
 declare variable $std:load               := std:load#4;
-declare variable $std:make-absolute-uris := ();
+declare variable $std:make-absolute-uris := std:make-absolute-uris#4;
 declare variable $std:namespace-rename   := ();
-declare variable $std:pack               := ();
+declare variable $std:pack               := std:pack#4;
 declare variable $std:parameters         := ();
 declare variable $std:rename             := std:rename#4;
 declare variable $std:replace            := ();
@@ -319,7 +319,49 @@ try {
 (: -------------------------------------------------------------------------- :)
 declare function std:make-absolute-uris($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+let $match    := u:get-option('match',$options,$primary)
+let $base-uri := u:get-option('base-uri',$options,$primary)
+let $new-uri  := if ($base-uri) then <xsl:value-of select="resolve-uri('{$base-uri}', base-uri($closest-element))"/>
+else <xsl:value-of select="base-uri($closest-element)"/>
+
+let $template := <xsl:stylesheet version="2.0">
+<xsl:template match="/">
+    <xsl:apply-templates/>
+</xsl:template>
+<xsl:template match="@*|node()">
+    <xsl:copy>
+        <xsl:apply-templates select="@*|node()"/>
+    </xsl:copy>
+</xsl:template>
+<xsl:template match="{$match}">
+  <xsl:variable name="closest-element">
+    <xsl:choose>
+      <xsl:when test=". instance of element()">
+        <xsl:copy-of select="."/>
+      </xsl:when>
+      <xsl:when test=". instance of attribute()">
+        <xsl:copy-of select="."/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy-of select="." />
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:choose>
+    <xsl:when test=". instance of element()">
+      <xsl:element name="{{name(.)}}">{$new-uri}</xsl:element>
+    </xsl:when>
+    <xsl:when test=". instance of attribute()">
+      <xsl:attribute name="{{name(.)}}">{$new-uri}</xsl:attribute>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:copy-of select="." />
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+</xsl:stylesheet>      
+return
+  u:transform($template,$primary)
 };
 
 
@@ -334,7 +376,15 @@ declare function std:namespace-rename($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 declare function std:pack($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+let $alternate := u:get-secondary('alternate',$secondary)
+let $wrapper := u:get-option('wrapper',$options,$primary)
+return
+    for $child at $count in $primary
+    return
+	    element {$wrapper}{
+	        $child,
+	        $alternate
+	    }
 };
 
 

@@ -243,3 +243,24 @@ declare function (:TEST:) tstd:testLoad() {
     $std:load((),(),<xproc:options><p:with-option name='href' select='"file:/Users/jfuller/Source/Webcomposite/xprocxq/src/test/tests/data/test1.xml"'/><p:with-option name='dtd-validate' select='""'/>
 </xproc:options>,())
 };
+
+declare function (:TEST:) tstd:testMakeAbsoluteUris() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b><b>alternate</b></a></c>
+  return
+    $std:make-absolute-uris($input,(),<xproc:options><p:with-option name='match' select='c'/><p:with-option name='base-uri' select='""'/></xproc:options>,())
+};
+
+
+declare function (:TEST:) tstd:testPack() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b><b>alternate</b></a></c>
+  let $secondary := <xproc:input step=""
+             xproc:default-name=""
+             port-type="input"
+             href=""
+             primary="false"
+             select="/"
+             port="alternate"
+             func=""><d>pack me along</d></xproc:input>
+  return
+    $std:pack($input,$secondary,<xproc:options><p:with-option name='wrapper' select='"packed"'/>><p:with-option name='wrapper-prefix' select='""'/>><p:with-option name='wrapper-namespace' select='""'/></xproc:options>,())
+};
