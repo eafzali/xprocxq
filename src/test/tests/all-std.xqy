@@ -86,8 +86,12 @@ test:html(
     <result>{tstd:testRename1()}</result>
   </test>
   <test name="std14" desc="std:label-elements">
-    <expected><c>aaa<a newid="1"><b newid="2">test</b><b>alternate</b></a></c></expected>
+    <expected><c>aaa<a id="1"><b id="2" xml:id="somevalue">test</b><b xml:id="somevalue">alternate</b></a></c></expected>
     <result>{tstd:testLabelElements()}</result>
+  </test>
+  <test name="std15" desc="std:xslt">
+    <expected><processed xmlns:xproc="http://xproc.net/xproc">processed correctly</processed></expected>
+    <result>{tstd:testXSLT()}</result>
   </test>
 </testsuite>
 )

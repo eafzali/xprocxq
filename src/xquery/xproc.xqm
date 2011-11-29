@@ -574,6 +574,8 @@ else if($stepname eq 'p:wrap-sequence') then
   $std:wrap-sequence
 else if($stepname eq 'p:unwrap') then
   $std:unwrap
+else if($stepname eq 'p:xslt') then
+  $std:xslt
 else if($stepname eq 'ext:post') then
   $ext:post
 else

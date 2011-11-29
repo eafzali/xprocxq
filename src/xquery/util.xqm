@@ -75,30 +75,24 @@ declare function u:outputResultElement($exp){
 };
 
 (: -------------------------------------------------------------------------- :)
-declare function u:get-secondary($name as xs:string,$secondary){
+declare function u:get-secondary($name as xs:string,$secondary as element(xproc:input)*) as item(){
 (: -------------------------------------------------------------------------- :)
-    for $child in $secondary/xproc:input[@port=$name]/node()
-    return
-        document{$child}
+    $secondary[@port eq $name]/node() 
 };
 
 
 (: -------------------------------------------------------------------------- :)
 declare function u:get-option($option-name as xs:string,$options as element(xproc:options),$primary) as xs:string*{
 (: -------------------------------------------------------------------------- :)
-let $value as xs:string := replace(string($options//p:with-option[@name eq $option-name]/@select),'"','')
+let $value as xs:string := replace(string($options//p:with-option[@name eq $option-name]/@select),'&quot;','')
 return
   $value
 };
 
 
-
-
-
 (: -------------------------------------------------------------------------- :)
 (: PRIMARY UTILITIES                                                          :)
 (: -------------------------------------------------------------------------- :)
-
 
 
 (: -------------------------------------------------------------------------- :)
