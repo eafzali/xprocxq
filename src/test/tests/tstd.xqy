@@ -215,3 +215,26 @@ declare function (:TEST:) tstd:testCompare1() {
   return
     $std:compare($input,$secondary,<xproc:options><p:with-option name='fail-if-not-equal' select='"false"'/></xproc:options>,())
 };
+
+declare function (:TEST:) tstd:testDirectoryList() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b><b>alternate</b></a></c>
+  return
+    $std:directory-list($input,(),<xproc:options><p:with-option name='path' select='"/Users/jfuller/Source/Webcomposite/xprocxq/src/test/tests/data"'/>
+<p:with-option name='include-filter' select='""'/>
+<p:with-option name='exclude-filter' select='""'/>
+</xproc:options>,())
+};
+
+
+declare function (:TEST:) tstd:testEscapeMarkup() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b><b>alternate</b></a></c>
+  return
+    $std:escape-markup($input,(),(),())
+};
+
+
+declare function (:TEST:) tstd:testUnescapeMarkup() { 
+  let $input  := <c>&lt;a id="1"&gt;&lt;b id="2"&gt;test&lt;/b&gt;&lt;b&gt;alternate&lt;/b&gt;&lt;/a&gt;</c>
+  return
+    $std:unescape-markup($input,(),(),())
+};

@@ -560,6 +560,16 @@ else if($stepname eq 'p:add-xml-base') then
   $std:add-xml-base
 else if($stepname eq 'p:error') then
   $std:error
+else if($stepname eq 'p:escape-markup') then
+  $std:escape-markup
+else if($stepname eq 'p:unescape-markup') then
+  $std:unescape-markup
+else if($stepname eq 'p:directory-list') then
+  $std:directory-list
+else if($stepname eq 'p:compare') then
+  $std:compare
+else if($stepname eq 'p:label-elements') then
+  $std:label-elements
 else if($stepname eq 'ext:pre') then
   $ext:pre
 else if($stepname eq 'p:rename') then

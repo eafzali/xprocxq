@@ -26,8 +26,8 @@ declare variable $std:compare            := std:compare#4;
 declare variable $std:delete             := std:delete#4;
 declare variable $std:error              := std:error#4;
 declare variable $std:filter             := std:filter#4;
-declare variable $std:directory-list     := ();
-declare variable $std:escape-markup      := ();
+declare variable $std:directory-list     := std:directory-list#4;
+declare variable $std:escape-markup      := std:escape-markup#4;
 declare variable $std:http-request       := ();
 declare variable $std:identity           := std:identity#4;
 declare variable $std:insert             := ();
@@ -44,7 +44,7 @@ declare variable $std:sink               := ();
 declare variable $std:split-sequence     := std:split-sequence#4;
 declare variable $std:store              := ();
 declare variable $std:string-replace     := std:string-replace#4;
-declare variable $std:unescape-markup    := ();
+declare variable $std:unescape-markup    := std:unescape-markup#4;
 declare variable $std:xinclude           := ();
 declare variable $std:wrap               := std:wrap#4;
 declare variable $std:wrap-sequence      := std:wrap-sequence#4;
@@ -168,14 +168,42 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:directory-list($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+let $path := u:get-option('path',$options,$primary)
+let $include-filter := u:get-option('include-filter',$options,$primary)
+let $exclude-filter := u:get-option('exclude-filter',$options,$primary)
+
+let $segment := substring-after($path,'file://')
+let $dirname := tokenize($path, '/')[last()]
+let $result :=
+                     let $files :=  u:dirlist($path)
+                     return
+                     <c:directory name="{$dirname}">
+                     {for $file in $files return <c:file name="{document-uri($file)}"/>}
+                     </c:directory>
+  return
+    u:outputResultElement($result)
 };
 
 
 (: -------------------------------------------------------------------------- :)
 declare function std:escape-markup($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+let $cdata-section-elements := u:get-option('limit',$options,$primary)
+let $doctype-public         := u:get-option('doctype-public',$options,$primary)
+let $doctype-system         := u:get-option('doctype-system',$options,$primary)
+let $escape-uri-attributes  := u:get-option('escape-uri-attributes',$options,$primary)
+let $include-content-type   := u:get-option('include-content-type',$options,$primary)
+let $indent                 := u:get-option('indent',$options,$primary)
+let $media-type             := u:get-option('media-type',$options,$primary)
+let $method                 := u:get-option('method',$options,$primary)
+let $omit-xml-declaration   := u:get-option('omit-xml-declaration',$options,$primary)
+let $standalone             := u:get-option('standalone',$options,$primary)
+let $undeclare-prefixes     := u:get-option('undeclare-prefixes',$options,$primary)
+let $version                := u:get-option('version',$options,$primary)
+return
+  element{name($primary)}{
+    u:serialize($primary/*)
+  }
 };
 
 
@@ -446,7 +474,14 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:unescape-markup($primary,$secondary,$options,$variables){
 (: -------------------------------------------------------------------------- :)
-()
+let $content-type := u:get-option('content-type',$options,$primary)
+let $encoding     := u:get-option('encoding',$options,$primary)
+let $charset      := u:get-option('charset',$options,$primary)
+return
+  element{name($primary)}{
+    u:parse($primary)
+  }
+
 };
 
 

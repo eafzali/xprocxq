@@ -28,6 +28,31 @@ import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
 declare variable $u:NDEBUG :=$const:NDEBUG;
 
 (: -------------------------------------------------------------------------- :)
+declare function u:parse($data as xs:string) as item(){
+(: -------------------------------------------------------------------------- :)
+saxon:parse($data) 
+};
+
+
+(: -------------------------------------------------------------------------- :)
+declare function u:serialize($xml) as xs:string{
+(: -------------------------------------------------------------------------- :)
+saxon:serialize($xml, <xsl:output method="xml" 
+                             omit-xml-declaration="yes" 
+                             indent="yes" 
+                             saxon:indent-spaces="1"/>) 
+};
+
+
+
+(: -------------------------------------------------------------------------- :)
+declare function u:dirlist($path){
+(: -------------------------------------------------------------------------- :)
+collection(concat($path,"?select=*.*;recurse=yes;on-error=ignore"))
+};
+
+
+(: -------------------------------------------------------------------------- :)
 declare function u:evalXPATH($xpath, $xml){
 (: -------------------------------------------------------------------------- :)
   if ($xpath eq '/' or $xpath eq '' or empty($xml)) then

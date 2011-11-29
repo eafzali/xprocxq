@@ -105,6 +105,21 @@ test:html(
     <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">false</c:result></expected>
     <result>{tstd:testCompare1()}</result>
   </test>
+  <test name="std18" desc="std:directory-list">
+    <expected></expected>
+    <result>{tstd:testDirectoryList()}</result>
+  </test>
+  <test name="std19" desc="std:escape-markup">
+    <expected><c>&lt;a id="1"&gt;
+ &lt;b id="2"&gt;test&lt;/b&gt;
+ &lt;b&gt;alternate&lt;/b&gt;
+&lt;/a&gt;</c></expected>
+    <result>{tstd:testEscapeMarkup()}</result>
+  </test>
+  <test name="std20" desc="std:unescape-markup">
+    <expected><c><a id="1"><b id="2">test</b><b>alternate</b></a></c></expected>
+    <result>{tstd:testUnescapeMarkup()}</result>
+  </test>
 </testsuite>
 )
 
@@ -113,4 +128,3 @@ test:html(
 -- compile-command: "../../../bin/test.sh all-std.xqy > ../../../report/all-std.html"
 -- End:
 :)
-
