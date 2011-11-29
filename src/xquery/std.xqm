@@ -32,7 +32,7 @@ declare variable $std:http-request       := ();
 declare variable $std:identity           := std:identity#4;
 declare variable $std:insert             := ();
 declare variable $std:label-elements     := std:label-elements#4;
-declare variable $std:load               := ();
+declare variable $std:load               := std:load#4;
 declare variable $std:make-absolute-uris := ();
 declare variable $std:namespace-rename   := ();
 declare variable $std:pack               := ();
@@ -301,7 +301,18 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:load($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+let $href := u:get-option('href',$options,$primary)
+let $dtd-validate := u:get-option('dtd-validate',$options,$primary)
+let $xproc:output-uri := u:get-option('xproc:output-uri',$options,$primary)
+return
+try {
+    if ($xproc:output-uri eq 'true') then
+      u:outputResultElement(doc($href))
+    else
+      doc($href)
+}catch * {
+  u:dynamicError('err:XC0026',"p:load option href is empty or could not load document.")
+}
 };
 
 

@@ -238,3 +238,8 @@ declare function (:TEST:) tstd:testUnescapeMarkup() {
   return
     $std:unescape-markup($input,(),(),())
 };
+
+declare function (:TEST:) tstd:testLoad() { 
+    $std:load((),(),<xproc:options><p:with-option name='href' select='"file:/Users/jfuller/Source/Webcomposite/xprocxq/src/test/tests/data/test1.xml"'/><p:with-option name='dtd-validate' select='""'/>
+</xproc:options>,())
+};

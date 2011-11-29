@@ -120,6 +120,10 @@ test:html(
     <expected><c><a id="1"><b id="2">test</b><b>alternate</b></a></c></expected>
     <result>{tstd:testUnescapeMarkup()}</result>
   </test>
+  <test name="std21" desc="std:load">
+    <expected><document>test</document></expected>
+    <result>{tstd:testLoad()}</result>
+  </test>
 </testsuite>
 )
 
