@@ -39,7 +39,7 @@ declare variable $std:pack               := std:pack#4;
 declare variable $std:parameters         := ();
 declare variable $std:rename             := std:rename#4;
 declare variable $std:replace            := ();
-declare variable $std:set-attributes     := ();
+declare variable $std:set-attributes     := std:set-attributes#4;
 declare variable $std:sink               := std:sink#4;
 declare variable $std:split-sequence     := std:split-sequence#4;
 declare variable $std:store              := std:store#4;
@@ -398,7 +398,6 @@ declare function std:parameters($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 declare function std:rename($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-
 let $match  := u:get-option('match',$options,$primary)
 let $new-name  := u:get-option('new-name',$options,$primary)
 let $new-prefix  := u:get-option('new-prefix',$options,$primary)
@@ -452,7 +451,33 @@ declare function std:replace($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 declare function std:set-attributes($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+let $match  := u:get-option('match',$options,$primary)
+let $attributes := u:get-secondary('attributes',$secondary)
+
+let $attribute-name := name($attributes/@*[1])
+let $attribute-value := $attributes/@*[1]
+
+let $template := <xsl:stylesheet version="2.0">
+<xsl:template match=".">
+    <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="@*|node()">
+    <xsl:copy>
+        <xsl:apply-templates select="@*|node()"/>
+    </xsl:copy>
+</xsl:template>
+
+<xsl:template match="{$match}">
+  <xsl:copy>
+    <xsl:apply-templates select="@*"/>
+    <xsl:attribute name="{$attribute-name}" select="'{$attribute-value}'"/>
+    <xsl:apply-templates/>
+  </xsl:copy>
+</xsl:template>
+</xsl:stylesheet>      
+return
+  u:transform($template,$primary)
 };
 
 

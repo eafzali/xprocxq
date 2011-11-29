@@ -140,6 +140,10 @@ test:html(
     <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">/tmp/storetest.xml</c:result></expected>
     <result>{tstd:testStore()}</result>
   </test>
+  <test name="std26" desc="std:set-attributes">
+    <expected><c myattr="myattrval">aaa<a id="1"><b id="2">test</b><b>alternate</b></a></c></expected>
+    <result>{tstd:testSetAttributes()}</result>
+  </test>
 </testsuite>
 )
 

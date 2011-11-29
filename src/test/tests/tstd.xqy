@@ -276,3 +276,18 @@ declare function (:TEST:) tstd:testStore() {
   return
     $std:store($input,(),<xproc:options><p:with-option name='href' select='"/tmp/storetest.xml"'/></xproc:options>,())
 };
+
+declare function (:TEST:) tstd:testSetAttributes() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b><b>alternate</b></a></c>
+  let $secondary := <xproc:input step=""
+             xproc:default-name=""
+             port-type="input"
+             href=""
+             primary="false"
+             select="/"
+             port="attributes"
+             func=""><d myattr="myattrval"/></xproc:input>
+
+  return
+    $std:set-attributes($input,$secondary,<xproc:options><p:with-option name='match' select='c'/></xproc:options>,())
+};
