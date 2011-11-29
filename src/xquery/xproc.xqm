@@ -556,6 +556,8 @@ else if($stepname eq 'p:delete') then
   $std:delete
 else if($stepname eq 'p:add-attribute') then
   $std:add-attribute
+else if($stepname eq 'p:add-xml-base') then
+  $std:add-xml-base
 else if($stepname eq 'p:error') then
   $std:error
 else if($stepname eq 'ext:pre') then

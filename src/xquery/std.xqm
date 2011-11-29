@@ -20,9 +20,9 @@ import module namespace u = "http://xproc.net/xproc/util" at "util.xqm";
 
 (: declare functions :)
 declare variable $std:add-attribute      := std:add-attribute#4;
-declare variable $std:add-xml-base       := ();
+declare variable $std:add-xml-base       := std:add-xml-base#4;
 declare variable $std:count              := std:count#4;
-declare variable $std:compare            := ();
+declare variable $std:compare            := std:compare#4;
 declare variable $std:delete             := std:delete#4;
 declare variable $std:error              := std:error#4;
 declare variable $std:filter             := std:filter#4;
@@ -87,14 +87,45 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:add-xml-base($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+let $all as xs:string := u:get-option('add',$options,$primary)
+let $relative as xs:string := u:get-option('relative',$options,$primary)
+let $template := <xsl:stylesheet version="2.0">
+<xsl:template match=".">
+    <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="@*">
+    <xsl:copy/>
+</xsl:template>
+
+<xsl:template match="node()">
+  <xsl:copy>
+    <xsl:apply-templates select="@*"/>
+    <xsl:attribute name="xml:base" select="''"/>
+    <xsl:apply-templates/>
+  </xsl:copy>
+</xsl:template>
+</xsl:stylesheet>      
+return
+  u:transform($template,$primary)
 };
 
 
 (: -------------------------------------------------------------------------- :)
 declare function std:compare($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+let $alternate := u:get-secondary('alternate',$secondary)
+(: let $strict := u:get-option('xproc:strict',$options,$v)  ext attribute xproc:strict:) 
+let $fail-if-not-equal as xs:string := u:get-option('fail-if-not-equal',$options,$primary)
+let $result := deep-equal($primary,$alternate)
+return
+  if($fail-if-not-equal eq "true") then
+    if ($result) then          
+      u:outputResultElement('true')
+    else
+      u:stepError('err:XC0019','p:compare fail-if-not-equal option is enabled and documents were not equal')
+    else
+      u:outputResultElement($result)
 };
 
 

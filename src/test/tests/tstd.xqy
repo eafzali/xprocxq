@@ -180,3 +180,38 @@ let $actual := $std:xslt($input,$secondary,<xproc:options>
   return
     $actual
 };
+
+declare function (:TEST:) tstd:testAddXMLBase() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b><b>alternate</b></a></c>
+  return
+    $std:add-xml-base($input,(),<xproc:options><p:with-option name='all' select='"false"'/><p:with-option name='relative' select='"true"'/></xproc:options>,())
+};
+
+declare function (:TEST:) tstd:testCompare() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b><b>alternate</b></a></c>
+  let $secondary := <xproc:input step=""
+             xproc:default-name=""
+             port-type="input"
+             href=""
+             primary="false"
+             select="/"
+             port="alternate"
+             func=""><c>aaa<a id="1"><b id="2">test</b><b>alternate</b></a></c></xproc:input>
+  return
+    $std:compare($input,$secondary,<xproc:options><p:with-option name='fail-if-not-equal' select='"false"'/></xproc:options>,())
+};
+
+
+declare function (:TEST:) tstd:testCompare1() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b><b>alternate</b></a></c>
+  let $secondary := <xproc:input step=""
+             xproc:default-name=""
+             port-type="input"
+             href=""
+             primary="false"
+             select="/"
+             port="alternate"
+             func=""><c>aaa<a id="1"><b>alternate</b></a></c></xproc:input>
+  return
+    $std:compare($input,$secondary,<xproc:options><p:with-option name='fail-if-not-equal' select='"false"'/></xproc:options>,())
+};

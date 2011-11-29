@@ -112,6 +112,13 @@ declare function u:dynamicError($error,$string) {
         error(QName('http://www.w3.org/ns/xproc-error',$error),concat($error,": XProc Dynamic Error - ",$string," ",$info/text(),'&#10;'))
 };
 
+(: -------------------------------------------------------------------------- :)
+declare function u:stepError($error,$string) {
+(: -------------------------------------------------------------------------- :)
+let $info := $const:error//err:error[@code=substring-after($error,':')]
+    return
+        error(QName('http://www.w3.org/ns/xproc-error',$error),concat($error,": XProc Step Error - ",$string," ",$info/text(),'&#10;'))
+};
 
 
 declare function u:binary-doc($uri){

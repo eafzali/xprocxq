@@ -93,6 +93,18 @@ test:html(
     <expected><processed xmlns:xproc="http://xproc.net/xproc">processed correctly</processed></expected>
     <result>{tstd:testXSLT()}</result>
   </test>
+  <test name="std16" desc="std:xml-base">
+    <expected></expected>
+    <result>{tstd:testAddXMLBase()}</result>
+  </test>
+  <test name="std17" desc="std:compare with equal inputs">
+    <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">true</c:result></expected>
+    <result>{tstd:testCompare()}</result>
+  </test>
+  <test name="std17a" desc="std:compare with unequal inputs">
+    <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">false</c:result></expected>
+    <result>{tstd:testCompare1()}</result>
+  </test>
 </testsuite>
 )
 
