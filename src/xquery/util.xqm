@@ -27,6 +27,15 @@ import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
 (: set to 1 to enable debugging :)
 declare variable $u:NDEBUG :=$const:NDEBUG;
 
+
+(: -------------------------------------------------------------------------- :)
+declare function u:store($href as xs:string,$data as item()){
+(: -------------------------------------------------------------------------- :)
+let $result := saxon:result-document($href, $data, <xsl:output method="xml"/>)
+return
+  $href
+};
+
 (: -------------------------------------------------------------------------- :)
 declare function u:parse($data as xs:string) as item(){
 (: -------------------------------------------------------------------------- :)

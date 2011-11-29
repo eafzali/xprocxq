@@ -568,6 +568,8 @@ else if($stepname eq 'p:directory-list') then
   $std:directory-list
 else if($stepname eq 'p:load') then
   $std:load
+else if($stepname eq 'p:store') then
+  $std:store
 else if($stepname eq 'p:make-absolute-uris') then
   $std:make-absolute-uris
 else if($stepname eq 'p:compare') then
@@ -582,6 +584,8 @@ else if($stepname eq 'p:filter') then
   $std:filter
 else if($stepname eq 'p:string-replace') then
   $std:string-replace
+else if($stepname eq 'p:split-sequence') then
+  $std:split-sequence
 else if($stepname eq 'p:rename') then
   $std:rename
 else if($stepname eq 'p:wrap') then

@@ -132,6 +132,14 @@ test:html(
     <expected><packed><c>aaa<a id="1"><b id="2">test</b><b>alternate</b></a></c><d xmlns:xproc="http://xproc.net/xproc">pack me along</d></packed></expected>
     <result>{tstd:testPack()}</result>
   </test>
+  <test name="std24" desc="std:sink">
+    <expected></expected>
+    <result>{tstd:testSink()}</result>
+  </test>
+  <test name="std25" desc="std:store">
+    <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">/tmp/storetest.xml</c:result></expected>
+    <result>{tstd:testStore()}</result>
+  </test>
 </testsuite>
 )
 

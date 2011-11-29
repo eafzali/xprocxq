@@ -40,9 +40,9 @@ declare variable $std:parameters         := ();
 declare variable $std:rename             := std:rename#4;
 declare variable $std:replace            := ();
 declare variable $std:set-attributes     := ();
-declare variable $std:sink               := ();
+declare variable $std:sink               := std:sink#4;
 declare variable $std:split-sequence     := std:split-sequence#4;
-declare variable $std:store              := ();
+declare variable $std:store              := std:store#4;
 declare variable $std:string-replace     := std:string-replace#4;
 declare variable $std:unescape-markup    := std:unescape-markup#4;
 declare variable $std:xinclude           := ();
@@ -188,7 +188,7 @@ let $result :=
 (: -------------------------------------------------------------------------- :)
 declare function std:escape-markup($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-let $cdata-section-elements := u:get-option('limit',$options,$primary)
+let $cdata-section-elements := u:get-option('cdata-section-elements',$options,$primary)
 let $doctype-public         := u:get-option('doctype-public',$options,$primary)
 let $doctype-system         := u:get-option('doctype-system',$options,$primary)
 let $escape-uri-attributes  := u:get-option('escape-uri-attributes',$options,$primary)
@@ -466,7 +466,7 @@ declare function std:sink($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 declare function std:split-sequence($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-let $test := u:get-option('test',$options,$primary)
+let $test         := u:get-option('test',$options,$primary)
 let $initial-only := u:get-option('initial-only',$options,$primary)
 return
     for $child at $count in $primary
@@ -478,7 +478,7 @@ return
           ()
       }
       catch * {
-        u:dynamicError('err:XD0016',": p:filter did not select anything - ")
+        u:dynamicError('err:XD0016',": p:split-sequence did not select anything - ")
       }
 
 };
@@ -487,7 +487,22 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:store($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+let $href                   := u:get-option('href',$options,$primary)
+let $byte-order-mark        := u:get-option('byte-order-mark',$options,$primary)
+let $cdata-section-elements := u:get-option('cdata-section-elements',$options,$primary)
+let $doctype-public         := u:get-option('doctype-public',$options,$primary)
+let $doctype-system         := u:get-option('doctype-system',$options,$primary)
+let $escape-uri-attributes  := u:get-option('escape-uri-attributes',$options,$primary)
+let $include-content-type   := u:get-option('include-content-type',$options,$primary)
+let $indent                 := u:get-option('indent',$options,$primary)
+let $media-type             := u:get-option('media-type',$options,$primary)
+let $method                 := u:get-option('method',$options,$primary)
+let $omit-xml-declaration   := u:get-option('omit-xml-declaration',$options,$primary)
+let $standalone             := u:get-option('standalone',$options,$primary)
+let $undeclare-prefixes     := u:get-option('undeclare-prefixes',$options,$primary)
+let $version                := u:get-option('version',$options,$primary)
+return
+    <c:result>{u:store($href,$primary)}</c:result>
 };
 
 

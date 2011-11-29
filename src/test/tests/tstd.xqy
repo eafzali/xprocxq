@@ -262,5 +262,17 @@ declare function (:TEST:) tstd:testPack() {
              port="alternate"
              func=""><d>pack me along</d></xproc:input>
   return
-    $std:pack($input,$secondary,<xproc:options><p:with-option name='wrapper' select='"packed"'/>><p:with-option name='wrapper-prefix' select='""'/>><p:with-option name='wrapper-namespace' select='""'/></xproc:options>,())
+    $std:pack($input,$secondary,<xproc:options><p:with-option name='wrapper' select='"packed"'/><p:with-option name='wrapper-prefix' select='""'/><p:with-option name='wrapper-namespace' select='""'/></xproc:options>,())
+};
+
+declare function (:TEST:) tstd:testSink() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b><b>alternate</b></a></c>
+  return
+    $std:sink($input,(),(),())
+};
+
+declare function (:TEST:) tstd:testStore() { 
+  let $input  := <c>aaa<a id="1"><b id="2">test</b><b>alternate</b></a></c>
+  return
+    $std:store($input,(),<xproc:options><p:with-option name='href' select='"/tmp/storetest.xml"'/></xproc:options>,())
 };
