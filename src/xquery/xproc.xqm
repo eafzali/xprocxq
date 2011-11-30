@@ -3,6 +3,7 @@ xquery version "3.0"  encoding "UTF-8";
 module namespace xproc = "http://xproc.net/xproc";
 
  declare boundary-space preserve;
+declare copy-namespaces no-preserve,no-inherit;
 
  (: declare namespaces :)
  declare namespace p="http://www.w3.org/ns/xproc";

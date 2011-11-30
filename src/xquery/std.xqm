@@ -17,6 +17,7 @@ declare namespace xsl="http://www.w3.org/1999/XSL/Transform";
 (: module imports :)
 import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
 import module namespace u = "http://xproc.net/xproc/util" at "util.xqm";
+declare namespace http = "http://www.expath.org/mod/http-client";
 
 (: declare functions :)
 declare variable $std:add-attribute      := std:add-attribute#4;
@@ -238,7 +239,69 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:http-request($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+let $byte-order-mark        := u:get-option('byte-order-mark',$options,$primary)
+let $cdata-section-elements := u:get-option('cdata-section-elements',$options,$primary)
+let $doctype-public         := u:get-option('doctype-public',$options,$primary)
+let $doctype-system         := u:get-option('doctype-system',$options,$primary)
+let $encoding               := u:get-option('encoding',$options,$primary)
+let $escape-uri-attributes  := u:get-option('escape-uri-attributes',$options,$primary)
+let $include-content-type   := u:get-option('include-content-type',$options,$primary)
+let $indent                 := u:get-option('indent',$options,$primary)
+let $media-type             := u:get-option('media-type',$options,$primary)
+let $method                 := u:get-option('method',$options,$primary)
+let $normalization-form     := u:get-option('normalization-form',$options,$primary)
+let $omit-xml-declaration   := u:get-option('omit-xml-declaration',$options,$primary)
+let $standalone             := u:get-option('standalone',$options,$primary)
+let $undeclare-prefixes     := u:get-option('undeclare-prefixes',$options,$primary)
+let $version                := u:get-option('version',$options,$primary)
+
+let $href := $primary/c:request/@href
+let $method := $primary/c:request/@method
+let $content-type := $primary/c:request/c:body/@content-type
+let $body := $primary/c:request/c:body
+let $status-only := $primary/c:request/@status-only
+let $detailed := $primary/c:request/@detailed
+let $username := ''
+let $password := ''
+let $auth-method := ''
+let $send-authorization := ''
+let $override-content-type := ''
+let $follow-redirect := ''
+let $http-request := <http:request href="{$href}" method="{$method}">{
+            for $header in $primary/c:request/c:header
+            return
+                <http:header name="{$header/@name}" value="{$header/@value}"/>,
+
+            if (empty($body)) then
+                ()
+            else
+              <http:body content-type="{$content-type}">
+                 {$body}
+              </http:body>
+        }
+           </http:request>
+           
+let $raw-response := () (: http:send-request($http-request) :)
+
+let $response-headers := for $header in $raw-response//http:header return <c:header name="{$header/@name}" value="{$header/@value}"/>
+
+let $response-body := if ($status-only) then
+            ()
+         else if ($detailed) then
+            <c:body>{$raw-response/*[not(name(.) eq 'http:body')][not(name(.) eq 'http:header')]}</c:body>
+         else
+            $raw-response/*[not(name(.) eq 'http:body')][not(name(.) eq 'http:header')]
+      
+return
+  if (not($primary/c:request)) then
+    u:dynamicError('err:XC0040',"source port must contain c:request element")
+  else if ($detailed) then
+    <c:response status="{$raw-response/@status}">
+      {$response-headers}
+      {$response-body}
+    </c:response>
+  else
+    $response-body
 };
 
 
