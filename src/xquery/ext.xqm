@@ -14,6 +14,9 @@ declare namespace err="http://www.w3.org/ns/xproc-error";
 declare namespace xproc = "http://xproc.net/xproc";
 
 (: module imports :)
+import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
+import module namespace u = "http://xproc.net/xproc/util" at "util.xqm";
+
 
 
 (: declare functions :)
@@ -39,8 +42,17 @@ $primary
 (: -------------------------------------------------------------------------- :)
 declare function ext:xproc($primary,$secondary,$options,$variables){
 (: -------------------------------------------------------------------------- :)
-(: NOTE - this function needs to be defined here, but use-function in xproc.xqm :)
-    ()
+()
+(: unsure if this is defined here or in xproc.xqm
+
+  let $pipeline :=  u:get-secondary('pipeline',$secondary)
+  let $dflag    :=  u:get-option('dflag',$options,$primary)
+  let $tflag    :=  u:get-option('tflag',$options,$primary)
+  let $bindings := ()
+  let $options  := ()
+  return
+    $xproc:run-step($pipeline,$primary,$bindings,$options,(),$dflag,$tflag)
+:)
 };
 
 

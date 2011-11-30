@@ -378,6 +378,8 @@ declare function std:pack($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 let $alternate := u:get-secondary('alternate',$secondary)
 let $wrapper := u:get-option('wrapper',$options,$primary)
+let $wrapper-prefix := u:get-option('wrapper-prefix',$options,$primary)
+let $wrapper-namespace := u:get-option('wrapper-namespace',$options,$primary)
 return
     for $child at $count in $primary
     return
@@ -456,7 +458,7 @@ let $attributes := u:get-secondary('attributes',$secondary)
 
 let $attribute-name := name($attributes/@*[1])
 let $attribute-value := $attributes/@*[1]
-
+(: TODO - this is limited to only a single attribute currently :)
 let $template := <xsl:stylesheet version="2.0">
 <xsl:template match=".">
     <xsl:apply-templates/>

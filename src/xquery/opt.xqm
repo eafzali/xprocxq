@@ -15,6 +15,7 @@ declare namespace err="http://www.w3.org/ns/xproc-error";
 
 (: module imports :)
 import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
+import module namespace u = "http://xproc.net/xproc/util" at "util.xqm";
 (: import module namespace xslfo = "http://exist-db.org/xquery/xslfo"; (: for p:xsl-formatter :) :)
 
 (: declare functions :)
@@ -53,7 +54,16 @@ declare function opt:uuid($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 declare function opt:www-form-urldecode($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+let $value := u:get-option('value',$options,$primary)
+let $params := tokenize($value,'&amp;')
+return
+       <c:param-set>
+        {
+        for $child in $params
+        return
+            <c:param name="{substring-before($child,'=')}" value="{substring-after($child,'=')}"/>
+        }
+       </c:param-set>
 };
 
 
@@ -82,6 +92,19 @@ declare function opt:xsl-formatter($primary,$secondary,$options,$variables) {
 declare function opt:xquery($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 ()
+(:
+let $xquery := u:get-secondary('query',$secondary)/c:query
+let $query  := if ($xquery/@xproc:escape = 'true') then
+  u:serialize($xquery/node(),$const:TRACE_SERIALIZE)
+else
+  $xquery/node()
+  let $preserve-context := u:get-option('xproc:preserve-context',$options,$v)
+  return
+    if ($preserve-context eq 'true') then
+      u:xquery-with-context($query,$v,$variables)
+    else
+      u:xquery($query,$v,$variables)
+:)
 };
 
 
