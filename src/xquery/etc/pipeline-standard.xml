@@ -112,7 +112,7 @@
    </p:declare-step>
    <p:declare-step type="p:make-absolute-uris" xml:id="make-absolute-uris">
       <p:input port="source" primary="true" select="/"/>
-      <p:output port="result" select="/"/>
+      <p:output port="result" primary="true" select="/"/>
       <p:option name="match" required="true"/>
       <p:option name="base-uri"/>
    </p:declare-step>
@@ -134,8 +134,8 @@
       <p:output port="result" primary="false" select="/"/>
    </p:declare-step>
    <p:declare-step type="p:rename" xml:id="rename" xproc:support="true">
-      <p:input port="source" select="/"/>
-      <p:output port="result" select="/"/>
+      <p:input port="source" primary="true" select="/"/>
+      <p:output port="result" primary="true" select="/"/>
       <p:option name="match" required="true"/>
       <p:option name="new-name" required="true"/>
    </p:declare-step>
@@ -155,15 +155,15 @@
       <p:input port="source" primary="true" sequence="true" select="/"/>
    </p:declare-step>
    <p:declare-step type="p:split-sequence" xml:id="split-sequence" xproc:support="true">
-      <p:input port="source" sequence="true" select="/"/>
+      <p:input port="source" sequence="true" primary="true" select="/"/>
       <p:output port="matched" sequence="true" primary="true" select="/"/>
-      <p:output port="not-matched" sequence="true" select="/"/>
+      <p:output port="not-matched" sequence="true" primary="false" select="/"/>
       <p:option name="initial-only" select="'false'"/>
       <p:option name="test" required="true"/>
    </p:declare-step>
    <p:declare-step type="p:store" xml:id="store" xmlns:xproc="http://xproc.net/xproc" xproc:support="true">
-      <p:input port="source" select="/"/>
-      <p:output port="result" primary="false" select="/"/>
+      <p:input port="source" select="/" primary="true"/>
+      <p:output port="result" primary="true" select="/"/>
       <p:option name="xproc:output-document"/>
       <p:option name="href" select="''"/>
       <p:option name="byte-order-mark"/>

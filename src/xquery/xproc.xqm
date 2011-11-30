@@ -3,7 +3,7 @@ xquery version "3.0"  encoding "UTF-8";
 module namespace xproc = "http://xproc.net/xproc";
 
  declare boundary-space preserve;
-declare copy-namespaces no-preserve,no-inherit;
+ declare copy-namespaces no-preserve,no-inherit;
 
  (: declare namespaces :)
  declare namespace p="http://www.w3.org/ns/xproc";
@@ -27,7 +27,7 @@ declare copy-namespaces no-preserve,no-inherit;
  declare variable $xproc:choose         := ();
  declare variable $xproc:try            := ();
  declare variable $xproc:catch          := ();
- declare variable $xproc:group          := ();
+ declare variable $xproc:group          := xproc:group#5;
  declare variable $xproc:for-each       := ();
  declare variable $xproc:viewport       := ();
  declare variable $xproc:library        := ();
@@ -36,6 +36,29 @@ declare copy-namespaces no-preserve,no-inherit;
 
  (: declare options :)
  declare option saxon:output "indent=yes";
+
+
+
+ (:~ p:group step implementation
+ :
+ : @param $primary -
+ : @param $secondary -
+ : @param $options -
+ : @param $currentstep -
+ : @param $outputs -
+ :
+ : @returns 
+ :)
+(: -------------------------------------------------------------------------- :)
+declare function xproc:group($primary,$secondary,$options,$currentstep,$outputs) {
+(: -------------------------------------------------------------------------- :)
+let $namespaces := xproc:enum-namespaces($currentstep)
+let $defaultname := concat(string($currentstep/@xproc:defaultname),'.0')
+let $ast := <p:declare-step name="{$defaultname}" xproc:defaultname="{$defaultname}" >{$currentstep/node()}</p:declare-step>
+return
+  (xproc:evalAST($ast,$xproc:eval-step,$namespaces,$primary,(),$outputs)/.)[last()]/node()
+};
+
 
  (:~ resolve external bindings
  :

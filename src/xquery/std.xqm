@@ -601,7 +601,7 @@ return
 declare function std:string-replace($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 let $match  := u:get-option('match',$options,$primary)
-let $replace as xs:string := concat("'",u:get-option('replace',$options,$primary),"'")
+let $replace as xs:string := u:get-option('replace',$options,$primary)
 let $template := <xsl:stylesheet version="2.0">
 <xsl:template match=".">
     <xsl:apply-templates/>
@@ -615,19 +615,19 @@ let $template := <xsl:stylesheet version="2.0">
 
 <xsl:template match="{$match}">
   <xsl:choose>
-    <xsl:when test=". instance of element()">
-      <xsl:element name="{$match}">
-      <xsl:copy-of select="@*"/>
-        <xsl:value-of select="{$replace}"/>
-      </xsl:element>
-    </xsl:when>
     <xsl:when test=". instance of attribute()">
-      <xsl:attribute name="{$match}">
-        <xsl:value-of select="{$replace}"/>
+      <xsl:attribute name="{replace($match,'@','')}">
+        <xsl:value-of select="'{$replace}'"/>
       </xsl:attribute>
     </xsl:when>
+    <xsl:when test=". instance of element()">
+      <xsl:element name="{replace($match,'@','')}">
+      <xsl:copy-of select="@*"/>
+        <xsl:value-of select="'{$replace}'"/>
+      </xsl:element>
+    </xsl:when>
     <xsl:otherwise>
-      <xsl:value-of select="{$replace}"/>
+      <xsl:value-of select="'{$replace}'"/>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>

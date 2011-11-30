@@ -5,13 +5,7 @@
 <p:identity name="a"/>
 <p:filter select="/c/a"/>
 <p:wrap match="/" wrapper="newwrapper"/>
-<p:unwrap match="b" name="z"/>
-
-<!--p:rename match="//@id" new-name="new-id"/-->
-<!--p:string-replace match="@new-id" replace="'this is new text'"/-->
-
-
-<p:delete match="a"/>
+<p:rename match="@id" new-name="new-id"/>
 <p:pack wrapper="packed">
      <p:input port="alternate">
        <p:inline>
