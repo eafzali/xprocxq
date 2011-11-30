@@ -109,7 +109,7 @@ declare function u:outputResultElement($exp){
 };
 
 (: -------------------------------------------------------------------------- :)
-declare function u:get-secondary($name as xs:string,$secondary as element(xproc:input)*) as item(){
+declare function u:get-secondary($name as xs:string,$secondary as element(xproc:input)*) as item()*{
 (: -------------------------------------------------------------------------- :)
     $secondary[@port eq $name]/node() 
 };

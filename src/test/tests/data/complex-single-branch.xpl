@@ -6,15 +6,11 @@
 <p:filter select="/c/a"/>
 <p:wrap match="/" wrapper="newwrapper"/>
 <p:unwrap match="b" name="z"/>
-<p:sink/>
+
 <!--p:rename match="//@id" new-name="new-id"/-->
 <!--p:string-replace match="@new-id" replace="'this is new text'"/-->
 
-<p:identity>
-<p:input port="source">
-<p:pipe port="result" step="z"/>
-</p:input>
-</p:identity>
+
 <p:delete match="a"/>
 <p:pack wrapper="packed">
      <p:input port="alternate">

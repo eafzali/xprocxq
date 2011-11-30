@@ -381,13 +381,14 @@ let $wrapper := u:get-option('wrapper',$options,$primary)
 let $wrapper-prefix := u:get-option('wrapper-prefix',$options,$primary)
 let $wrapper-namespace := u:get-option('wrapper-namespace',$options,$primary)
 return
-    for $child at $count in $primary
+    for $child in $primary
     return
 	    element {$wrapper}{
 	        $child,
 	        $alternate
 	    }
 };
+
 
 
 (: -------------------------------------------------------------------------- :)

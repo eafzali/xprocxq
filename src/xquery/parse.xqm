@@ -341,7 +341,7 @@ declare boundary-space preserve;
            else
              (),
 (:             $node[not(p:*)]/*, :)
-$node/text(),
+           if (empty($node/text())) then () else $node/text(),
              parse:explicit-name($node/*,if($node/@xproc:step eq 'true') then $name else $cname)
          }
      default

@@ -144,7 +144,7 @@ module namespace xproc = "http://xproc.net/xproc";
      case element(p:empty)
        return <empty/>
      case element(p:inline)
-       return $input/node()[1]
+       return $input/*
      case element(p:document)
        return xproc:resolve-document-binding($input/@href)
      case element(p:data)
@@ -189,7 +189,6 @@ module namespace xproc = "http://xproc.net/xproc";
  (: -------------------------------------------------------------------------- :)
  let $step-name as xs:string := string(($currentstep/@name|$currentstep/@xproc:default-name)[1])
  return
-     <xproc:inputs>{
          for $input in $currentstep/p:input[@primary eq 'false']
              return
              <xproc:input port="{$input/@port}" select="{$input/@select}">
@@ -220,7 +219,6 @@ module namespace xproc = "http://xproc.net/xproc";
              }
              </xproc:input>
 
-     }</xproc:inputs>
  };
 
 
@@ -299,10 +297,10 @@ module namespace xproc = "http://xproc.net/xproc";
              <xproc:output step="{$step}"
              xproc:default-name="{$step}"
              port-type="input"
-             href="{if ($log-port eq $currentstep/p:input[1][@primary='true']/@port) then u:result-document($log-href,$primary) else ()}"
+             href="{if ($log-port eq $currentstep/p:input[1][@primary eq 'true']/@port) then u:result-document($log-href,$primary) else ()}"
              primary="true"
-             select="{$currentstep/p:input[1][@primary='true']/@select}"
-             port="{$currentstep/p:input[1][@primary='true']/@port}"
+             select="{$currentstep/p:input[1][@primary eq 'true']/@select}"
+             port="{$currentstep/p:input[1][@primary eq 'true']/@port}"
              func="{$stepfunc}">{$primary}</xproc:output>
              ,
              (: all other input ports :)
@@ -314,7 +312,7 @@ module namespace xproc = "http://xproc.net/xproc";
              href="{if ($log-port eq $child/@port) then u:result-document($log-href,$child/node()) else ()}"
              primary="false"
              select="{$child/@select}"
-             port="{$child/@port}"
+             port="{$currentstep/p:input[1][@primary eq 'false']/@port}"
              func="{$stepfunc}">{$child/node()}</xproc:output>
              )
              ,
@@ -322,21 +320,21 @@ module namespace xproc = "http://xproc.net/xproc";
              if($currentstep/p:output[@primary='true']) then
              <xproc:output step="{$step}"
              port-type="output"
-             href="{if ($log-port eq $currentstep/p:output[1][@primary='true']/@port) then $log-href else ()}"
+             href="{if ($log-port eq $currentstep/p:output[1][@primary eq 'true']/@port) then $log-href else ()}"
              primary="true"
              xproc:default-name="{$step}"
-             select="{$currentstep/p:output[@primary='true']/@select}"
-             port="{$currentstep/p:output[@primary='true']/@port}"
+             select="{$currentstep/p:output[@primary eq 'true']/@select}"
+             port="{$currentstep/p:output[@primary eq 'true']/@port}"
              func="{$stepfunc}">{$stepfunction($primary,$secondary,$options,$variables)}</xproc:output>
            else
              (: all other primary output ports @TODO - needs to be handled :)
              <xproc:output step="{$step}"
              port-type="output"
-             href="{if ($log-port eq $currentstep/p:output[1][@primary='false']/@port) then $log-href else ()}"
+             href="{if ($log-port eq $currentstep/p:output[1][@primary eq 'false']/@port) then $log-href else ()}"
              primary="false"
              xproc:default-name="{$step}"
-             select="{$currentstep/p:output[@primary='false']/@select}"
-             port="{$currentstep/p:output[@primary='false']/@port}"
+             select="{$currentstep/p:output[@primary eq 'false']/@select}"
+             port="{$currentstep/p:output[@primary eq 'false']/@port}"
              func="{$stepfunc}"/>
          )
  };

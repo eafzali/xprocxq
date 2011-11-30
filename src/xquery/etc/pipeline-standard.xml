@@ -126,7 +126,7 @@
    <p:declare-step type="p:pack" xml:id="pack" xproc:support="true">
       <p:input port="source" sequence="true" primary="true" select="/"/>
       <p:input port="alternate" primary="false" sequence="true" select="/"/>
-      <p:output port="result" sequence="true" select="/"/>
+      <p:output port="result" primary="true" sequence="true" select="/"/>
       <p:option name="wrapper" required="true"/>
    </p:declare-step>
    <p:declare-step type="p:parameters" xml:id="parameters">
