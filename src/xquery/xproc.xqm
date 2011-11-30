@@ -102,10 +102,8 @@ module namespace xproc = "http://xproc.net/xproc";
  };
 
 
-(:~ resolve input port bindings
+(:~ resolve p:data input port bindings
  :
- : Will process p:empty, p:inline, p:document, p:data, p:pipe
- : or throw err:XD0001 
  :
  : @param $href - xs:string
  : @param $wrapper  - xs:string
@@ -140,19 +138,19 @@ module namespace xproc = "http://xproc.net/xproc";
  : @returns 
  :)
  (: -------------------------------------------------------------------------- :)
- declare function xproc:resolve-port-binding($input,$result,$ast,$currentstep){
+ declare function xproc:resolve-port-binding($input,$outputs,$ast,$currentstep){
  (: -------------------------------------------------------------------------- :)
    typeswitch($input)
      case element(p:empty)
        return <empty/>
      case element(p:inline)
-       return $input/node()
+       return $input/node()[1]
      case element(p:document)
        return xproc:resolve-document-binding($input/@href)
      case element(p:data)
        return xproc:resolve-data-binding($input/@href,'')
      case element(p:pipe)
-       return $result[@xproc:default-name eq $input/@xproc:default-step-name][@port eq $input/@port]/node()
+       return $outputs[@xproc:default-name eq $input/@xproc:default-step-name][@port eq $input/@port]/node()
      default 
        return
          u:dynamicError('err:XD0001',concat("cannot bind to port: ",$input/@port," step: ",$input/@step,' ',u:serialize($currentstep,$const:TRACE_SERIALIZE)))
@@ -246,7 +244,7 @@ module namespace xproc = "http://xproc.net/xproc";
  declare function xproc:eval-primary($ast as element(p:declare-step),$currentstep,$primaryinput as item()*,$outputs as item()*){
  (: -------------------------------------------------------------------------- :)
  let $step-name as xs:string := string(($currentstep/@name|$currentstep/@xproc:default-name)[1])
- let $pinput as element(p:input) := $currentstep/p:input[@primary eq 'true']
+ let $pinput as element(p:input)? := $currentstep/p:input[@primary eq 'true']
  let $data :=  if($pinput/node()) then
    (: resolve each nested port binding :)
    for $input in $pinput/*
@@ -278,13 +276,13 @@ module namespace xproc = "http://xproc.net/xproc";
  (: -------------------------------------------------------------------------- :)
  declare function xproc:evalstep ($step,$namespaces,$primaryinput,$ast,$outputs) {
  (: -------------------------------------------------------------------------- :)
-     let $declarens    :=  u:declare-ns($namespaces)
-     let $variables    :=  $outputs/xproc:variable
+     let $declarens    := u:declare-ns($namespaces)
+     let $variables    := $outputs/xproc:variable
      let $options      := xproc:eval-options($ast,$step)
      let $currentstep  := $ast/*[@xproc:default-name eq $step][1]
      let $stepfunc     := name($currentstep)
      let $stepfunction := xproc:getstep($stepfunc)
-     let $primary      :=  xproc:eval-primary($ast,$currentstep,$primaryinput,$outputs)
+     let $primary      := xproc:eval-primary($ast,$currentstep,$primaryinput,$outputs)
      let $secondary    := xproc:eval-secondary($ast,$currentstep,$primaryinput,$outputs)
 
      let $log-href := $currentstep/p:log/@href
@@ -392,7 +390,7 @@ module namespace xproc = "http://xproc.net/xproc";
    (: TODO - define default p:serialization options here:)
 
    ($result[@func ne 'ext:post']/.)[last()]/node()
-   
+
 (:   subsequence($result[@func ne 'ext:post'],count($result) - 3,1)/node() :)
 (:
    let $stdout := $output//*[@port eq 'stdout']/node()
@@ -425,7 +423,6 @@ module namespace xproc = "http://xproc.net/xproc";
  declare function xproc:evalAST($ast as element(p:declare-step),
    $evalstep,$namespaces as element(namespace),$stdin as item()* ,$bindings,$outputs as item()*) as item()* {
  (: ------------------------------------------------------------------------------------------------------------- :)
-
      let $steps := xproc:genstepnames($ast)
      let $pipeline-name := $ast/@xproc:default-name
      return
@@ -525,10 +522,10 @@ module namespace xproc = "http://xproc.net/xproc";
    namespace xxq-error {"http://xproc.net/xproc/error"},
    parse:pipeline-step-sort( $parse/*, () )
  }
- let $checkAST   :=  u:assert(not(empty($ast)),"AST is empty")
- let $eval_result := xproc:evalAST($ast,$xproc:eval-step,$namespaces,$stdin,$bindings,$outputs)
+ let $checkAST          := u:assert(not(empty($ast/*[@xproc:step])),"pipeline AST has no steps")
+ let $eval_result       := xproc:evalAST($ast,$xproc:eval-step,$namespaces,$stdin,$bindings,$outputs)
  let $serialized_result := xproc:output($eval_result,$dflag)
- return 
+ return
    $serialized_result
  };
 
@@ -552,6 +549,8 @@ if ($stepname eq 'p:identity') then
   $std:identity
 else if($stepname eq 'p:count') then
   $std:count
+else if($stepname eq 'p:pack') then
+  $std:pack
 else if($stepname eq 'p:delete') then
   $std:delete
 else if($stepname eq 'p:add-attribute') then
@@ -586,6 +585,10 @@ else if($stepname eq 'p:string-replace') then
   $std:string-replace
 else if($stepname eq 'p:split-sequence') then
   $std:split-sequence
+else if($stepname eq 'p:sink') then
+  $std:sink
+else if($stepname eq 'p:set-attributes') then
+  $std:set-attributes
 else if($stepname eq 'p:rename') then
   $std:rename
 else if($stepname eq 'p:wrap') then

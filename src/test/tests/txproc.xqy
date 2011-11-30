@@ -74,7 +74,8 @@ declare function (:TEST:) txproc:runEntryPointTest2() {
    $xproc:run-step($pipeline,$stdin,$bindings,$options,(),$dflag,$tflag)
 };
 
-declare function (:TEST:) txproc:runEntryPointTest3() { 
+declare function (:
+TEST:) txproc:runEntryPointTest3() { 
   let $pipeline := fn:doc('data/test2.xpl')
   let $stdin    := <test/>
   let $dflag    := 0
@@ -100,7 +101,7 @@ declare function (:TEST:) txproc:runDynamicError() {
 declare function (:TEST:) txproc:runComplexSingleBranch() { 
   let $pipeline := fn:doc('data/complex-single-branch.xpl')
   let $stdin    := <c>aaa<a id="1"><b id="2">test</b></a></c>
-  let $dflag    := 0
+  let $dflag    := 1
   let $tflag    := 0
   let $bindings := ()
   let $options  := ()

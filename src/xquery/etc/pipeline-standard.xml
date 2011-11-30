@@ -152,7 +152,7 @@
       <p:option name="match" required="true"/>
    </p:declare-step>
    <p:declare-step type="p:sink" xml:id="sink" xmlns:xproc="http://xproc.net/xproc" xproc:support="true">
-      <p:input port="source" sequence="true" select="/"/>
+      <p:input port="source" primary="true" sequence="true" select="/"/>
    </p:declare-step>
    <p:declare-step type="p:split-sequence" xml:id="split-sequence" xproc:support="true">
       <p:input port="source" sequence="true" select="/"/>
