@@ -548,7 +548,8 @@ return
  let $eval_result       := xproc:evalAST($ast,$xproc:eval-step,$namespaces,$stdin,$bindings,$outputs)
  let $serialized_result := xproc:output($eval_result,$dflag)
  return
-   $serialized_result
+ parse:explicit-bindings(  parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
+(:   $serialized_result :)
  };
 
 

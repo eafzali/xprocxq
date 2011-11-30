@@ -12,6 +12,7 @@ Congratulations! You've run your first pipeline!
 <p:identity name="step1"/>
 
 <p:identity name="step3">
+
   <p:input port="source">
     <p:pipe port="result" step="step2"/>
   </p:input>

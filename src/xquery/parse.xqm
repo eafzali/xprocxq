@@ -113,7 +113,7 @@ declare boundary-space preserve;
     namespace c {"http://www.w3.org/ns/xproc-step"},
     namespace err {"http://www.w3.org/ns/xproc-error"},
     namespace xxq-error {"http://xproc.net/xproc/error"},
-   parse:explicit-bindings($pipeline/*,'!1')
+   parse:explicit-bindings($pipeline/*,'stdin','!1')
  }
  };
 
@@ -161,6 +161,73 @@ declare boundary-space preserve;
    else
      $node
 };
+
+
+ (:~
+  : make all p:input and p:output ports explicit
+  :
+  : @returns element()*
+  :)
+ (: --------------------------------------------------------------------------------------------------------- :)
+ declare function parse:explicit-bindings($ast as item()*,$portname,$unique_id){
+ (: --------------------------------------------------------------------------------------------------------- :)
+
+ (
+   for $port in $ast[not(@xproc:step)]
+   return
+     typeswitch($port)
+       case element(p:input)
+       return 
+         if($port/@primary eq "true") then
+           element p:input {
+             $port/@*,
+             element p:pipe {
+               attribute port {$portname},
+               attribute step {$unique_id}
+             }
+           }
+         else
+           $port
+
+       case element(p:output)
+       return
+         $port
+       default
+       return
+         $port
+     ,
+
+   for $step at $count in $ast[@xproc:step eq 'true']
+   return
+     if(empty($step)) then
+       ()
+     else
+       element {name($step)}{
+         $step/@*,
+         $step/text(),
+         parse:explicit-bindings($step/*,$ast[$count - 1]/p:output[@primary eq "true"]/@port,$ast[$count - 1]/@xproc:default-name)
+       } 
+ )
+
+(:
+ for $children at $count in $pipeline
+ let $unique_before  := fn:concat($unique_id,'.',$count - 2)
+ let $unique_current := fn:concat($unique_id,'.',$count)
+ let $unique_after   := fn:concat($unique_id,'.',$count + 2)
+ return
+   if(empty($children)) then 
+     ()
+   else 
+     for $c in $children
+     return   
+       if($c/@xproc:step eq 'true') then
+           element {name($c)}{
+             parse:explicit-bindings($c,$unique_id)
+           }
+       else
+         ()
+:)
+ };
 
 
  (:~

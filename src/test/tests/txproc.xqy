@@ -101,7 +101,7 @@ declare function (:TEST:) txproc:runDynamicError() {
 declare function (:TEST:) txproc:runComplexSingleBranch() { 
   let $pipeline := fn:doc('data/complex-single-branch.xpl')
   let $stdin    := <c>aaa<a id="1"><b id="2">test</b></a></c>
-  let $dflag    := 0
+  let $dflag    := 1
   let $tflag    := 0
   let $bindings := ()
   let $options  := ()
@@ -113,7 +113,7 @@ declare function (:TEST:) txproc:runComplexSingleBranch() {
 declare function (:TEST:) txproc:runGroup() { 
   let $pipeline := <p:declare-step name="main">
 <p:input port="source"/><p:output port="result"/>
-<p:group><p:identity/></p:group></p:declare-step>
+<p:group><p:identity/><p:count/></p:group><p:identity/></p:declare-step>
   let $stdin    := <c>aaa<a id="1"><b id="2">test</b></a></c>
   let $dflag    := 1
   let $tflag    := 0
