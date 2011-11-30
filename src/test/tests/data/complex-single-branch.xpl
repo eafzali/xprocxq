@@ -6,6 +6,8 @@
 <p:filter select="/c/a"/>
 <p:wrap match="/" wrapper="newwrapper"/>
 <p:rename match="@id" new-name="new-id"/>
+<p:string-replace match="@new-id" replace="&quot;this is a new string&quot;"/>
+<p:delete match="b"/>
 <p:pack wrapper="packed">
      <p:input port="alternate">
        <p:inline>
