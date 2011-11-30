@@ -1,4 +1,4 @@
-XPROCXQ - implementation of xproc in xquery (coming soon ...)
+xproc.XQ - implementation of xproc in xquery (coming soon ...)
 
 Please review
 [Milestones] (https://github.com/xquery/xprocxq/issues/milestones)
