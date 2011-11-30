@@ -49,6 +49,11 @@ test:html(
              </packed></expected>
     <result>{txproc:runComplexSingleBranch()}</result>
   </test>
+  <test name="xproc8" desc="p:group">
+    <expected></expected>
+    <result>{txproc:runGroup()}</result>
+  </test>
+
 </testsuite>
 )
 

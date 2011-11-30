@@ -202,9 +202,9 @@ let $standalone             := u:get-option('standalone',$options,$primary)
 let $undeclare-prefixes     := u:get-option('undeclare-prefixes',$options,$primary)
 let $version                := u:get-option('version',$options,$primary)
 return
-  element{name($primary)}{
-    u:serialize($primary/*)
-  }
+  <c:result>{
+    u:serialize($primary)
+  }</c:result>
 };
 
 

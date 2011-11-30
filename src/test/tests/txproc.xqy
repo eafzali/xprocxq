@@ -109,3 +109,17 @@ declare function (:TEST:) txproc:runComplexSingleBranch() {
   return
    $xproc:run-step($pipeline,$stdin,$bindings,$options,$output,$dflag,$tflag)
 };
+
+declare function (:TEST:) txproc:runGroup() { 
+  let $pipeline := <p:declare-step name="main">
+<p:input port="source"/><p:output port="result"/>
+<p:group><p:identity/></p:group></p:declare-step>
+  let $stdin    := <c>aaa<a id="1"><b id="2">test</b></a></c>
+  let $dflag    := 1
+  let $tflag    := 0
+  let $bindings := ()
+  let $options  := ()
+  let $output   := ()
+  return
+   $xproc:run-step($pipeline,$stdin,$bindings,$options,$output,$dflag,$tflag)
+};

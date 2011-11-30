@@ -266,7 +266,7 @@ return
  declare function xproc:eval-primary($ast as element(p:declare-step),$currentstep,$primaryinput as item()*,$outputs as item()*){
  (: -------------------------------------------------------------------------- :)
  let $step-name as xs:string := string(($currentstep/@name|$currentstep/@xproc:default-name)[1])
- let $pinput as element(p:input)? := $currentstep/p:input[@primary eq 'true']
+ let $pinput as element(p:input)? := $currentstep/p:input[@primary eq 'true'][1]
  let $data :=  if($pinput/node()) then
    (: resolve each nested port binding :)
    for $input in $pinput/*

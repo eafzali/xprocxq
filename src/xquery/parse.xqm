@@ -131,17 +131,16 @@ declare boundary-space preserve;
   let $unique_after   := fn:concat($unique_id,'.',$count + 2)
   return   
     if(fn:contains($node/@xproc:type,'step')) then
-
       element {node-name($node)} {$node/@*,
        for $input in $node//p:input
          return
-          element p:input {$input/@*,
-          namespace xproc {"http://xproc.net/xproc"},
-          namespace ext {"http://xproc.net/xproc/ext"},
-          namespace c {"http://www.w3.org/ns/xproc-step"},
-          namespace err {"http://www.w3.org/ns/xproc-error"},
-          namespace xxq-error {"http://xproc.net/xproc/error"},
-
+           element p:input {$input/@*,
+           namespace xproc {"http://xproc.net/xproc"},
+           namespace ext {"http://xproc.net/xproc/ext"},
+           namespace c {"http://www.w3.org/ns/xproc-step"},
+           namespace err {"http://www.w3.org/ns/xproc-error"},
+           namespace xxq-error {"http://xproc.net/xproc/error"},
+     
            if ($input//p:pipe) then
                element p:pipe {
                  $input/p:pipe/@port,
@@ -162,6 +161,7 @@ declare boundary-space preserve;
    else
      $node
 };
+
 
  (:~
   : parse input bindings
@@ -340,7 +340,6 @@ declare boundary-space preserve;
              attribute xproc:default-name {$name}
            else
              (),
-(:             $node[not(p:*)]/*, :)
            if (empty($node/text())) then () else $node/text(),
              parse:explicit-name($node/*,if($node/@xproc:step eq 'true') then $name else $cname)
          }
