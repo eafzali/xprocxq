@@ -1,7 +1,7 @@
 XPROCXQ - implementation of xproc in xquery (coming soon ...)
 
 Please review
-[[https://github.com/xquery/xprocxq/issues/milestones][Milestones]]
+[Milestones] (https://github.com/xquery/xprocxq/issues/milestones)
 for release date information.
 
 currently requires at least Saxon Professional Edition (targeting
