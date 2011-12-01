@@ -86,7 +86,19 @@ declare boundary-space preserve;
        ($sorted,                
        <ext:post xproc:step="true" xproc:default-name="{$sorted[1]/@xproc:default-name}!">
          <p:input port="source" primary="true">
-         (: need to pipe in last step or override from top level p:output :)
+         {
+         if($sorted[1]/p:output/p:pipe) then
+           element p:pipe {
+             attribute port {$sorted[1]/p:output[@primary eq 'true']/p:pipe/@port},
+             attribute step {$sorted[1]/p:output[@primary eq 'true']/p:pipe/@step}
+           }
+         else
+           element p:pipe {
+             attribute port {$sorted[last()]/p:output[@primary eq 'true']/@port},
+             attribute step {$sorted[last()]/@xproc:default-name},
+             attribute xproc:default-step-name {$sorted[last()]/@xproc:default-name}
+           }
+         }
          </p:input>
          <p:output primary="true" port="stdout" select="/"/>
        </ext:post>)
@@ -185,25 +197,28 @@ declare boundary-space preserve;
                element p:pipe {
                  $port/p:pipe/@port,
                  $port/p:pipe/@step,
+                 attribute xproc:type {"comp"},
                  attribute xproc:default-step-name {$pipeline//*[@name eq $port/p:pipe/@step]/@xproc:default-name}
                  }
                else if ($port/(p:inline|p:empty|p:data|p:document)) then
                  $port/*
                else
                  element p:pipe {
+                   attribute xproc:type {"comp"},
                    attribute port {
                      if(empty($portname)) then "xproc:stdin" else $portname
                    },
-                   attribute step {$unique_id}                
+                   attribute step {$unique_id},
+                   attribute xproc:default-step-name {$unique_id}
                  }
            else
              $port
          }
        case element(p:output)
-       return
-         $port
+        return
+          $port
        default
-       return
+        return
          $port
      ,
 

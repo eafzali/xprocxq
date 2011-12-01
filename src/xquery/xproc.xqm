@@ -447,7 +447,7 @@ return
   :)
  (: ------------------------------------------------------------------------------------------------------------- :)
  declare function xproc:evalAST($ast as element(p:declare-step),
-   $evalstep,$namespaces as element(namespace),$stdin as item()* ,$bindings,$outputs as item()*) as item()* {
+   $evalstep,$namespaces as element(namespace),$stdin as item()* ,$bindings,$outputs as item()?) as item()* {
  (: ------------------------------------------------------------------------------------------------------------- :)
      let $steps := xproc:genstepnames($ast)
      let $pipeline-name := $ast/@xproc:default-name
@@ -496,8 +496,8 @@ return
                               $namespaces as element(namespace),
                               $steps as xs:string*,
                               $evalstep-function,
-                              $primary as node(),
-                              $outputs as element()*  ) {
+                              $primary as item()?,
+                              $outputs as item()*  ) {
  (: -------------------------------------------------------------------------- :)
 
     if (empty($steps)) then

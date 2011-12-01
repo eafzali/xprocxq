@@ -27,6 +27,12 @@ test:html(
     <expected>!1.0 !1.1 !1.3 !1.2 !1.0!</expected>
     <result>{txproc:stepNamesTest()}</result>
   </test>
+  <test name="xproc4" desc="simple xproc pipeline">
+    <expected><doc>
+      Congratulations! You've run your first pipeline!
+    </doc></expected>
+    <result>{txproc:runEntryPointTest1()}</result>
+  </test>
   <test name="xproc4a" desc="test entry point with simple xproc pipeline">
     <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">1</c:result></expected>
     <result>{txproc:runEntryPointTest()}</result>

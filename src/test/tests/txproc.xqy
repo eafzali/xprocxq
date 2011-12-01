@@ -63,6 +63,18 @@ declare function (:TEST:) txproc:runEntryPointTest() {
     $result
 };
 
+declare function (:TEST:) txproc:runEntryPointTest1() { 
+  let $pipeline := fn:doc('data/simple.xpl')
+  let $stdin    := ()
+  let $dflag    := 0
+  let $tflag    := 0
+  let $bindings := ()
+  let $options  := ()
+  let $result   := xproc:run($pipeline,$stdin,$bindings,$options,(),$dflag,$tflag)
+  return
+    $result
+};
+
 declare function (:TEST:) txproc:runEntryPointTest2() { 
   let $pipeline := fn:doc('data/test2.xpl')
   let $stdin    := <test/>
@@ -115,7 +127,7 @@ declare function (:TEST:) txproc:runGroup() {
 <p:input port="source"/><p:output port="result"/>
 <p:group><p:identity/><p:count/></p:group><p:identity/></p:declare-step>
   let $stdin    := <c>aaa<a id="1"><b id="2">test</b></a></c>
-  let $dflag    := 0
+  let $dflag    := 1
   let $tflag    := 0
   let $bindings := ()
   let $options  := ()
