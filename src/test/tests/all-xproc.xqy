@@ -20,7 +20,7 @@ test:html(
     <result>{txproc:loadModuleTest()}</result>
   </test>
   <test name="xproc2" desc="enum in-use namespaces">
-    <expected><namespace name=""><ns prefix="xml" URI="http://www.w3.org/XML/1998/namespace"></ns><ns prefix="p" URI="http://www.w3.org/ns/xproc"></ns><ns prefix="c" URI="http://www.w3.org/ns/xproc-step"></ns><ns prefix="cx" URI="http://xmlcalabash.com/ns/extensions"></ns><ns prefix="" URI=""></ns></namespace></expected>
+    <expected><namespace name=""><ns prefix="xml" URI="http://www.w3.org/XML/1998/namespace"></ns><ns prefix="p" URI="http://www.w3.org/ns/xproc"></ns><ns prefix="c" URI=""></ns></namespace></expected>
     <result>{txproc:enumNSTest()}</result>
   </test>
   <test name="xproc3" desc="test getting step names of a pipe, in order">
@@ -28,15 +28,15 @@ test:html(
     <result>{txproc:stepNamesTest()}</result>
   </test>
   <test name="xproc4a" desc="test entry point with simple xproc pipeline">
-    <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step" xmlns:xproc="http://xproc.net/xproc">1</c:result></expected>
+    <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">1</c:result></expected>
     <result>{txproc:runEntryPointTest()}</result>
   </test>
   <test name="xproc4b" desc="test entry point via HOX invoke xproc:run-step">
-    <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step" xmlns:xproc="http://xproc.net/xproc">1</c:result></expected>
+    <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">1</c:result></expected>
     <result>{txproc:runEntryPointTest2()}</result>
   </test>
   <test name="xproc5" desc="test">
-    <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step" xmlns:xproc="http://xproc.net/xproc">1</c:result></expected>
+    <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">1</c:result></expected>
     <result>{txproc:runEntryPointTest3()}</result>
   </test>
   <!--test name="xproc6" desc="test throwing dynamic error">

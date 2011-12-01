@@ -177,8 +177,12 @@ return
        return $outputs[@xproc:default-name eq $input/@xproc:default-step-name][@port eq $input/@port]/node()
      default 
        return
+         <error/>
+(:
          u:dynamicError('err:XD0001',concat("cannot bind to port: ",$input/@port," step: ",$input/@step,' ',u:serialize($currentstep,$const:TRACE_SERIALIZE)))
- };
+ 
+:)
+};
 
 
 (:~ evaluates step options
@@ -548,8 +552,7 @@ return
  let $eval_result       := xproc:evalAST($ast,$xproc:eval-step,$namespaces,$stdin,$bindings,$outputs)
  let $serialized_result := xproc:output($eval_result,$dflag)
  return
- parse:explicit-bindings(  parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
-(:   $serialized_result :)
+   $serialized_result 
  };
 
 

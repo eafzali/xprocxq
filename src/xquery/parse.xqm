@@ -113,7 +113,7 @@ declare boundary-space preserve;
     namespace c {"http://www.w3.org/ns/xproc-step"},
     namespace err {"http://www.w3.org/ns/xproc-error"},
     namespace xxq-error {"http://xproc.net/xproc/error"},
-   parse:explicit-bindings($pipeline/*,'stdin','!1')
+   parse:explicit-bindings($pipeline/*,'stdin','!1',$pipeline)
  }
  };
 
@@ -159,7 +159,7 @@ declare boundary-space preserve;
            ,parse:explicit-bindings($node/*[name(.) ne 'p:input'],$unique_current) 
      }
    else
-     $node
+     ()
 };
 
 
@@ -169,7 +169,7 @@ declare boundary-space preserve;
   : @returns element()*
   :)
  (: --------------------------------------------------------------------------------------------------------- :)
- declare function parse:explicit-bindings($ast as item()*,$portname,$unique_id){
+ declare function parse:explicit-bindings($ast as item()*,$portname,$unique_id,$pipeline){
  (: --------------------------------------------------------------------------------------------------------- :)
 
  (
@@ -178,17 +178,27 @@ declare boundary-space preserve;
      typeswitch($port)
        case element(p:input)
        return 
-         if($port/@primary eq "true") then
-           element p:input {
-             $port/@*,
-             element p:pipe {
-               attribute port {$portname},
-               attribute step {$unique_id}
-             }
-           }
-         else
-           $port
-
+         element p:input {
+           $port/@*,
+           if($port/@primary eq "true") then
+             if ($port/p:pipe) then
+               element p:pipe {
+                 $port/p:pipe/@port,
+                 $port/p:pipe/@step,
+                 attribute xproc:default-step-name {$pipeline//*[@name eq $port/p:pipe/@step]/@xproc:default-name}
+                 }
+               else if ($port/(p:inline|p:empty|p:data|p:document)) then
+                 $port/*
+               else
+                 element p:pipe {
+                   attribute port {
+                     if(empty($portname)) then "xproc:stdin" else $portname
+                   },
+                   attribute step {$unique_id}                
+                 }
+           else
+             $port
+         }
        case element(p:output)
        return
          $port
@@ -205,7 +215,7 @@ declare boundary-space preserve;
        element {name($step)}{
          $step/@*,
          $step/text(),
-         parse:explicit-bindings($step/*,$ast[$count - 1]/p:output[@primary eq "true"]/@port,$ast[$count - 1]/@xproc:default-name)
+         parse:explicit-bindings($step/*,$ast[$count - 1]/p:output[@primary eq "true"]/@port,$ast[$count - 1]/@xproc:default-name,$pipeline)
        } 
  )
 
@@ -230,8 +240,74 @@ declare boundary-space preserve;
  };
 
 
+
+ (:~
+  : parse xpath-context bindings used with p:choose
+  : 
+  :
+  : @returns element(p:xpath-context)
+  :)
+ (: --------------------------------------------------------------------------------------------------------- :)
+ declare function parse:xpath-context($node as element(p:input)*, $step-definition) as element(p:input)*{
+ (: --------------------------------------------------------------------------------------------------------- :)
+  for $input in $step-definition/p:input
+  let $name as xs:string := fn:string($input/@port)  
+  let $s := $node[@port eq $name]
+  return 
+    element p:input {
+      attribute xproc:type {'comp'},
+      $input/@*[name(.) ne 'select'],
+      ($s/@select, $input/@select)[1],
+      $s/*
+    }
+};
+
+
+ (:~
+  : parse viewport-source bindings used with p:viewport
+  : 
+  :
+  : @returns element(p:viewport-source)
+  :)
+ (: --------------------------------------------------------------------------------------------------------- :)
+ declare function parse:viewport-source($node as element(p:input)*, $step-definition) as element(p:input)*{
+ (: --------------------------------------------------------------------------------------------------------- :)
+  for $input in $step-definition/p:input
+  let $name as xs:string := fn:string($input/@port)  
+  let $s := $node[@port eq $name]
+  return 
+    element p:input {
+      attribute xproc:type {'comp'},
+      $input/@*[name(.) ne 'select'],
+      ($s/@select, $input/@select)[1],
+      $s/*
+    }
+};
+
+ (:~
+  : parse iteration-source bindings used with p:for-each
+  : 
+  :
+  : @returns element(p:iteration-source)
+  :)
+ (: --------------------------------------------------------------------------------------------------------- :)
+ declare function parse:iteration-source($node as element(p:input)*, $step-definition) as element(p:input)*{
+ (: --------------------------------------------------------------------------------------------------------- :)
+  for $input in $step-definition/p:input
+  let $name as xs:string := fn:string($input/@port)  
+  let $s := $node[@port eq $name]
+  return 
+    element p:input {
+      attribute xproc:type {'comp'},
+      $input/@*[name(.) ne 'select'],
+      ($s/@select, $input/@select)[1],
+      $s/*
+    }
+};
+
  (:~
   : parse input bindings
+  :
   :
   : @returns element(p:input)
   :)
@@ -329,7 +405,7 @@ declare boundary-space preserve;
         typeswitch($node)
             case text()
                    return $node/text()
-            case element(p:declare-step)
+            case element(p:declare-step) 
                    return element p:declare-step {
                      namespace xproc {"http://xproc.net/xproc"},
                      namespace ext {"http://xproc.net/xproc/ext"},
@@ -345,7 +421,94 @@ declare boundary-space preserve;
                      },
                      parse:AST($node/*[@xproc:type ne 'comp'])
                    }
-
+            case element(p:group) 
+                   return element p:group {
+                     $node/@*,
+                     element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
+                       attribute xproc:step {"true"},
+                       $node/p:log,
+                       parse:input-port($node/p:input, $step-definition),
+                       parse:output-port($node/p:output, $step-definition)
+                     },
+                     parse:AST($node/*[@xproc:type ne 'comp'])
+                   }
+            case element(p:for-each) 
+                   return element p:for-each {
+                     $node/@*,
+                     element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
+                       attribute xproc:step {"true"},
+                       $node/p:log,
+                       parse:iteration-source($node/p:input, $step-definition),
+                       parse:output-port($node/p:output, $step-definition)
+                     },
+                     parse:AST($node/*[@xproc:type ne 'comp'])
+                   }
+            case element(p:viewport) 
+                   return element p:viewport {
+                     $node/@*,
+                     element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
+                       attribute xproc:step {"true"},
+                       $node/p:log,
+                       parse:viewport-source($node/p:input, $step-definition),
+                       parse:output-port($node/p:output, $step-definition)
+                     },
+                     parse:AST($node/*[@xproc:type ne 'comp'])
+                   }
+            case element(p:choose) 
+                   return element p:choose {
+                     $node/@*,
+                     element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
+                       attribute xproc:step {"true"},
+                       $node/p:variable,
+                       parse:xpath-context($node/p:input, $step-definition),
+                       parse:output-port($node/p:output, $step-definition)
+                     },
+                     parse:AST($node/*[@xproc:type ne 'comp'])
+                   }
+           case element(p:when) 
+                   return element p:when {
+                     $node/@*,
+                     element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
+                       attribute xproc:step {"true"},
+                       $node/p:log,
+                       parse:xpath-context($node/p:input, $step-definition),
+                       parse:output-port($node/p:output, $step-definition)
+                     },
+                     parse:AST($node/*[@xproc:type ne 'comp'])
+                   }
+           case element(p:otherwise) 
+                   return element p:otherwise {
+                     $node/@*,
+                     element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
+                       attribute xproc:step {"true"},
+                       $node/p:log,
+                       parse:input-port($node/p:input, $step-definition),
+                       parse:output-port($node/p:output, $step-definition)
+                     },
+                     parse:AST($node/*[@xproc:type ne 'comp'])
+                   }
+            case element(p:try) 
+                   return element p:try {
+                     $node/@*,
+                     element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
+                       attribute xproc:step {"true"},
+                       $node/p:variable,
+                       parse:input-port($node/p:input, $step-definition),
+                       parse:output-port($node/p:output, $step-definition)
+                     },
+                     parse:AST($node/*[@xproc:type ne 'comp'])
+                   }
+            case element(p:catch) 
+                   return element p:catch {
+                     $node/@*,
+                     element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
+                       attribute xproc:step {"true"},
+                       $node/p:log,
+                       parse:input-port($node/p:input, $step-definition),
+                       parse:output-port($node/p:output, $step-definition)
+                     },
+                     parse:AST($node/*[@xproc:type ne 'comp'])
+                   }
            case element()
                    return element {node-name($node)}{
                      $node/@*,
