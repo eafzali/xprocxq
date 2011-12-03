@@ -36,20 +36,24 @@ declare function (:TEST:) txproc:enumNSTest() {
 
 declare function (:TEST:) txproc:stepNamesTest() { 
   let $pipeline := fn:doc('data/test2.xpl')
-  let $parse      := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
-  let $ast        := element p:declare-step {$parse/@*,
+  let $parse   :=  parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
+  let $b := $parse/*
+  let $ast   := element p:declare-step {$parse/@*,
+   namespace p {"http://www.w3.org/ns/xproc"},
    namespace xproc {"http://xproc.net/xproc"},
    namespace ext {"http://xproc.net/xproc/ext"},
+   namespace opt {"http://xproc.net/xproc/opt"},
    namespace c {"http://www.w3.org/ns/xproc-step"},
    namespace err {"http://www.w3.org/ns/xproc-error"},
    namespace xxq-error {"http://xproc.net/xproc/error"},
-   parse:pipeline-step-sort( $parse/*, () )
+   parse:pipeline-step-sort( $b, () )
  }
-
+  
   let $result := xproc:genstepnames($ast)
-  return
-   $result 
+  return  
+    $result
 };
+
 
 declare function (:TEST:) txproc:runEntryPointTest() { 
   let $pipeline := fn:doc('data/test2.xpl')
@@ -63,9 +67,24 @@ declare function (:TEST:) txproc:runEntryPointTest() {
     $result
 };
 
+
+declare function (:TEST:) txproc:runEntryPointTest4() { 
+  let $pipeline := <p:declare-step name="main">
+<p:input port="source"/><p:output port="result"/>
+<p:identity/><p:count/></p:declare-step>
+  let $stdin    := <c>aaa<a id="1"><b id="2">test</b></a></c>
+  let $dflag    := 0
+  let $tflag    := 0
+  let $bindings := ()
+  let $options  := ()
+  let $outputs   := ()
+  return
+   $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
+};
+
 declare function (:TEST:) txproc:runEntryPointTest1() { 
   let $pipeline := fn:doc('data/simple.xpl')
-  let $stdin    := ()
+  let $stdin    := <test/>
   let $dflag    := 0
   let $tflag    := 0
   let $bindings := ()
@@ -127,11 +146,11 @@ declare function (:TEST:) txproc:runGroup() {
 <p:input port="source"/><p:output port="result"/>
 <p:group><p:identity/><p:count/></p:group><p:identity/></p:declare-step>
   let $stdin    := <c>aaa<a id="1"><b id="2">test</b></a></c>
-  let $dflag    := 1
+  let $dflag    := 0
   let $tflag    := 0
   let $bindings := ()
   let $options  := ()
-  let $output   := ()
+  let $outputs   := ()
   return
-   $xproc:run-step($pipeline,$stdin,$bindings,$options,$output,$dflag,$tflag)
+   $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
 };

@@ -460,7 +460,7 @@ return
          ($outputs,
          <xproc:variable/>, 
          xproc:resolve-external-bindings($bindings,$pipeline-name),
-         xproc:generate_output($pipeline-name,'stdin','external','false',$stdin)
+         xproc:generate_output($pipeline-name,'result','external','false',$stdin)
           )
          )
  };
@@ -496,7 +496,7 @@ return
                               $namespaces as element(namespace),
                               $steps as xs:string*,
                               $evalstep-function,
-                              $primary as item()?,
+                              $primary as item(),
                               $outputs as item()*  ) {
  (: -------------------------------------------------------------------------- :)
 
@@ -552,7 +552,9 @@ return
  let $eval_result       := xproc:evalAST($ast,$xproc:eval-step,$namespaces,$stdin,$bindings,$outputs)
  let $serialized_result := xproc:output($eval_result,$dflag)
  return
+
    $serialized_result 
+
  };
 
 

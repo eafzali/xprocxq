@@ -10,10 +10,10 @@ module namespace parse = "http://xproc.net/xproc/parse";
 declare boundary-space preserve;
 
  (: declare namespaces :)
- declare namespace xproc="http://xproc.net/xproc";
  declare namespace p="http://www.w3.org/ns/xproc";
  declare namespace c="http://www.w3.org/ns/xproc-step";
  declare namespace err="http://www.w3.org/ns/xproc-error";
+ declare namespace xproc="http://xproc.net/xproc";
  declare namespace ext="http://xproc.net/xproc/ext";
  declare namespace opt="http://xproc.net/xproc/opt";
 
@@ -74,42 +74,32 @@ declare boundary-space preserve;
  };
 
 
+
  (:~
   : sorts pipeline based on input port dependencies<br/>
   :
   : @returns node()*
   :)
  (: --------------------------------------------------------------------------------------------------------- :)
- declare function parse:pipeline-step-sort($unsorted, $sorted) as node()*{
+ declare function parse:pipeline-step-sort($unsorted, $sorted) {
  (: --------------------------------------------------------------------------------------------------------- :)
-    if (empty($unsorted)) then
-       ($sorted,                
-       <ext:post xproc:step="true" xproc:default-name="{$sorted[1]/@xproc:default-name}!">
-         <p:input port="source" primary="true">
-         {
-         if($sorted[1]/p:output/p:pipe) then
-           element p:pipe {
-             attribute port {$sorted[1]/p:output[@primary eq 'true']/p:pipe/@port},
-             attribute step {$sorted[1]/p:output[@primary eq 'true']/p:pipe/@step}
-           }
+    if (count($unsorted) eq 0) then
+      ($sorted,
+      <ext:post xproc:step="true" xproc:default-name="{$sorted[1]/@xproc:default-name}!">
+        <p:input port="source" primary="true">
+        (: need to pipe in last step or override from top level p:output :)
+        </p:input>
+        <p:output primary="true" port="stdout" select="/"/>
+        </ext:post>)
+     else
+       let $allnodes := $unsorted [ every $id in p:input/p:pipe/@step satisfies ($id = $sorted/@xproc:default-name)]
+       return
+         if ($allnodes) then
+           parse:pipeline-step-sort( $unsorted except $allnodes, ($sorted, $allnodes ))
          else
-           element p:pipe {
-             attribute port {$sorted[last()]/p:output[@primary eq 'true']/@port},
-             attribute step {$sorted[last()]/@xproc:default-name},
-             attribute xproc:default-step-name {$sorted[last()]/@xproc:default-name}
-           }
-         }
-         </p:input>
-         <p:output primary="true" port="stdout" select="/"/>
-       </ext:post>)
-    else
-        let $allnodes := $unsorted [ every $id in p:input[@primary eq 'true'][@port eq 'source']/p:pipe/@xproc:default-step-name satisfies ($id = $sorted/@xproc:default-name)]
-    return
-        if ($allnodes) then
-          parse:pipeline-step-sort( $unsorted except $allnodes, ($sorted, $allnodes ))
-        else
           ()
  };
+
 
  (:~
   : entry point for parse:explicit-bindings
@@ -120,60 +110,10 @@ declare boundary-space preserve;
  declare function parse:explicit-bindings($pipeline) as element(p:declare-step){
  (: --------------------------------------------------------------------------------------------------------- :)
  element p:declare-step {$pipeline/@*,
-    namespace xproc {"http://xproc.net/xproc"},
-    namespace ext {"http://xproc.net/xproc/ext"},
-    namespace c {"http://www.w3.org/ns/xproc-step"},
-    namespace err {"http://www.w3.org/ns/xproc-error"},
-    namespace xxq-error {"http://xproc.net/xproc/error"},
-   parse:explicit-bindings($pipeline/*,'stdin','!1',$pipeline)
+   parse:explicit-bindings($pipeline,'source','!1',$pipeline)
  }
  };
 
- (:~
-  : make all p:input and p:output ports explicit
-  :
-  : @returns element()*
-  :)
- (: --------------------------------------------------------------------------------------------------------- :)
- declare function parse:explicit-bindings($pipeline,$unique_id){
- (: --------------------------------------------------------------------------------------------------------- :)
-  for $node at $count in $pipeline
-  let $unique_before  := fn:concat($unique_id,'.',$count - 2)
-  let $unique_current := fn:concat($unique_id,'.',$count)
-  let $unique_after   := fn:concat($unique_id,'.',$count + 2)
-  return   
-    if(fn:contains($node/@xproc:type,'step')) then
-      element {node-name($node)} {$node/@*,
-       for $input in $node//p:input
-         return
-           element p:input {$input/@*,
-           namespace xproc {"http://xproc.net/xproc"},
-           namespace ext {"http://xproc.net/xproc/ext"},
-           namespace c {"http://www.w3.org/ns/xproc-step"},
-           namespace err {"http://www.w3.org/ns/xproc-error"},
-           namespace xxq-error {"http://xproc.net/xproc/error"},
-     
-           if ($input//p:pipe) then
-               element p:pipe {
-                 $input/p:pipe/@port,
-                 $input/p:pipe/@step,
-                 attribute xproc:default-step-name {($pipeline[@name eq $input/p:pipe/@step]/@xproc:default-name,$pipeline//*[@name eq $input/p:pipe/@step]/@xproc:default-name)[1]}
-                 }
-           else if ($input/(p:inline|p:empty|p:data|p:document)) then
-             $input/*
-           else
-               element p:pipe {
-                 attribute port {"result"},
-                 attribute step {$unique_before},
-                 attribute xproc:default-step-name {$unique_before}
-               }
-           }
-           ,parse:explicit-bindings($node/*[name(.) ne 'p:input'],$unique_current) 
-     }
-   else
-     ()
-};
-
 
  (:~
   : make all p:input and p:output ports explicit
@@ -181,77 +121,51 @@ declare boundary-space preserve;
   : @returns element()*
   :)
  (: --------------------------------------------------------------------------------------------------------- :)
- declare function parse:explicit-bindings($ast as item()*,$portname,$unique_id,$pipeline){
+ declare function parse:explicit-bindings($ast,$portname as xs:string,$unique_id as xs:string?,$pipeline){
  (: --------------------------------------------------------------------------------------------------------- :)
-
- (
-   for $port in $ast[not(@xproc:step)]
-   return
-     typeswitch($port)
-       case element(p:input)
-       return 
-         element p:input {
-           $port/@*,
-           if($port/@primary eq "true") then
-             if ($port/p:pipe) then
-               element p:pipe {
-                 $port/p:pipe/@port,
-                 $port/p:pipe/@step,
-                 attribute xproc:type {"comp"},
-                 attribute xproc:default-step-name {$pipeline//*[@name eq $port/p:pipe/@step]/@xproc:default-name}
-                 }
-               else if ($port/(p:inline|p:empty|p:data|p:document)) then
-                 $port/*
-               else
-                 element p:pipe {
-                   attribute xproc:type {"comp"},
-                   attribute port {
-                     if(empty($portname)) then "xproc:stdin" else $portname
-                   },
-                   attribute step {$unique_id},
-                   attribute xproc:default-step-name {$unique_id}
-                 }
-           else
-             $port
-         }
-       case element(p:output)
-        return
-          $port
-       default
-        return
-         $port
-     ,
-
-   for $step at $count in $ast[@xproc:step eq 'true']
+   for $step at $count in $ast/*[@xproc:step eq 'true']
    return
      if(empty($step)) then
        ()
-     else
+     else 
        element {name($step)}{
-         $step/@*,
-         $step/text(),
-         parse:explicit-bindings($step/*,$ast[$count - 1]/p:output[@primary eq "true"]/@port,$ast[$count - 1]/@xproc:default-name,$pipeline)
-       } 
- )
+         $step/@name,
+         $step/@xproc:type,
+         $step/@xproc:step,
+         $step/@xproc:default-name,
 
-(:
- for $children at $count in $pipeline
- let $unique_before  := fn:concat($unique_id,'.',$count - 2)
- let $unique_current := fn:concat($unique_id,'.',$count)
- let $unique_after   := fn:concat($unique_id,'.',$count + 2)
- return
-   if(empty($children)) then 
-     ()
-   else 
-     for $c in $children
-     return   
-       if($c/@xproc:step eq 'true') then
-           element {name($c)}{
-             parse:explicit-bindings($c,$unique_id)
-           }
-       else
-         ()
-:)
+         for $input in $step/p:input[@primary eq "true"]
+         return
+            element p:input {
+              $input/@port,
+              $input/@select,
+              $input/@xproc:type,
+              attribute primary {true()},
+
+              if($input/p:pipe) then
+                element p:pipe{
+                  $input/p:pipe/@port,
+                  attribute xproc:type {"comp"},
+                  attribute step {$pipeline//*[@name eq $input/p:pipe/@step]/@xproc:default-name},
+                  attribute xproc:step-name {$pipeline//*[@name eq $input/p:pipe/@step]/@xproc:default-name}
+
+                }
+              else if ($input/(p:data|p:document|p:inline)) then
+                $input/*
+              else if (name($step) eq 'ext:pre') then
+                ()
+              else
+                element p:pipe{
+                  attribute port {"result"},
+                  attribute xproc:type {"comp"},
+                  attribute step {if ($count eq 2) then concat($unique_id,'.0') else $unique_id},
+                  attribute xproc:step-name {if ($count eq 2) then concat($unique_id,'.0') else $unique_id}
+                }
+            },
+         parse:explicit-bindings($step/*[@xproc:step eq "true"],$ast[$count - 1]/p:output[@primary eq "true"]/@port,$ast[$count - 1]/@xproc:default-name,$pipeline)
+        }
+
+
  };
 
 

@@ -1,18 +1,11 @@
 <?xml version="1.0"?>
 <p:declare-step version="1.0" name="main" xmlns:p="http://www.w3.org/ns/xproc">
-<p:input port="source">
-  <p:inline><doc>
-Congratulations! You've run your first pipeline!
-</doc></p:inline>
-</p:input>
-<p:output port="result">
-  <p:pipe step="step3" port="result"/>
-</p:output>
+<p:input port="source"/>
+<p:output port="result"/>
 
 <p:identity name="step1"/>
 
 <p:identity name="step3">
-
   <p:input port="source">
     <p:pipe port="result" step="step2"/>
   </p:input>

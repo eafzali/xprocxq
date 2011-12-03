@@ -33,6 +33,10 @@ test:html(
     </doc></expected>
     <result>{txproc:runEntryPointTest1()}</result>
   </test>
+  <test name="xproc4" desc="simple xproc pipeline">
+    <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">1</c:result></expected>
+    <result>{txproc:runEntryPointTest4()}</result>
+  </test>
   <test name="xproc4a" desc="test entry point with simple xproc pipeline">
     <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">1</c:result></expected>
     <result>{txproc:runEntryPointTest()}</result>
@@ -45,10 +49,6 @@ test:html(
     <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">1</c:result></expected>
     <result>{txproc:runEntryPointTest3()}</result>
   </test>
-  <!--test name="xproc6" desc="test throwing dynamic error">
-    <expected></expected>
-    <result>{txproc:runDynamicError()}</result>
-  </test-->
   <test name="xproc7" desc="run more complex single branch pipeline (complex-single-branch.xpl)">
     <expected><packed><newwrapper><a new-id="this is a new string"></a></newwrapper>
              <a>test</a>
@@ -59,7 +59,10 @@ test:html(
     <expected></expected>
     <result>{txproc:runGroup()}</result>
   </test>
-
+  <!--test name="xproc6" desc="test throwing dynamic error">
+    <expected></expected>
+    <result>{txproc:runDynamicError()}</result>
+  </test-->
 </testsuite>
 )
 
