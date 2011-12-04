@@ -8,8 +8,8 @@
   <xsl:output name="default" indent="yes" omit-xml-declaration="yes"/>
   <xsl:param name="title"/>
   <xsl:variable name="total" select="count(//*:test)"/>
-  <xsl:variable name="pass" select="count(//*:test[result eq expected])"/>
-  <xsl:variable name="fail" select="count(//*:test[result ne expected])"/>
+  <xsl:variable name="pass" select="count(//*:test[deep-equal(result/node(),expected/node())])"/>
+  <xsl:variable name="fail" select="count(//*:test[not(deep-equal(result/node(),expected/node()))])"/>
   <xsl:template match="/">
     <html>
       <head>
@@ -146,7 +146,7 @@
       </h3><br/>
     </li>
   </xsl:template>
-  <xsl:template match="*:test[expected ne result]">
+  <xsl:template match="*:test[not(deep-equal(expected/node(),result/node()))]">
     <li class="result fail">
       <h3 ><input name="test" value="" type="checkbox" checked="checked"></input>
       <a href="?test="><xsl:value-of select="@name"/><br/> <span

@@ -31,7 +31,7 @@ for $test in collection("tests.xproc.org/required?select=*.xml")
  let $outputs  := ()
 return
 
-<test name="{$test//t:title}" desc="{$test//t:title}">
+<test name="" desc="{$test//t:title}">
 <input port="source">
 {$stdin}
 </input>
@@ -66,7 +66,7 @@ for $test in collection("tests.xproc.org/optional?select=*.xml")
  let $outputs  := ()
 return
 
-<test name="{$test//t:title}" desc="">
+<test name="" desc="{$test//t:title}">
 <input port="source">
 {$stdin}
 </input>
