@@ -50,14 +50,14 @@ test:html(
   </test>
   <test name="xproc7" desc="run more complex single branch pipeline (complex-single-branch.xpl)">
     <expected><packed><newwrapper><a new-id="this is a new string"></a></newwrapper>
-             <a>test</a>
-             </packed></expected>
+   <a>test</a>
+ </packed></expected>
     <result>{txproc:runComplexSingleBranch()}</result>
   </test>
-  <!--test name="xproc8" desc="p:group">
+  <test name="xproc8" desc="p:group">
     <expected></expected>
     <result>{txproc:runGroup()}</result>
-  </test-->
+  </test>
 
 
 

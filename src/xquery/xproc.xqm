@@ -27,7 +27,7 @@ module namespace xproc = "http://xproc.net/xproc";
  declare variable $xproc:choose         := ();
  declare variable $xproc:try            := ();
  declare variable $xproc:catch          := ();
- declare variable $xproc:group          := xproc:group#5;
+ declare variable $xproc:group          := xproc:group#4;
  declare variable $xproc:for-each       := ();
  declare variable $xproc:viewport       := ();
  declare variable $xproc:library        := ();
@@ -50,13 +50,13 @@ module namespace xproc = "http://xproc.net/xproc";
  : @returns 
  :)
 (: -------------------------------------------------------------------------- :)
-declare function xproc:group($primary,$secondary,$options,$currentstep,$outputs) {
+declare function xproc:group($primary,$secondary,$options,$currentstep) {
 (: -------------------------------------------------------------------------- :)
-let $namespaces := xproc:enum-namespaces($currentstep)
-let $defaultname := concat(string($currentstep/@xproc:default-name),'.0')
+let $namespaces  := xproc:enum-namespaces($currentstep)
+let $defaultname as xs:string := string($currentstep/@xproc:default-name)
 let $ast := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/node()}</p:declare-step>
 return
-  (xproc:evalAST($ast,$xproc:eval-step,$namespaces,$primary,(),$outputs)/.)[last()]/node()
+  xproc:output(xproc:evalAST($ast,$xproc:eval-step,$namespaces,$primary,(),()), 0)
 };
 
 
@@ -235,7 +235,8 @@ return
              if ($result) then
                $result
              else
-               u:dynamicError('err:XD0016',concat("xproc step ",$step-name, "did not select anything from p:input"))
+               <error/>
+           (:    u:dynamicError('err:XD0016',concat("xproc step ",$step-name, "did not select anything from p:input")) :)
    }
  </xproc:input>
  };
@@ -274,7 +275,8 @@ return
    if ($result) then
      document{$result}
    else
-     u:dynamicError('err:XD0016',concat("xproc step ",$step-name, "did not select anything from p:input"))
+     <error/>
+   (:  u:dynamicError('err:XD0016',concat("xproc step ",$step-name, "did not select anything from p:input")) :)
 };
 
 
@@ -289,7 +291,7 @@ return
   : @returns item()*
  :)
  (: -------------------------------------------------------------------------- :)
- declare function xproc:evalstep ($step,$namespaces,$primaryinput,$ast,$outputs) {
+ declare function xproc:evalstep ($step,$namespaces,$primaryinput as item()?,$ast as element(p:declare-step),$outputs) {
  (: -------------------------------------------------------------------------- :)
      let $declarens    := u:declare-ns($namespaces)
      let $variables    := $outputs/xproc:variable
@@ -306,7 +308,6 @@ return
      return
 
          if(name($currentstep) = "p:declare-step") then
-            (: TODO: refactor p:pipeline and p:declare-step :)
             ()
          else
            (
@@ -343,7 +344,16 @@ return
              select="{$currentstep/p:output[@primary eq 'true']/@select}"
              port="{$currentstep/p:output[@primary eq 'true']/@port}"
              func="{$stepfunc}">{$stepfunction($primary,$secondary,$options,$variables)}</xproc:output>
-           else
+             else if($currentstep/ext:pre) then
+             <xproc:output step="{$step}"
+             port-type="output"
+             href="{if ($log-port eq $currentstep/p:output[1][@primary eq 'true']/@port) then $log-href else ()}"
+             primary="true"
+             xproc:default-name="{$step}"
+             select="{$currentstep/p:output[@primary eq 'true']/@select}"
+             port="{$currentstep/p:output[@primary eq 'true']/@port}"
+             func="{$stepfunc}">{$stepfunction($primary,$secondary,$options,$currentstep)}</xproc:output>
+             else
              (: all other primary output ports @TODO - needs to be handled :)
              <xproc:output step="{$step}"
              port-type="output"
@@ -386,7 +396,7 @@ return
  (: -------------------------------------------------------------------------- :)
  declare function xproc:output($result,$dflag as xs:integer) as item()*{
  (: -------------------------------------------------------------------------- :)
- let $pipeline :=subsequence($result,1,1)
+ let $ast    :=subsequence($result,1,1)
  let $output := <xproc:outputs>{ subsequence($result,2) } </xproc:outputs>
  return
    if($dflag eq 1) then
@@ -398,11 +408,10 @@ return
    xmlns:xxq-error="http://xproc.net/xproc/error"
    xmlns:opt="http://xproc.net/xproc/opt"
    >
-     <xproc:pipeline>{$pipeline}</xproc:pipeline>
+     <xproc:pipeline>{$ast}</xproc:pipeline>
      {$output}
    </xproc:debug>
  else
-   (: TODO - define default p:serialization options here:)
    $result[last()]/node()
  };
 
@@ -540,6 +549,7 @@ return
  };
 
 
+
 (:~ waiting for fn:function-lookup() to be supported by XQuery implementations
  :
  : This is a *temporary* function as a dynamic function constructor
@@ -611,6 +621,8 @@ else if($stepname eq 'p:xslt') then
   $std:xslt
 else if($stepname eq 'ext:post') then
   $ext:post
+else if($stepname eq 'p:group') then
+  $xproc:group
 else
  $std:identity
 };
