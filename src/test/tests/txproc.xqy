@@ -215,3 +215,31 @@ declare function (:TEST:) txproc:runViewPort() {
   return
    $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
 };
+
+declare function (:TEST:) txproc:runChoose() { 
+  let $pipeline := <p:declare-step name="main">
+<p:input port="source"/><p:output port="result"/>
+<p:choose><p:xpath-context select="//a"/><p:when test="count(a) eq 2"><p:wrap wrapper="z" match="/"/></p:when><p:otherwise><p:count/></p:otherwise></p:choose><p:identity/></p:declare-step>
+  let $stdin    := <c><a>test1</a><a>test2</a></c>
+  let $dflag    := 0
+  let $tflag    := 0
+  let $bindings := ()
+  let $options  := ()
+  let $outputs   := ()
+  return
+   $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
+};
+
+declare function (:TEST:) txproc:runChoose1() { 
+  let $pipeline := <p:declare-step name="main">
+<p:input port="source"/><p:output port="result"/>
+<p:choose><p:xpath-context select="//a"/><p:when test="count(a) lt 1"><p:wrap wrapper="z" match="/"/></p:when><p:otherwise><p:count/></p:otherwise></p:choose><p:identity/></p:declare-step>
+  let $stdin    := <c><a>test1</a><a>test2</a></c>
+  let $dflag    := 0
+  let $tflag    := 0
+  let $bindings := ()
+  let $options  := ()
+  let $outputs   := ()
+  return
+   $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
+};

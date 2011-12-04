@@ -131,6 +131,7 @@ declare boundary-space preserve;
        ()
      else 
        element {name($step)}{
+         $step/@test,                           (: required to p:when :)
          $step/@name,
          $step/@xproc:type,
          $step/@xproc:step,
@@ -396,6 +397,7 @@ $pipeline)
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                        attribute xproc:step {"true"},
                        $node/p:variable,
+                       $node/p:xpath-context,
                        parse:xpath-context($node/p:input, $step-definition),
                        parse:output-port($node/p:output, $step-definition)
                      },

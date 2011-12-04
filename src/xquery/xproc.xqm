@@ -19,19 +19,19 @@ module namespace xproc = "http://xproc.net/xproc";
  import module namespace   ext = "http://xproc.net/xproc/ext"   at "ext.xqm";
 
  (: declare variables :)
- declare variable $xproc:eval-step       := xproc:evalstep#5;
+ declare variable $xproc:eval-step      := xproc:evalstep#5;
 
  (: declare steps :)
- declare variable $xproc:run-step       := xproc:run#7;
- declare variable $xproc:declare-step   := ();
- declare variable $xproc:choose         := ();
- declare variable $xproc:try            := xproc:try#4;
- declare variable $xproc:group          := xproc:group#4;
- declare variable $xproc:for-each       := xproc:for-each#4;
- declare variable $xproc:viewport       := xproc:viewport#4;
- declare variable $xproc:library        := ();
- declare variable $xproc:pipeline       := ();
- declare variable $xproc:variable       := ();
+ declare variable $xproc:run-step      := xproc:run#7;
+ declare variable $xproc:declare-step  := ();
+ declare variable $xproc:choose        := xproc:choose#4;
+ declare variable $xproc:try           := xproc:try#4;
+ declare variable $xproc:group         := xproc:group#4;
+ declare variable $xproc:for-each      := xproc:for-each#4;
+ declare variable $xproc:viewport      := xproc:viewport#4; (: partial implementation :)
+ declare variable $xproc:library       := ();
+ declare variable $xproc:pipeline      := ();
+ declare variable $xproc:variable      := ();
 
  (: declare options :)
  declare option saxon:output "indent=yes";
@@ -54,6 +54,40 @@ let $defaultname as xs:string := string($currentstep/@xproc:default-name)
 let $ast := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/node()}</p:declare-step>
 return
   xproc:output(xproc:evalAST($ast,$xproc:eval-step,$namespaces,$primary,(),()), 0)
+};
+
+
+ (:~ p:choose step implementation
+ :
+ :
+ : @param $primary -
+ : @param $secondary -
+ : @param $options -
+ : @param $currentstep -
+ :
+ : @returns 
+ :)
+(: -------------------------------------------------------------------------- :)
+declare function xproc:choose($primary,$secondary,$options,$currentstep) {
+(: -------------------------------------------------------------------------- :)
+let $namespaces  := xproc:enum-namespaces($currentstep)
+let $defaultname as xs:string := string($currentstep/@xproc:default-name)
+let $xpath-context as xs:string   := string($currentstep/ext:pre/p:xpath-context/@select)
+let $ast-otherwise := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/p:otherwise/node()}</p:declare-step>
+let $context := (u:evalXPATH($xpath-context,document{$primary}))
+let $when-test := for $when at $count in $currentstep/p:when
+          return
+            if(string($when/@test) ne '') then
+              if (u:evalXPATH(string($when/@test),document{$context})) then $count else ()
+            else
+              ()
+return
+  if($when-test) then 
+    let $ast-when := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/p:when[$when-test]/node()}</p:declare-step>
+    return
+      xproc:output(xproc:evalAST($ast-when,$xproc:eval-step,$namespaces,$primary,(),()), 0)
+    else
+      xproc:output(xproc:evalAST($ast-otherwise,$xproc:eval-step,$namespaces,$primary,(),()), 0)
 };
 
 
@@ -700,6 +734,8 @@ else if($stepname eq 'p:for-each') then
   $xproc:for-each
 else if($stepname eq 'p:viewport') then
   $xproc:viewport
+else if($stepname eq 'p:choose') then
+  $xproc:choose
 else if($stepname eq 'p:replace') then
   $std:replace
 else

@@ -74,6 +74,24 @@ test:html(
     <expected><z><a>1</a></z><z><a><l>test</l></a></z><z><a><l>test</l></a></z></expected>
     <result>{txproc:runViewPort()}</result>
   </test>
+  <test name="xproc12a" desc="p:choose with p:when">
+    <expected><z><c><a>test1</a><a>test2</a></c></z></expected>
+    <result>{txproc:runChoose()}</result>
+  </test>
+  <test name="xproc12b" desc="p:choose with p:otherwise">
+    <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">1</c:result></expected>
+    <result>{txproc:runChoose1()}</result>
+  </test>
+
+
+
+
+
+
+
+
+
+
 
 
   <!--test name="xproc6" desc="test throwing dynamic error">

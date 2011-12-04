@@ -23,7 +23,6 @@
   </xproc:element>
 
   <xproc:element type="p:for-each" xproc:step="true" xproc:support="true">
-    <p:iteration-source port="source" primary="true" select="/"/>
     <p:input port="source" primary="true" select="/"/>
     <p:output port="result" primary="true" select="/"/>
   </xproc:element>
@@ -58,20 +57,20 @@
   <!-- Input alternatives //-->    
 
   <xproc:element type="p:iteration-source" xproc:support="true"/>
-  <xproc:element type="xproc:iteration-source" xproc:support="true"/>
-
   <xproc:element type="p:viewport-source" xproc:support="true"/>
-  <xproc:element type="xproc:viewport-source" xproc:support="true"/>
-
   <xproc:element type="p:xpath-context" xproc:support="true"/>
-  <xproc:element type="xproc:xpath-context" xproc:support="true"/>
 
   <!-- //-->    
 
   <xproc:element type="p:when" xproc:support="true" xproc:step="true">
-    <xproc:attribute name="test"/>
+    <p:input port="source" primary="true" select="/"/>
+    <p:output port="result" primary="true" select="/"/>	
   </xproc:element>
-  <xproc:element type="p:otherwise" xproc:support="true" xproc:step="true"/>     
+  <xproc:element type="p:otherwise" xproc:support="true"
+                 xproc:step="true">
+    <p:input port="source" primary="true" select="/"/>
+    <p:output port="result" primary="true" select="/"/>	
+  </xproc:element>     
 
   <!-- //-->    
 
