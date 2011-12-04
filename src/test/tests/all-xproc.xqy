@@ -59,6 +59,11 @@ test:html(
     <expected></expected>
     <result>{txproc:runGroup()}</result>
   </test>
+
+
+
+
+
   <!--test name="xproc6" desc="test throwing dynamic error">
     <expected></expected>
     <result>{txproc:runDynamicError()}</result>

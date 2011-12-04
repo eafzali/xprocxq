@@ -84,15 +84,15 @@ declare boundary-space preserve;
  declare function parse:pipeline-step-sort($unsorted, $sorted) {
  (: --------------------------------------------------------------------------------------------------------- :)
     if (count($unsorted) eq 0) then
-      ($sorted,
-      <ext:post xproc:step="true" xproc:default-name="{$sorted[1]/@xproc:default-name}!">
+      (remove($sorted,1),
+      <ext:post xproc:step="true" xproc:default-name="{$sorted[1]/@xproc:default-name}.0!">
         <p:input port="source" primary="true">
         (: need to pipe in last step or override from top level p:output :)
         </p:input>
         <p:output primary="true" port="stdout" select="/"/>
         </ext:post>)
      else
-       let $allnodes := $unsorted [ every $id in p:input/p:pipe/@step satisfies ($id = $sorted/@xproc:default-name)]
+       let $allnodes := $unsorted [ every $id in p:input/p:pipe/@xproc:step-name satisfies ($id = $sorted/@xproc:default-name)]
        return
          if ($allnodes) then
            parse:pipeline-step-sort( $unsorted except $allnodes, ($sorted, $allnodes ))
@@ -133,7 +133,6 @@ declare boundary-space preserve;
          $step/@xproc:type,
          $step/@xproc:step,
          $step/@xproc:default-name,
-
          for $input in $step/p:input[@primary eq "true"]
          return
             element p:input {
@@ -141,31 +140,34 @@ declare boundary-space preserve;
               $input/@select,
               $input/@xproc:type,
               attribute primary {true()},
-
               if($input/p:pipe) then
                 element p:pipe{
                   $input/p:pipe/@port,
                   attribute xproc:type {"comp"},
                   attribute step {$pipeline//*[@name eq $input/p:pipe/@step]/@xproc:default-name},
                   attribute xproc:step-name {$pipeline//*[@name eq $input/p:pipe/@step]/@xproc:default-name}
-
                 }
               else if ($input/(p:data|p:document|p:inline)) then
                 $input/*
-              else if (name($step) eq 'ext:pre') then
-                ()
               else
                 element p:pipe{
                   attribute port {"result"},
                   attribute xproc:type {"comp"},
-                  attribute step {if ($count eq 2) then concat($unique_id,'.0') else $unique_id},
-                  attribute xproc:step-name {if ($count eq 2) then concat($unique_id,'.0') else $unique_id}
+                  attribute step {if ($count eq 1) then $unique_id else concat($unique_id,'.',string($count - 2 ))},
+                  attribute xproc:step-name {if ($count eq 1) then $unique_id else concat($unique_id,'.',string($count - 2 ))}
                 }
             },
-         parse:explicit-bindings($step/*[@xproc:step eq "true"],$ast[$count - 1]/p:output[@primary eq "true"]/@port,$ast[$count - 1]/@xproc:default-name,$pipeline)
-        }
+            $step/p:input[@primary eq 'false'],
+            $step/p:output,
+            $step/p:with-option,
+            parse:explicit-bindings($step[@xproc:step eq "true"],$ast[$count - 1]/p:output[@primary eq "true"]/@port,
 
+$step/@xproc:default-name,
 
+(: $ast[$count - 1]/@xproc:default-name, :)
+
+$pipeline)
+       }
  };
 
 

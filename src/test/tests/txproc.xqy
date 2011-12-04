@@ -46,7 +46,7 @@ declare function (:TEST:) txproc:stepNamesTest() {
    namespace c {"http://www.w3.org/ns/xproc-step"},
    namespace err {"http://www.w3.org/ns/xproc-error"},
    namespace xxq-error {"http://xproc.net/xproc/error"},
-   parse:pipeline-step-sort( $b, () )
+   parse:pipeline-step-sort( $b, <p:declare-step xproc:default-name="!1"/> )
  }
   
   let $result := xproc:genstepnames($ast)
@@ -68,19 +68,6 @@ declare function (:TEST:) txproc:runEntryPointTest() {
 };
 
 
-declare function (:TEST:) txproc:runEntryPointTest4() { 
-  let $pipeline := <p:declare-step name="main">
-<p:input port="source"/><p:output port="result"/>
-<p:identity/><p:count/></p:declare-step>
-  let $stdin    := <c>aaa<a id="1"><b id="2">test</b></a></c>
-  let $dflag    := 0
-  let $tflag    := 0
-  let $bindings := ()
-  let $options  := ()
-  let $outputs   := ()
-  return
-   $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
-};
 
 declare function (:TEST:) txproc:runEntryPointTest1() { 
   let $pipeline := fn:doc('data/simple.xpl')
@@ -117,6 +104,21 @@ TEST:) txproc:runEntryPointTest3() {
    $xproc:run-step($pipeline,$stdin,$bindings,$options,(),$dflag,$tflag)
 };
 
+
+declare function (:TEST:) txproc:runEntryPointTest4() { 
+  let $pipeline := <p:declare-step name="main">
+<p:input port="source"/><p:output port="result"/>
+<p:identity/><p:count/></p:declare-step>
+  let $stdin    := <c>aaa<a id="1"><b id="2">test</b></a></c>
+  let $dflag    := 0
+  let $tflag    := 0
+  let $bindings := ()
+  let $options  := ()
+  let $outputs   := ()
+  return
+   $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
+};
+
 declare function (:TEST:) txproc:runDynamicError() { 
   let $pipeline := fn:doc('data/error.xpl')
   let $stdin    := <test/>
@@ -146,7 +148,7 @@ declare function (:TEST:) txproc:runGroup() {
 <p:input port="source"/><p:output port="result"/>
 <p:group><p:identity/><p:count/></p:group><p:identity/></p:declare-step>
   let $stdin    := <c>aaa<a id="1"><b id="2">test</b></a></c>
-  let $dflag    := 0
+  let $dflag    := 1
   let $tflag    := 0
   let $bindings := ()
   let $options  := ()

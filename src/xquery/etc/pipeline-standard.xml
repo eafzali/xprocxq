@@ -2,8 +2,8 @@
 <p:library xmlns:p="http://www.w3.org/ns/xproc"
 		xmlns:xproc="http://xproc.net/xproc">
    <p:declare-step type="p:add-attribute" xml:id="add-attribute"  xmlns:xproc="http://xproc.net/xproc" xproc:support="true">
-      <p:input port="source" primary="true" />
-      <p:output port="result" primary="true" />
+      <p:input port="source" primary="true" select="/"/>
+      <p:output port="result" primary="true" select="/"/>
       <p:option name="match" required="true"/>
       <p:option name="attribute-name" required="true"/>
       <p:option name="attribute-prefix"/>                          

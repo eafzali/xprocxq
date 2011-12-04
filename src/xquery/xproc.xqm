@@ -53,8 +53,8 @@ module namespace xproc = "http://xproc.net/xproc";
 declare function xproc:group($primary,$secondary,$options,$currentstep,$outputs) {
 (: -------------------------------------------------------------------------- :)
 let $namespaces := xproc:enum-namespaces($currentstep)
-let $defaultname := concat(string($currentstep/@xproc:defaultname),'.0')
-let $ast := <p:declare-step name="{$defaultname}" xproc:defaultname="{$defaultname}" >{$currentstep/node()}</p:declare-step>
+let $defaultname := concat(string($currentstep/@xproc:default-name),'.0')
+let $ast := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/node()}</p:declare-step>
 return
   (xproc:evalAST($ast,$xproc:eval-step,$namespaces,$primary,(),$outputs)/.)[last()]/node()
 };
@@ -103,6 +103,7 @@ return
  (: ------------------------------------------------------------------------------------------------------------- :)
  <xproc:output
   step="{$step}"
+  xproc:default-name="{$step}"
   port="{$port}"
   port-type="{$port-type}"
   primary="{$primary}"
@@ -174,14 +175,10 @@ return
      case element(p:data)
        return xproc:resolve-data-binding($input/@href,'')
      case element(p:pipe)
-       return $outputs[@xproc:default-name eq $input/@xproc:default-step-name][@port eq $input/@port]/node()
+       return $outputs[@xproc:default-name eq $input/@xproc:step-name][@port eq $input/@port]/node()
      default 
        return
-         <error/>
-(:
          u:dynamicError('err:XD0001',concat("cannot bind to port: ",$input/@port," step: ",$input/@step,' ',u:serialize($currentstep,$const:TRACE_SERIALIZE)))
- 
-:)
 };
 
 
@@ -215,7 +212,7 @@ return
  (: -------------------------------------------------------------------------- :)
  declare function xproc:eval-secondary($ast as element(p:declare-step),$currentstep,$primaryinput as item()*,$outputs as item()*){
  (: -------------------------------------------------------------------------- :)
- let $step-name as xs:string := string(($currentstep/@name|$currentstep/@xproc:default-name)[1])
+ let $step-name as xs:string := string($currentstep/@xproc:default-name)
  return
          for $input in $currentstep/p:input[@primary eq 'false']
              return
@@ -269,8 +266,8 @@ return
  (:---------------------------------------------------------------------------:)
  declare function xproc:eval-primary($ast as element(p:declare-step),$currentstep,$primaryinput as item()*,$outputs as item()*){
  (: -------------------------------------------------------------------------- :)
- let $step-name as xs:string := string(($currentstep/@name|$currentstep/@xproc:default-name)[1])
- let $pinput as element(p:input)? := $currentstep/p:input[@primary eq 'true'][1]
+ let $step-name as xs:string := string($currentstep/@xproc:default-name)
+ let $pinput as element(p:input)? := $currentstep/p:input[@primary eq 'true']
  let $data :=  if($pinput/node()) then
    (: resolve each nested port binding :)
    for $input in $pinput/*
@@ -414,19 +411,7 @@ return
    </xproc:debug>
  else
    (: TODO - define default p:serialization options here:)
-
    ($result[@func ne 'ext:post']/.)[last()]/node()
-
-(:   subsequence($result[@func ne 'ext:post'],count($result) - 3,1)/node() :)
-(:
-   let $stdout := $output//*[@port eq 'stdout']/node()
-   let $count := count ($result)
-   return
-     if (empty($stdout)) then
-       subsequence($result,$count - 2,1)/node()
-     else
-       $stdout
-:)
  };
 
 
@@ -460,7 +445,7 @@ return
          ($outputs,
          <xproc:variable/>, 
          xproc:resolve-external-bindings($bindings,$pipeline-name),
-         xproc:generate_output($pipeline-name,'result','external','false',$stdin)
+         xproc:generate_output($pipeline-name,'result','external','true',$stdin)
           )
          )
  };
@@ -538,6 +523,7 @@ return
  let $validate   := () (: validation:jing($pipeline,fn:doc($const:xproc-rng-schema)) :)
  let $namespaces := xproc:enum-namespaces($pipeline)
  let $parse      := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
+ let $b := $parse/*
  let $ast        := element p:declare-step {$parse/@*,
    namespace p {"http://www.w3.org/ns/xproc"},
    namespace xproc {"http://xproc.net/xproc"},
@@ -546,15 +532,13 @@ return
    namespace c {"http://www.w3.org/ns/xproc-step"},
    namespace err {"http://www.w3.org/ns/xproc-error"},
    namespace xxq-error {"http://xproc.net/xproc/error"},
-   parse:pipeline-step-sort( $parse/*, () )
+   parse:pipeline-step-sort( $parse/*,  <p:declare-step xproc:default-name="!1"/> )
  }
  let $checkAST          := u:assert(not(empty($ast/*[@xproc:step])),"pipeline AST has no steps")
  let $eval_result       := xproc:evalAST($ast,$xproc:eval-step,$namespaces,$stdin,$bindings,$outputs)
  let $serialized_result := xproc:output($eval_result,$dflag)
  return
-
-   $serialized_result 
-
+   $serialized_result
  };
 
 
