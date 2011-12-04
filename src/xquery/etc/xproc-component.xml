@@ -23,6 +23,7 @@
   </xproc:element>
 
   <xproc:element type="p:for-each" xproc:step="true" xproc:support="true">
+    <p:iteration-source port="source" primary="true" select="/"/>
     <p:input port="source" primary="true" select="/"/>
     <p:output port="result" primary="true" select="/"/>
   </xproc:element>

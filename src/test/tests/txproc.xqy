@@ -186,3 +186,18 @@ declare function (:TEST:) txproc:runTryCatch1() {
   return
    $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
 };
+
+
+declare function (:TEST:) txproc:runForEach() { 
+  let $pipeline := <p:declare-step name="main">
+<p:input port="source"/><p:output port="result"/>
+<p:for-each><p:iteration-source select="//a"/><p:wrap wrapper="d" match="/"/></p:for-each><p:identity/></p:declare-step>
+  let $stdin    := <c><a>1</a><a>1</a><a>1</a><a>1</a><a>1</a><a>1</a><a>1</a><a>1</a><a>1</a><b>2</b></c>
+  let $dflag    := 0
+  let $tflag    := 0
+  let $bindings := ()
+  let $options  := ()
+  let $outputs   := ()
+  return
+   $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
+};

@@ -27,7 +27,7 @@ module namespace xproc = "http://xproc.net/xproc";
  declare variable $xproc:choose         := ();
  declare variable $xproc:try            := xproc:try#4;
  declare variable $xproc:group          := xproc:group#4;
- declare variable $xproc:for-each       := ();
+ declare variable $xproc:for-each       := xproc:for-each#4;
  declare variable $xproc:viewport       := ();
  declare variable $xproc:library        := ();
  declare variable $xproc:pipeline       := ();
@@ -80,6 +80,29 @@ return
   }catch *{
     xproc:output(xproc:evalAST($ast-catch,$xproc:eval-step,$namespaces,$primary,(),()), 0)
   }
+};
+
+
+ (:~ p:for-each step implementation
+ :
+ : @param $primary -
+ : @param $secondary -
+ : @param $options -
+ : @param $currentstep -
+ :
+ : @returns 
+ :)
+(: -------------------------------------------------------------------------- :)
+declare function xproc:for-each($primary,$secondary,$options,$currentstep) {
+(: -------------------------------------------------------------------------- :)
+let $namespaces  := xproc:enum-namespaces($currentstep)
+let $defaultname as xs:string := string($currentstep/@xproc:default-name)
+let $iteration-select as xs:string   := string($currentstep/ext:pre/p:iteration-source/@select)
+let $ast := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/node()}</p:declare-step>
+return
+for $item in u:evalXPATH($iteration-select,document{$primary})
+return
+  xproc:output(xproc:evalAST($ast,$xproc:eval-step,$namespaces,$item,(),()), 0)
 };
 
 
@@ -374,7 +397,7 @@ return
              primary="true"
              xproc:default-name="{$step}"
              select="{$currentstep/p:output[@primary eq 'true']/@select}"
-             port="{$currentstep/p:output[@primary eq 'true']/@port}"
+             port="result"
              func="{$stepfunc}">{$stepfunction($primary,$secondary,$options,$currentstep)}</xproc:output>
              else
              (: all other primary output ports @TODO - needs to be handled :)
@@ -650,6 +673,8 @@ else if($stepname eq 'p:try') then
   $xproc:try
 else if($stepname eq 'p:catch') then
   $std:identity
+else if($stepname eq 'p:for-each') then
+  $xproc:for-each
 else
  $std:identity
 };

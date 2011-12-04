@@ -66,6 +66,10 @@ test:html(
     <expected><c>aaa<a id="1"><b id="2">test</b></a></c> </expected>
     <result>{txproc:runTryCatch1()}</result>
   </test>
+  <test name="xproc10" desc="p:for-each">
+    <expected><d><a>1</a></d><d><a>1</a></d><d><a>1</a></d><d><a>1</a></d><d><a>1</a></d><d><a>1</a></d><d><a>1</a></d><d><a>1</a></d><d><a>1</a></d></expected>
+    <result>{txproc:runForEach()}</result>
+  </test>
   <!--test name="xproc6" desc="test throwing dynamic error">
     <expected></expected>
     <result>{txproc:runDynamicError()}</result>

@@ -162,6 +162,7 @@ declare boundary-space preserve;
             $step/p:input[@primary eq 'false'],
             $step/p:output,
             $step/p:with-option,
+            $step/(p:iteration-source|p:viewport-source|p:xpath-context),
             parse:explicit-bindings($step[@xproc:step eq "true"],$ast[$count - 1]/p:output[@primary eq "true"]/@port,
 
 $step/@xproc:default-name,
@@ -371,6 +372,7 @@ $pipeline)
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                        attribute xproc:step {"true"},
                        $node/p:log,
+                       $node/p:iteration-source,
                        parse:iteration-source($node/p:input, $step-definition),
                        parse:output-port($node/p:output, $step-definition)
                      },
