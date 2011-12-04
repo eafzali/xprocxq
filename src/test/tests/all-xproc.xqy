@@ -4,7 +4,6 @@ xquery version "3.0";
  declare namespace c="http://www.w3.org/ns/xproc-step";
  declare namespace err="http://www.w3.org/ns/xproc-error";
 
-
 import module namespace test = "http://www.marklogic.com/test"
     at "../lib/test.xqm";
 
@@ -29,8 +28,8 @@ test:html(
   </test>
   <test name="xproc4" desc="simple xproc pipeline">
     <expected><doc>
-      Congratulations! You've run your first pipeline!
-    </doc></expected>
+        Congratulations! You've run your first pipeline!
+      </doc></expected>
     <result>{txproc:runEntryPointTest1()}</result>
   </test>
   <test name="xproc4" desc="simple xproc pipeline">
@@ -55,10 +54,10 @@ test:html(
              </packed></expected>
     <result>{txproc:runComplexSingleBranch()}</result>
   </test>
-  <test name="xproc8" desc="p:group">
+  <!--test name="xproc8" desc="p:group">
     <expected></expected>
     <result>{txproc:runGroup()}</result>
-  </test>
+  </test-->
 
 
 

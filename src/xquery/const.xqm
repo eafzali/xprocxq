@@ -28,17 +28,17 @@ declare variable $const:NS_XPROC_ERR  := "http://www.w3.org/ns/xproc-error";
 (: -------------------------------------------------------------------------- :)
 (: Serialization Constants :)
 (: -------------------------------------------------------------------------- :)
-declare variable $const:DEFAULT_SERIALIZE := 'method=xml indent=yes';
-declare variable $const:TRACE_SERIALIZE := 'method=xml';
+declare variable $const:DEFAULT_SERIALIZE  := 'method=xml indent=yes';
+declare variable $const:TRACE_SERIALIZE    := 'method=xml';
 declare variable $const:XINCLUDE_SERIALIZE := 'expand-xincludes=yes';
-declare variable $const:TEXT_SERIALIZE := 'method=text';
-declare variable $const:ESCAPE_SERIALIZE := 'method=xml indent=no';
+declare variable $const:TEXT_SERIALIZE     := 'method=text';
+declare variable $const:ESCAPE_SERIALIZE   := 'method=xml indent=no';
 
 
 (: -------------------------------------------------------------------------- :)
 (: XProc Extension Namespaces :)
 (: -------------------------------------------------------------------------- :)
-declare variable $const:NS_XPROC_EXT := "http://xproc.net/ns/xproc/ex";
+declare variable $const:NS_XPROC_EXT     := "http://xproc.net/ns/xproc/ex";
 declare variable $const:NS_XPROC_ERR_EXT := "http://xproc.net/ns/errors";
 
 
@@ -69,7 +69,6 @@ declare variable $const:vendor-uri :="http://www.xproc.net";
 declare variable $const:xpath-version :="2.0";
 declare variable $const:psvi-supported :="false";
 declare variable $const:episode :="somerandomnumber";
-
 
 
 (: -------------------------------------------------------------------------- :)

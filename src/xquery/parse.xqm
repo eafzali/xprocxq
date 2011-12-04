@@ -112,7 +112,7 @@ declare boundary-space preserve;
  declare function parse:explicit-bindings($pipeline) as element(p:declare-step){
  (: --------------------------------------------------------------------------------------------------------- :)
  element p:declare-step {$pipeline/@*,
-   parse:explicit-bindings($pipeline,'source','!1',$pipeline)
+   parse:explicit-bindings($pipeline,'source',$const:init_unique_id,$pipeline)
  }
  };
 
@@ -471,9 +471,9 @@ $pipeline)
     namespace c {"http://www.w3.org/ns/xproc-step"},
     namespace err {"http://www.w3.org/ns/xproc-error"},
     namespace xxq-error {"http://xproc.net/xproc/error"},
-    attribute xproc:default-name {'!1'},
+    attribute xproc:default-name {$const:init_unique_id},
     $pipeline/*[not(@xproc:step)],
-    parse:explicit-name($pipeline/*[@xproc:step eq "true"], '!1')
+    parse:explicit-name($pipeline/*[@xproc:step eq "true"], $const:init_unique_id)
   }
  };
 
