@@ -23,12 +23,13 @@ module namespace xproc = "http://xproc.net/xproc";
 
  (: declare steps :)
  declare variable $xproc:run-step      := xproc:run#7;
- declare variable $xproc:declare-step  := ();
  declare variable $xproc:choose        := xproc:choose#4;
  declare variable $xproc:try           := xproc:try#4;
  declare variable $xproc:group         := xproc:group#4;
  declare variable $xproc:for-each      := xproc:for-each#4;
  declare variable $xproc:viewport      := xproc:viewport#4; (: partial implementation :)
+
+ declare variable $xproc:declare-step  := ();
  declare variable $xproc:library       := ();
  declare variable $xproc:pipeline      := ();
  declare variable $xproc:variable      := ();
@@ -366,14 +367,17 @@ return
  (: -------------------------------------------------------------------------- :)
  let $step-name as xs:string := string($currentstep/@xproc:default-name)
  let $pinput as element(p:input)? := $currentstep/p:input[@primary eq 'true']
- let $data :=  if($pinput/node() and empty($primaryinput)) then
-   (: resolve each nested port binding :)
-   for $input in $pinput/*
-   return
-     xproc:resolve-port-binding($input,$outputs,$ast,$currentstep)
-   else
-     if(name($primaryinput) eq 'xproc:output') then $primaryinput/node() else $primaryinput
- let $result :=  u:evalXPATH(string($pinput/@select),$data)
+ let $data :=  if($pinput/node() (: and empty($primaryinput) :)) then
+       for $input in $pinput/*
+       return
+         xproc:resolve-port-binding($input,$outputs,$ast,$currentstep)
+       else
+         if(name($primaryinput) eq 'xproc:output') then 
+           $primaryinput/node() 
+         else 
+           $primaryinput
+           
+let $result :=  u:evalXPATH(string($pinput/@select),$data)
  return
    if ($result) then
      document{$result}
