@@ -76,7 +76,9 @@ declare boundary-space preserve;
 
 
  (:~
-  : sorts pipeline based on input port dependencies<br/>
+  : sorts pipeline based on input port dependencies 
+  :
+  : p:pipe/xproc:step-name are checked against xproc:default-name
   :
   : @returns node()*
   :)
@@ -86,10 +88,10 @@ declare boundary-space preserve;
     if (count($unsorted) eq 0) then
       (remove($sorted,1),
       <ext:post xproc:step="true" xproc:default-name="{$sorted[1]/@xproc:default-name}.0!">
-        <p:input port="source" primary="true">
-        (: need to pipe in last step or override from top level p:output :)
+        <p:input port="source" primary="true" select="/" xproc:type="comp">
+          <p:pipe port="result" step="{$sorted[last()]/@xproc:default-name}" xproc:step-name="{$sorted[last()]/@xproc:default-name}"/>
         </p:input>
-        <p:output primary="true" port="stdout" select="/"/>
+        <p:output primary="true" port="result" xproc:type="comp" select="/"/>
         </ext:post>)
      else
        let $allnodes := $unsorted [ every $id in p:input/p:pipe/@xproc:step-name satisfies ($id = $sorted/@xproc:default-name)]

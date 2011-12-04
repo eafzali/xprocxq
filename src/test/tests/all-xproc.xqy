@@ -64,6 +64,7 @@ test:html(
 
 
 
+
   <!--test name="xproc6" desc="test throwing dynamic error">
     <expected></expected>
     <result>{txproc:runDynamicError()}</result>
