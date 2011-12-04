@@ -144,6 +144,27 @@ test:html(
     <expected><c myattr="myattrval">aaa<a id="1"><b id="2">test</b><b>alternate</b></a></c></expected>
     <result>{tstd:testSetAttributes()}</result>
   </test>
+  <test name="std26a" desc="std:replace with element">
+    <expected><c>aaa<a id="1"><d xmlns:xproc="http://xproc.net/xproc" myattr="myattrval"></d></a><d><r><d xmlns:xproc="http://xproc.net/xproc" myattr="myattrval"></d></r></d></c></expected>
+    <result>{tstd:testReplace()}</result>
+  </test>
+  <test name="std26b" desc="std:replace with text">
+    <expected></expected>
+    <result>{tstd:testReplace()}</result>
+  </test>
+  <test name="std26c" desc="std:replace with processing instruction">
+    <expected></expected>
+    <result>{tstd:testReplace()}</result>
+  </test>
+  <test name="std26d" desc="std:replace with comment">
+    <expected></expected>
+    <result>{tstd:testReplace()}</result>
+  </test>
+  <test name="std26e" desc="std:replace with attribute, should throw err:XC0023">
+    <expected></expected>
+    <result>{tstd:testReplace()}</result>
+  </test>
+
 </testsuite>
 )
 

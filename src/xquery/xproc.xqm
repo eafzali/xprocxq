@@ -28,7 +28,7 @@ module namespace xproc = "http://xproc.net/xproc";
  declare variable $xproc:try            := xproc:try#4;
  declare variable $xproc:group          := xproc:group#4;
  declare variable $xproc:for-each       := xproc:for-each#4;
- declare variable $xproc:viewport       := ();
+ declare variable $xproc:viewport       := xproc:viewport#4;
  declare variable $xproc:library        := ();
  declare variable $xproc:pipeline       := ();
  declare variable $xproc:variable       := ();
@@ -101,6 +101,30 @@ let $iteration-select as xs:string   := string($currentstep/ext:pre/p:iteration-
 let $ast := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/node()}</p:declare-step>
 return
 for $item in u:evalXPATH($iteration-select,document{$primary})
+return
+  xproc:output(xproc:evalAST($ast,$xproc:eval-step,$namespaces,$item,(),()), 0)
+};
+
+
+ (:~ p:viewport step implementation
+ :
+ : @param $primary -
+ : @param $secondary -
+ : @param $options -
+ : @param $currentstep -
+ :
+ : @returns 
+ :)
+(: -------------------------------------------------------------------------- :)
+declare function xproc:viewport($primary,$secondary,$options,$currentstep) {
+(: -------------------------------------------------------------------------- :)
+let $namespaces  := xproc:enum-namespaces($currentstep)
+let $defaultname as xs:string := string($currentstep/@xproc:default-name)
+let $iteration-select as xs:string   := string($currentstep/ext:pre/p:iteration-source/@select)
+let $ast := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/node()}</p:declare-step>
+return
+for $item at $count in u:evalXPATH($iteration-select,document{$primary})
+let $result := xproc:output(xproc:evalAST($ast,$xproc:eval-step,$namespaces,$item,(),()), 0)
 return
   xproc:output(xproc:evalAST($ast,$xproc:eval-step,$namespaces,$item,(),()), 0)
 };
@@ -675,6 +699,8 @@ else if($stepname eq 'p:catch') then
   $std:identity
 else if($stepname eq 'p:for-each') then
   $xproc:for-each
+else if($stepname eq 'p:replace') then
+  $std:replace
 else
  $std:identity
 };

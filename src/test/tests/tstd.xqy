@@ -291,3 +291,18 @@ declare function (:TEST:) tstd:testSetAttributes() {
   return
     $std:set-attributes($input,$secondary,<xproc:options><p:with-option name='match' select='c'/></xproc:options>,())
 };
+
+
+declare function (:TEST:) tstd:testReplace() { 
+  let $input     := <c>aaa<a id="1"><b id="2">test</b></a><d><r><b/></r></d></c>
+  let $secondary := <xproc:input step=""
+             xproc:default-name=""
+             port-type="input"
+             href=""
+             primary="false"
+             select="/"
+             port="replacement"
+             func=""><d myattr="myattrval"/></xproc:input>
+  return
+    $std:replace($input,$secondary,<xproc:options><p:with-option name='match' select='b'/></xproc:options>,())
+};

@@ -70,6 +70,12 @@ test:html(
     <expected><d><a>1</a></d><d><a>1</a></d><d><a>1</a></d><d><a>1</a></d><d><a>1</a></d><d><a>1</a></d><d><a>1</a></d><d><a>1</a></d><d><a>1</a></d></expected>
     <result>{txproc:runForEach()}</result>
   </test>
+  <test name="xproc11" desc="p:viewport">
+    <expected></expected>
+    <result>{txproc:runViewPort()}</result>
+  </test>
+
+
   <!--test name="xproc6" desc="test throwing dynamic error">
     <expected></expected>
     <result>{txproc:runDynamicError()}</result>

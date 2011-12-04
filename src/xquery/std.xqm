@@ -39,7 +39,7 @@ declare variable $std:namespace-rename   := ();
 declare variable $std:pack               := std:pack#4;
 declare variable $std:parameters         := ();
 declare variable $std:rename             := std:rename#4;
-declare variable $std:replace            := ();
+declare variable $std:replace            := std:replace#4;
 declare variable $std:set-attributes     := std:set-attributes#4;
 declare variable $std:sink               := std:sink#4;
 declare variable $std:split-sequence     := std:split-sequence#4;
@@ -510,7 +510,38 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:replace($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+let $match  := u:get-option('match',$options,$primary)
+let $replacement := u:get-secondary('replacement',$secondary)
+
+let $template := <xsl:stylesheet version="2.0">
+<xsl:template match=".">
+    <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="@*|node()">
+    <xsl:copy>
+        <xsl:apply-templates select="@*|node()"/>
+    </xsl:copy>
+</xsl:template>
+
+<xsl:template match="{$match}">
+  <xsl:choose>
+    <xsl:when test=". instance of element()">
+    {$replacement}
+    </xsl:when>
+    <xsl:otherwise>
+       <error>err:XC0023</error>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+</xsl:stylesheet>      
+
+let $result :=   u:transform($template,$primary)
+return
+  if($result//error[. eq 'err:XC0023']) then
+    u:dynamicError('err:XC0023',": p:replace cannot replace matching attribute - ")
+  else 
+    $result
 };
 
 
