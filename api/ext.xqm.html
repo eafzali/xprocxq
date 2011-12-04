@@ -1,0 +1,189 @@
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta http-equiv="Generator" content="xquerydoc - https://github.com/xquery/xquerydoc"/><meta http-equiv="Authors" content="Copyright 2011 - John Snelson, James Fuller"/><title>xqDoc - </title><style type="text/css">
+          body {
+          font-family: Helvetica;
+          padding: 0.5em  1em;
+          }
+          pre {
+          font-family: Inconsolata, Consolas, monospace;
+          }
+          ol.results {
+          padding-left: 0;
+          }
+          .footer {
+          text-align:right;
+          border-top: solid 4px;
+          padding: 0.25em 0.5em;
+          font-size: 85%;
+          color: #999;
+          }
+          li.result {
+          list-style-position: inside;
+          list-style: none;
+          height:140px;
+          }
+          h2 {
+          display: inline-block;
+          margin: 0;
+          }
+
+          h2 a,
+          .result h3 a {
+          text-decoration: inherit;
+          color: inherit;
+          }
+          h3{
+	  font-size: 140%;
+	  background-color: #aaa;
+	  border-bottom: 1px solid #000;
+	  width: 100%;
+	  }
+          h4{
+	  font-size: 100%;
+	  background-color: #ddd;
+	  width: 90%;
+	  }
+
+          .namespace {
+          color: #999;
+          }
+          .namespace:before {
+          content: "{";
+          }
+          .namespace:after {
+          content: "}";
+          }
+          table{
+          width:75%;
+          float:right;
+          }
+          td {
+          height:100px;
+          width:50%;
+          vertical-align:text-top;
+          }
+        </style><script src="lib/prettify.js" type="text/javascript"> </script><script src="lib/lang-xq.js" type="text/javascript"> </script><link rel="stylesheet" type="text/css" href="lib/prettify.css"/></head><body class="home"><div style="text-align:right;"><a href="index.html">XQuery API index</a></div><div id="main"><h1><span class="namespace"/>  library module </h1><div><h3>Variables</h3><ul><li>pre</li><li>post</li><li>xproc</li><li>xsltforms</li></ul></div><div><h3>Functions</h3><h4><pre class="prettyprint lang-xq"><u>Function:</u> pre($primary,$secondary,$options,$variables)</pre></h4><h5>Params</h5><ul><li>primary: </li><li>secondary: </li><li>options: </li><li>variables: </li></ul><h4><pre class="prettyprint lang-xq"><u>Function:</u> post($primary,$secondary,$options,$variables)</pre></h4><h5>Params</h5><ul><li>primary: </li><li>secondary: </li><li>options: </li><li>variables: </li></ul><h4><pre class="prettyprint lang-xq"><u>Function:</u> xproc($primary,$secondary,$options,$variables)</pre></h4><h5>Params</h5><ul><li>primary: </li><li>secondary: </li><li>options: </li><li>variables: </li></ul><h4><pre class="prettyprint lang-xq"><u>Function:</u> xsltforms($primary,$secondary,$options,$variables)</pre></h4><h5>Params</h5><ul><li>primary: </li><li>secondary: </li><li>options: </li><li>variables: </li></ul></div><div><h3>Original Source Code</h3><pre class="prettyprint lang-xq">(: ------------------------------------------------------------------------------------- &#xD;
+&#xD;
+	ext.xqm - implements all xprocxq specific extension steps.&#xD;
+	&#xD;
+---------------------------------------------------------------------------------------- :)&#xD;
+xquery version "3.0" encoding "UTF-8";&#xD;
+&#xD;
+module namespace ext = "http://xproc.net/xproc/ext";&#xD;
+&#xD;
+(: declare namespaces :)&#xD;
+declare namespace p="http://www.w3.org/ns/xproc";&#xD;
+declare namespace c="http://www.w3.org/ns/xproc-step";&#xD;
+declare namespace err="http://www.w3.org/ns/xproc-error";&#xD;
+declare namespace xproc = "http://xproc.net/xproc";&#xD;
+&#xD;
+(: module imports :)&#xD;
+import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";&#xD;
+import module namespace u = "http://xproc.net/xproc/util" at "util.xqm";&#xD;
+&#xD;
+&#xD;
+&#xD;
+(: declare functions :)&#xD;
+declare variable $ext:pre       := ext:pre#4;&#xD;
+declare variable $ext:post      := ext:post#4;&#xD;
+declare variable $ext:xproc     := ext:xproc#4;&#xD;
+declare variable $ext:xsltforms := ext:xsltforms#4;&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function ext:pre($primary,$secondary,$options,$variables){&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+$primary&#xD;
+};&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function ext:post($primary,$secondary,$options,$variables){&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+$primary&#xD;
+};&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function ext:xproc($primary,$secondary,$options,$variables){&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+()&#xD;
+(: unsure if this is defined here or in xproc.xqm&#xD;
+&#xD;
+  let $pipeline :=  u:get-secondary('pipeline',$secondary)&#xD;
+  let $dflag    :=  u:get-option('dflag',$options,$primary)&#xD;
+  let $tflag    :=  u:get-option('tflag',$options,$primary)&#xD;
+  let $bindings := ()&#xD;
+  let $options  := ()&#xD;
+  return&#xD;
+    $xproc:run-step($pipeline,$primary,$bindings,$options,(),$dflag,$tflag)&#xD;
+:)&#xD;
+};&#xD;
+&#xD;
+&#xD;
+(:-------------------------------------------------------------------------- :)&#xD;
+declare function ext:xsltforms($primary,$secondary,$options,$variables){&#xD;
+(: TODO- unsure about the logic of this :)&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+()&#xD;
+};&#xD;
+&#xD;
+&#xD;
+</pre></div><br/><div class="footer"><p style="text-align:right"><i/> |
+          generated by xquerydoc <a href="https://github.com/xquery/xquerydoc" target="xquerydoc">https://github.com/xquery/xquerydoc</a></p></div></div><div><textarea rows="20" cols="100"><doc:xqdoc xmlns:doc="http://www.xqdoc.org/1.0"><doc:control><XQuery><Module><VersionDecl>(: ------------------------------------------------------------------------------------- &#xD;
+&#xD;
+	ext.xqm - implements all xprocxq specific extension steps.&#xD;
+	&#xD;
+---------------------------------------------------------------------------------------- :)&#xD;
+<TOKEN>xquery</TOKEN><TOKEN>version</TOKEN><StringLiteral>"3.0"</StringLiteral><TOKEN>encoding</TOKEN><StringLiteral>"UTF-8"</StringLiteral><Separator><TOKEN>;</TOKEN></Separator></VersionDecl><LibraryModule><ModuleDecl><TOKEN>module</TOKEN><TOKEN>namespace</TOKEN><NCName><NCName>ext</NCName></NCName><TOKEN>=</TOKEN><URILiteral>"http://xproc.net/xproc/ext"</URILiteral><Separator><TOKEN>;</TOKEN></Separator></ModuleDecl><Prolog><NamespaceDecl>&#xD;
+&#xD;
+(: declare namespaces :)&#xD;
+<TOKEN>declare</TOKEN><TOKEN>namespace</TOKEN><NCName><NCName>p</NCName></NCName><TOKEN>=</TOKEN><URILiteral>"http://www.w3.org/ns/xproc"</URILiteral></NamespaceDecl><Separator><TOKEN>;</TOKEN></Separator><NamespaceDecl><TOKEN>declare</TOKEN><TOKEN>namespace</TOKEN><NCName><NCName>c</NCName></NCName><TOKEN>=</TOKEN><URILiteral>"http://www.w3.org/ns/xproc-step"</URILiteral></NamespaceDecl><Separator><TOKEN>;</TOKEN></Separator><NamespaceDecl><TOKEN>declare</TOKEN><TOKEN>namespace</TOKEN><NCName><NCName>err</NCName></NCName><TOKEN>=</TOKEN><URILiteral>"http://www.w3.org/ns/xproc-error"</URILiteral></NamespaceDecl><Separator><TOKEN>;</TOKEN></Separator><NamespaceDecl><TOKEN>declare</TOKEN><TOKEN>namespace</TOKEN><NCName><NCName>xproc</NCName></NCName><TOKEN>=</TOKEN><URILiteral>"http://xproc.net/xproc"</URILiteral></NamespaceDecl><Separator><TOKEN>;</TOKEN></Separator><Import><ModuleImport>&#xD;
+&#xD;
+(: module imports :)&#xD;
+<TOKEN>import</TOKEN><TOKEN>module</TOKEN><TOKEN>namespace</TOKEN><NCName><NCName>const</NCName></NCName><TOKEN>=</TOKEN><URILiteral>"http://xproc.net/xproc/const"</URILiteral><TOKEN>at</TOKEN><URILiteral>"const.xqm"</URILiteral></ModuleImport></Import><Separator><TOKEN>;</TOKEN></Separator><Import><ModuleImport><TOKEN>import</TOKEN><TOKEN>module</TOKEN><TOKEN>namespace</TOKEN><NCName><NCName>u</NCName></NCName><TOKEN>=</TOKEN><URILiteral>"http://xproc.net/xproc/util"</URILiteral><TOKEN>at</TOKEN><URILiteral>"util.xqm"</URILiteral></ModuleImport></Import><Separator><TOKEN>;</TOKEN></Separator><AnnotatedDecl>&#xD;
+&#xD;
+&#xD;
+&#xD;
+(: declare functions :)&#xD;
+<TOKEN>declare</TOKEN><VarDecl><TOKEN>variable</TOKEN><TOKEN>$</TOKEN><VarName><EQName><FunctionName><EQName>ext:pre</EQName></FunctionName></EQName></VarName><TOKEN>:=</TOKEN><VarValue><ExprSingle><OrExpr><AndExpr><ComparisonExpr><RangeExpr><AdditiveExpr><MultiplicativeExpr><UnionExpr><IntersectExceptExpr><InstanceofExpr><TreatExpr><CastableExpr><CastExpr><UnaryExpr><ValueExpr><PathExpr><RelativePathExpr><StepExpr><PostfixExpr><PrimaryExpr><FunctionItemExpr><LiteralFunctionItem><EQName><FunctionName><EQName>ext:pre</EQName></FunctionName></EQName><TOKEN>#</TOKEN><IntegerLiteral>4</IntegerLiteral></LiteralFunctionItem></FunctionItemExpr></PrimaryExpr></PostfixExpr></StepExpr></RelativePathExpr></PathExpr></ValueExpr></UnaryExpr></CastExpr></CastableExpr></TreatExpr></InstanceofExpr></IntersectExceptExpr></UnionExpr></MultiplicativeExpr></AdditiveExpr></RangeExpr></ComparisonExpr></AndExpr></OrExpr></ExprSingle></VarValue></VarDecl></AnnotatedDecl><Separator><TOKEN>;</TOKEN></Separator><AnnotatedDecl><TOKEN>declare</TOKEN><VarDecl><TOKEN>variable</TOKEN><TOKEN>$</TOKEN><VarName><EQName><FunctionName><EQName>ext:post</EQName></FunctionName></EQName></VarName><TOKEN>:=</TOKEN><VarValue><ExprSingle><OrExpr><AndExpr><ComparisonExpr><RangeExpr><AdditiveExpr><MultiplicativeExpr><UnionExpr><IntersectExceptExpr><InstanceofExpr><TreatExpr><CastableExpr><CastExpr><UnaryExpr><ValueExpr><PathExpr><RelativePathExpr><StepExpr><PostfixExpr><PrimaryExpr><FunctionItemExpr><LiteralFunctionItem><EQName><FunctionName><EQName>ext:post</EQName></FunctionName></EQName><TOKEN>#</TOKEN><IntegerLiteral>4</IntegerLiteral></LiteralFunctionItem></FunctionItemExpr></PrimaryExpr></PostfixExpr></StepExpr></RelativePathExpr></PathExpr></ValueExpr></UnaryExpr></CastExpr></CastableExpr></TreatExpr></InstanceofExpr></IntersectExceptExpr></UnionExpr></MultiplicativeExpr></AdditiveExpr></RangeExpr></ComparisonExpr></AndExpr></OrExpr></ExprSingle></VarValue></VarDecl></AnnotatedDecl><Separator><TOKEN>;</TOKEN></Separator><AnnotatedDecl><TOKEN>declare</TOKEN><VarDecl><TOKEN>variable</TOKEN><TOKEN>$</TOKEN><VarName><EQName><FunctionName><EQName>ext:xproc</EQName></FunctionName></EQName></VarName><TOKEN>:=</TOKEN><VarValue><ExprSingle><OrExpr><AndExpr><ComparisonExpr><RangeExpr><AdditiveExpr><MultiplicativeExpr><UnionExpr><IntersectExceptExpr><InstanceofExpr><TreatExpr><CastableExpr><CastExpr><UnaryExpr><ValueExpr><PathExpr><RelativePathExpr><StepExpr><PostfixExpr><PrimaryExpr><FunctionItemExpr><LiteralFunctionItem><EQName><FunctionName><EQName>ext:xproc</EQName></FunctionName></EQName><TOKEN>#</TOKEN><IntegerLiteral>4</IntegerLiteral></LiteralFunctionItem></FunctionItemExpr></PrimaryExpr></PostfixExpr></StepExpr></RelativePathExpr></PathExpr></ValueExpr></UnaryExpr></CastExpr></CastableExpr></TreatExpr></InstanceofExpr></IntersectExceptExpr></UnionExpr></MultiplicativeExpr></AdditiveExpr></RangeExpr></ComparisonExpr></AndExpr></OrExpr></ExprSingle></VarValue></VarDecl></AnnotatedDecl><Separator><TOKEN>;</TOKEN></Separator><AnnotatedDecl><TOKEN>declare</TOKEN><VarDecl><TOKEN>variable</TOKEN><TOKEN>$</TOKEN><VarName><EQName><FunctionName><EQName>ext:xsltforms</EQName></FunctionName></EQName></VarName><TOKEN>:=</TOKEN><VarValue><ExprSingle><OrExpr><AndExpr><ComparisonExpr><RangeExpr><AdditiveExpr><MultiplicativeExpr><UnionExpr><IntersectExceptExpr><InstanceofExpr><TreatExpr><CastableExpr><CastExpr><UnaryExpr><ValueExpr><PathExpr><RelativePathExpr><StepExpr><PostfixExpr><PrimaryExpr><FunctionItemExpr><LiteralFunctionItem><EQName><FunctionName><EQName>ext:xsltforms</EQName></FunctionName></EQName><TOKEN>#</TOKEN><IntegerLiteral>4</IntegerLiteral></LiteralFunctionItem></FunctionItemExpr></PrimaryExpr></PostfixExpr></StepExpr></RelativePathExpr></PathExpr></ValueExpr></UnaryExpr></CastExpr></CastableExpr></TreatExpr></InstanceofExpr></IntersectExceptExpr></UnionExpr></MultiplicativeExpr></AdditiveExpr></RangeExpr></ComparisonExpr></AndExpr></OrExpr></ExprSingle></VarValue></VarDecl></AnnotatedDecl><Separator><TOKEN>;</TOKEN></Separator><AnnotatedDecl>&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+<TOKEN>declare</TOKEN><FunctionDecl><TOKEN>function</TOKEN><EQName><FunctionName><EQName>ext:pre</EQName></FunctionName></EQName><TOKEN>(</TOKEN><ParamList><Param><TOKEN>$</TOKEN><EQName><FunctionName><EQName>primary</EQName></FunctionName></EQName></Param><TOKEN>,</TOKEN><Param><TOKEN>$</TOKEN><EQName><FunctionName><EQName>secondary</EQName></FunctionName></EQName></Param><TOKEN>,</TOKEN><Param><TOKEN>$</TOKEN><EQName><FunctionName><EQName>options</EQName></FunctionName></EQName></Param><TOKEN>,</TOKEN><Param><TOKEN>$</TOKEN><EQName><FunctionName><EQName>variables</EQName></FunctionName></EQName></Param></ParamList><TOKEN>)</TOKEN><FunctionBody><EnclosedExpr><TOKEN>{</TOKEN><Expr><ExprSingle><OrExpr><AndExpr><ComparisonExpr><RangeExpr><AdditiveExpr><MultiplicativeExpr><UnionExpr><IntersectExceptExpr><InstanceofExpr><TreatExpr><CastableExpr><CastExpr><UnaryExpr><ValueExpr><PathExpr><RelativePathExpr><StepExpr><PostfixExpr><PrimaryExpr><VarRef>&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+<TOKEN>$</TOKEN><VarName><EQName><FunctionName><EQName>primary</EQName></FunctionName></EQName></VarName></VarRef></PrimaryExpr></PostfixExpr></StepExpr></RelativePathExpr></PathExpr></ValueExpr></UnaryExpr></CastExpr></CastableExpr></TreatExpr></InstanceofExpr></IntersectExceptExpr></UnionExpr></MultiplicativeExpr></AdditiveExpr></RangeExpr></ComparisonExpr></AndExpr></OrExpr></ExprSingle></Expr><TOKEN>}</TOKEN></EnclosedExpr></FunctionBody></FunctionDecl></AnnotatedDecl><Separator><TOKEN>;</TOKEN></Separator><AnnotatedDecl>&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+<TOKEN>declare</TOKEN><FunctionDecl><TOKEN>function</TOKEN><EQName><FunctionName><EQName>ext:post</EQName></FunctionName></EQName><TOKEN>(</TOKEN><ParamList><Param><TOKEN>$</TOKEN><EQName><FunctionName><EQName>primary</EQName></FunctionName></EQName></Param><TOKEN>,</TOKEN><Param><TOKEN>$</TOKEN><EQName><FunctionName><EQName>secondary</EQName></FunctionName></EQName></Param><TOKEN>,</TOKEN><Param><TOKEN>$</TOKEN><EQName><FunctionName><EQName>options</EQName></FunctionName></EQName></Param><TOKEN>,</TOKEN><Param><TOKEN>$</TOKEN><EQName><FunctionName><EQName>variables</EQName></FunctionName></EQName></Param></ParamList><TOKEN>)</TOKEN><FunctionBody><EnclosedExpr><TOKEN>{</TOKEN><Expr><ExprSingle><OrExpr><AndExpr><ComparisonExpr><RangeExpr><AdditiveExpr><MultiplicativeExpr><UnionExpr><IntersectExceptExpr><InstanceofExpr><TreatExpr><CastableExpr><CastExpr><UnaryExpr><ValueExpr><PathExpr><RelativePathExpr><StepExpr><PostfixExpr><PrimaryExpr><VarRef>&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+<TOKEN>$</TOKEN><VarName><EQName><FunctionName><EQName>primary</EQName></FunctionName></EQName></VarName></VarRef></PrimaryExpr></PostfixExpr></StepExpr></RelativePathExpr></PathExpr></ValueExpr></UnaryExpr></CastExpr></CastableExpr></TreatExpr></InstanceofExpr></IntersectExceptExpr></UnionExpr></MultiplicativeExpr></AdditiveExpr></RangeExpr></ComparisonExpr></AndExpr></OrExpr></ExprSingle></Expr><TOKEN>}</TOKEN></EnclosedExpr></FunctionBody></FunctionDecl></AnnotatedDecl><Separator><TOKEN>;</TOKEN></Separator><AnnotatedDecl>&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+<TOKEN>declare</TOKEN><FunctionDecl><TOKEN>function</TOKEN><EQName><FunctionName><EQName>ext:xproc</EQName></FunctionName></EQName><TOKEN>(</TOKEN><ParamList><Param><TOKEN>$</TOKEN><EQName><FunctionName><EQName>primary</EQName></FunctionName></EQName></Param><TOKEN>,</TOKEN><Param><TOKEN>$</TOKEN><EQName><FunctionName><EQName>secondary</EQName></FunctionName></EQName></Param><TOKEN>,</TOKEN><Param><TOKEN>$</TOKEN><EQName><FunctionName><EQName>options</EQName></FunctionName></EQName></Param><TOKEN>,</TOKEN><Param><TOKEN>$</TOKEN><EQName><FunctionName><EQName>variables</EQName></FunctionName></EQName></Param></ParamList><TOKEN>)</TOKEN><FunctionBody><EnclosedExpr><TOKEN>{</TOKEN><Expr><ExprSingle><OrExpr><AndExpr><ComparisonExpr><RangeExpr><AdditiveExpr><MultiplicativeExpr><UnionExpr><IntersectExceptExpr><InstanceofExpr><TreatExpr><CastableExpr><CastExpr><UnaryExpr><ValueExpr><PathExpr><RelativePathExpr><StepExpr><PostfixExpr><PrimaryExpr><ParenthesizedExpr>&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+<TOKEN>(</TOKEN><TOKEN>)</TOKEN></ParenthesizedExpr></PrimaryExpr></PostfixExpr></StepExpr></RelativePathExpr></PathExpr></ValueExpr></UnaryExpr></CastExpr></CastableExpr></TreatExpr></InstanceofExpr></IntersectExceptExpr></UnionExpr></MultiplicativeExpr></AdditiveExpr></RangeExpr></ComparisonExpr></AndExpr></OrExpr></ExprSingle></Expr>&#xD;
+(: unsure if this is defined here or in xproc.xqm&#xD;
+&#xD;
+  let $pipeline :=  u:get-secondary('pipeline',$secondary)&#xD;
+  let $dflag    :=  u:get-option('dflag',$options,$primary)&#xD;
+  let $tflag    :=  u:get-option('tflag',$options,$primary)&#xD;
+  let $bindings := ()&#xD;
+  let $options  := ()&#xD;
+  return&#xD;
+    $xproc:run-step($pipeline,$primary,$bindings,$options,(),$dflag,$tflag)&#xD;
+:)&#xD;
+<TOKEN>}</TOKEN></EnclosedExpr></FunctionBody></FunctionDecl></AnnotatedDecl><Separator><TOKEN>;</TOKEN></Separator><AnnotatedDecl>&#xD;
+&#xD;
+&#xD;
+(:-------------------------------------------------------------------------- :)&#xD;
+<TOKEN>declare</TOKEN><FunctionDecl><TOKEN>function</TOKEN><EQName><FunctionName><EQName>ext:xsltforms</EQName></FunctionName></EQName><TOKEN>(</TOKEN><ParamList><Param><TOKEN>$</TOKEN><EQName><FunctionName><EQName>primary</EQName></FunctionName></EQName></Param><TOKEN>,</TOKEN><Param><TOKEN>$</TOKEN><EQName><FunctionName><EQName>secondary</EQName></FunctionName></EQName></Param><TOKEN>,</TOKEN><Param><TOKEN>$</TOKEN><EQName><FunctionName><EQName>options</EQName></FunctionName></EQName></Param><TOKEN>,</TOKEN><Param><TOKEN>$</TOKEN><EQName><FunctionName><EQName>variables</EQName></FunctionName></EQName></Param></ParamList><TOKEN>)</TOKEN><FunctionBody><EnclosedExpr><TOKEN>{</TOKEN><Expr><ExprSingle><OrExpr><AndExpr><ComparisonExpr><RangeExpr><AdditiveExpr><MultiplicativeExpr><UnionExpr><IntersectExceptExpr><InstanceofExpr><TreatExpr><CastableExpr><CastExpr><UnaryExpr><ValueExpr><PathExpr><RelativePathExpr><StepExpr><PostfixExpr><PrimaryExpr><ParenthesizedExpr>&#xD;
+(: TODO- unsure about the logic of this :)&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+<TOKEN>(</TOKEN><TOKEN>)</TOKEN></ParenthesizedExpr></PrimaryExpr></PostfixExpr></StepExpr></RelativePathExpr></PathExpr></ValueExpr></UnaryExpr></CastExpr></CastableExpr></TreatExpr></InstanceofExpr></IntersectExceptExpr></UnionExpr></MultiplicativeExpr></AdditiveExpr></RangeExpr></ComparisonExpr></AndExpr></OrExpr></ExprSingle></Expr><TOKEN>}</TOKEN></EnclosedExpr></FunctionBody></FunctionDecl></AnnotatedDecl><Separator><TOKEN>;</TOKEN></Separator></Prolog></LibraryModule></Module><EOF/></XQuery><!--Generated by xquerydoc: http://github.com/xquery/xquerydoc--><doc:date>2011-12-04T19:09:33.943+01:00</doc:date><doc:version><VersionDecl>(: ------------------------------------------------------------------------------------- &#xD;
+&#xD;
+	ext.xqm - implements all xprocxq specific extension steps.&#xD;
+	&#xD;
+---------------------------------------------------------------------------------------- :)&#xD;
+<TOKEN>xquery</TOKEN><TOKEN>version</TOKEN><StringLiteral>"3.0"</StringLiteral><TOKEN>encoding</TOKEN><StringLiteral>"UTF-8"</StringLiteral><Separator><TOKEN>;</TOKEN></Separator></VersionDecl></doc:version></doc:control><doc:module type="library"><doc:uri/></doc:module><doc:variables><doc:variable><doc:uri>pre</doc:uri></doc:variable><doc:variable><doc:uri>post</doc:uri></doc:variable><doc:variable><doc:uri>xproc</doc:uri></doc:variable><doc:variable><doc:uri>xsltforms</doc:uri></doc:variable></doc:variables><doc:functions><doc:function><doc:name>pre</doc:name><doc:signature>($primary,$secondary,$options,$variables)</doc:signature><doc:parameters><doc:parameter><doc:name>primary</doc:name></doc:parameter><doc:parameter><doc:name>secondary</doc:name></doc:parameter><doc:parameter><doc:name>options</doc:name></doc:parameter><doc:parameter><doc:name>variables</doc:name></doc:parameter></doc:parameters></doc:function><doc:function><doc:name>post</doc:name><doc:signature>($primary,$secondary,$options,$variables)</doc:signature><doc:parameters><doc:parameter><doc:name>primary</doc:name></doc:parameter><doc:parameter><doc:name>secondary</doc:name></doc:parameter><doc:parameter><doc:name>options</doc:name></doc:parameter><doc:parameter><doc:name>variables</doc:name></doc:parameter></doc:parameters></doc:function><doc:function><doc:name>xproc</doc:name><doc:signature>($primary,$secondary,$options,$variables)</doc:signature><doc:parameters><doc:parameter><doc:name>primary</doc:name></doc:parameter><doc:parameter><doc:name>secondary</doc:name></doc:parameter><doc:parameter><doc:name>options</doc:name></doc:parameter><doc:parameter><doc:name>variables</doc:name></doc:parameter></doc:parameters></doc:function><doc:function><doc:name>xsltforms</doc:name><doc:signature>($primary,$secondary,$options,$variables)</doc:signature><doc:parameters><doc:parameter><doc:name>primary</doc:name></doc:parameter><doc:parameter><doc:name>secondary</doc:name></doc:parameter><doc:parameter><doc:name>options</doc:name></doc:parameter><doc:parameter><doc:name>variables</doc:name></doc:parameter></doc:parameters></doc:function></doc:functions></doc:xqdoc></textarea></div><script type="application/javascript">
+	  window.onload = function(){ prettyPrint(); }
+	</script></body></html>
