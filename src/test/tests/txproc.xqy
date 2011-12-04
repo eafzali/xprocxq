@@ -149,7 +149,36 @@ declare function (:TEST:) txproc:runGroup() {
 <p:input port="source"/><p:output port="result"/>
 <p:group><p:identity/><p:count/></p:group><p:identity/></p:declare-step>
   let $stdin    := <c>aaa<a id="1"><b id="2">test</b></a></c>
-  let $dflag    := 1
+  let $dflag    := 0
+  let $tflag    := 0
+  let $bindings := ()
+  let $options  := ()
+  let $outputs   := ()
+  return
+   $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
+};
+
+
+declare function (:TEST:) txproc:runTryCatch() { 
+  let $pipeline := <p:declare-step name="main">
+<p:input port="source"/><p:output port="result"/>
+<p:try><p:wrap wrapper="wrapme" match="/"/></p:try><p:identity/></p:declare-step>
+  let $stdin    := <c>aaa<a id="1"><b id="2">test</b></a></c>
+  let $dflag    := 0
+  let $tflag    := 0
+  let $bindings := ()
+  let $options  := ()
+  let $outputs   := ()
+  return
+   $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
+};
+
+declare function (:TEST:) txproc:runTryCatch1() { 
+  let $pipeline := <p:declare-step name="main">
+<p:input port="source"/><p:output port="result"/>
+<p:try><p:wrap wrapper="2" match="/"/></p:try><p:identity/></p:declare-step>
+  let $stdin    := <c>aaa<a id="1"><b id="2">test</b></a></c>
+  let $dflag    := 0
   let $tflag    := 0
   let $bindings := ()
   let $options  := ()

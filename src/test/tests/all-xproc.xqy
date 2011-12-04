@@ -55,15 +55,17 @@ test:html(
     <result>{txproc:runComplexSingleBranch()}</result>
   </test>
   <test name="xproc8" desc="p:group">
-    <expected></expected>
+    <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">1</c:result></expected>
     <result>{txproc:runGroup()}</result>
   </test>
-
-
-
-
-
-
+  <test name="xproc9a" desc="successful p:try">
+    <expected><wrapme><c>aaa<a id="1"><b id="2">test</b></a></c></wrapme></expected>
+    <result>{txproc:runTryCatch()}</result>
+  </test>
+  <test name="xproc9b" desc="p:try which fails and fallsback to catch">
+    <expected><c>aaa<a id="1"><b id="2">test</b></a></c> </expected>
+    <result>{txproc:runTryCatch1()}</result>
+  </test>
   <!--test name="xproc6" desc="test throwing dynamic error">
     <expected></expected>
     <result>{txproc:runDynamicError()}</result>

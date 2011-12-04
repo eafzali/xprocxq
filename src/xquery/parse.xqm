@@ -425,7 +425,7 @@ $pipeline)
                      $node/@*,
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                        attribute xproc:step {"true"},
-                       $node/p:variable,
+                       $node/p:log,
                        parse:input-port($node/p:input, $step-definition),
                        parse:output-port($node/p:output, $step-definition)
                      },

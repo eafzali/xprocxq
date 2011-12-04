@@ -25,8 +25,7 @@ module namespace xproc = "http://xproc.net/xproc";
  declare variable $xproc:run-step       := xproc:run#7;
  declare variable $xproc:declare-step   := ();
  declare variable $xproc:choose         := ();
- declare variable $xproc:try            := ();
- declare variable $xproc:catch          := ();
+ declare variable $xproc:try            := xproc:try#4;
  declare variable $xproc:group          := xproc:group#4;
  declare variable $xproc:for-each       := ();
  declare variable $xproc:viewport       := ();
@@ -38,14 +37,12 @@ module namespace xproc = "http://xproc.net/xproc";
  declare option saxon:output "indent=yes";
 
 
-
  (:~ p:group step implementation
  :
  : @param $primary -
  : @param $secondary -
  : @param $options -
  : @param $currentstep -
- : @param $outputs -
  :
  : @returns 
  :)
@@ -57,6 +54,32 @@ let $defaultname as xs:string := string($currentstep/@xproc:default-name)
 let $ast := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/node()}</p:declare-step>
 return
   xproc:output(xproc:evalAST($ast,$xproc:eval-step,$namespaces,$primary,(),()), 0)
+};
+
+
+ (:~ p:try step implementation
+ :
+ : @param $primary -
+ : @param $secondary -
+ : @param $options -
+ : @param $currentstep -
+ :
+ : @returns 
+ :)
+(: -------------------------------------------------------------------------- :)
+declare function xproc:try($primary,$secondary,$options,$currentstep) {
+(: -------------------------------------------------------------------------- :)
+let $namespaces  := xproc:enum-namespaces($currentstep)
+let $defaultname as xs:string := string($currentstep/@xproc:default-name)
+let $ast-try := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/*[name(.) ne 'p:catch']}</p:declare-step>
+let $ast-catch := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/p:catch/node()}</p:declare-step>
+
+return
+  try{
+    xproc:output(xproc:evalAST($ast-try,$xproc:eval-step,$namespaces,$primary,(),()), 0)
+  }catch *{
+    xproc:output(xproc:evalAST($ast-catch,$xproc:eval-step,$namespaces,$primary,(),()), 0)
+  }
 };
 
 
@@ -235,7 +258,7 @@ return
              if ($result) then
                $result
              else
-               <error/>
+               <error type="eval-secondary"/>
            (:    u:dynamicError('err:XD0016',concat("xproc step ",$step-name, "did not select anything from p:input")) :)
    }
  </xproc:input>
@@ -275,7 +298,7 @@ return
    if ($result) then
      document{$result}
    else
-     <error/>
+     <error1 type="eval-primary"/>
    (:  u:dynamicError('err:XD0016',concat("xproc step ",$step-name, "did not select anything from p:input")) :)
 };
 
@@ -623,6 +646,10 @@ else if($stepname eq 'ext:post') then
   $ext:post
 else if($stepname eq 'p:group') then
   $xproc:group
+else if($stepname eq 'p:try') then
+  $xproc:try
+else if($stepname eq 'p:catch') then
+  $std:identity
 else
  $std:identity
 };
