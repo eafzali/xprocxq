@@ -71,7 +71,7 @@ test:html(
     <result>{txproc:runForEach()}</result>
   </test>
   <test name="xproc11" desc="p:viewport">
-    <expected></expected>
+    <expected><z><a>1</a></z><z><a><l>test</l></a></z><z><a><l>test</l></a></z></expected>
     <result>{txproc:runViewPort()}</result>
   </test>
 

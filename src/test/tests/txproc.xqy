@@ -205,8 +205,8 @@ declare function (:TEST:) txproc:runForEach() {
 declare function (:TEST:) txproc:runViewPort() { 
   let $pipeline := <p:declare-step name="main">
 <p:input port="source"/><p:output port="result"/>
-<p:viewport><p:iteration-source select="//a"/><p:wrap wrapper="d" match="/"/></p:viewport><p:identity/></p:declare-step>
-  let $stdin    := <c><a>1</a><b><a></a></b><d><a></a></d></c>
+<p:viewport><p:viewport-source select="//a"/><p:wrap wrapper="z" match="/"/></p:viewport><p:identity/></p:declare-step>
+  let $stdin    := <c><a>1</a><b><a><l>test</l></a></b><r><a><l>test</l></a></r></c>
   let $dflag    := 0
   let $tflag    := 0
   let $bindings := ()

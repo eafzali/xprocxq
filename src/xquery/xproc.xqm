@@ -120,11 +120,10 @@ declare function xproc:viewport($primary,$secondary,$options,$currentstep) {
 (: -------------------------------------------------------------------------- :)
 let $namespaces  := xproc:enum-namespaces($currentstep)
 let $defaultname as xs:string := string($currentstep/@xproc:default-name)
-let $iteration-select as xs:string   := string($currentstep/ext:pre/p:iteration-source/@select)
+let $iteration-select as xs:string   := string($currentstep/ext:pre/p:viewport-source/@select)
 let $ast := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/node()}</p:declare-step>
 return
 for $item at $count in u:evalXPATH($iteration-select,document{$primary})
-let $result := xproc:output(xproc:evalAST($ast,$xproc:eval-step,$namespaces,$item,(),()), 0)
 return
   xproc:output(xproc:evalAST($ast,$xproc:eval-step,$namespaces,$item,(),()), 0)
 };
@@ -699,6 +698,8 @@ else if($stepname eq 'p:catch') then
   $std:identity
 else if($stepname eq 'p:for-each') then
   $xproc:for-each
+else if($stepname eq 'p:viewport') then
+  $xproc:viewport
 else if($stepname eq 'p:replace') then
   $std:replace
 else
