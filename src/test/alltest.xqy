@@ -5,13 +5,13 @@ xquery version "3.0";
 declare boundary-space strip;
  declare copy-namespaces no-preserve,no-inherit;
 
+declare namespace xqyerr="http://www.w3.org/2005/xqt-errors";
+
 declare namespace p="http://www.w3.org/ns/xproc";
 declare namespace c="http://www.w3.org/ns/xproc-step";
-declare namespace err="http://www.w3.org/ns/xproc-error";
 declare namespace ext ="http://xproc.net/xproc/ext";
 declare namespace t="http://xproc.org/ns/testsuite";
 declare namespace test="http://xproc.org/ns/testsuite";
-declare namespace err="http://www.w3.org/2005/xqt-errors";
 
 import module namespace xproc = "http://xproc.net/xproc" at "../../src/xquery/xproc.xqm";
 
@@ -19,7 +19,7 @@ import module namespace test1 = "http://www.marklogic.com/test"
     at "lib/test.xqm";
 
  test1:html(
-<testsuite title="w3c required and optional tests">
+<testsuite title="w3c required and optional tests" xmlns:xqyerr="http://www.w3.org/2005/xqt-errors">
 {
 for $test in collection("tests.xproc.org/required?select=delete-001.xml")
  let $pipeline := $test/t:test/t:pipeline/*
@@ -44,15 +44,13 @@ return
 </expected>
 <result>
 {
-try{
-  $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
-} catch * {
-<error>{
-    $err:code, $err:value, " module: ",
-    $err:module, "(", $err:line-number, ",", $err:column-number, ")"
-}</error>
 
+try { 
+  $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
+} catch * { 
+  <error code="{$xqyerr:code}">file not found</error> 
 }
+
 }
 </result>
 </test>

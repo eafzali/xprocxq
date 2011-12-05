@@ -8,7 +8,7 @@ module namespace xproc = "http://xproc.net/xproc";
  (: declare namespaces :)
  declare namespace p="http://www.w3.org/ns/xproc";
  declare namespace c="http://www.w3.org/ns/xproc-step";
- declare namespace err="http://www.w3.org/ns/xproc-error";
+ declare namespace xprocerr="http://www.w3.org/ns/xproc-error";
 
  (: module imports :)
  import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
@@ -227,7 +227,7 @@ return
     if (doc-available($href)) then
         doc($href)
     else
-        u:dynamicError('err:XD0002',concat(" cannot access document ",$href))
+        u:dynamicError('xprocerr:XD0002',concat(" cannot access document ",$href))
  };
 
 
@@ -249,7 +249,7 @@ return
     string
 </c:data>
 (:
-    u:dynamicError('err:XD0002',concat("cannot access file:  ",$href))
+    u:dynamicError('xprocerr:XD0002',concat("cannot access file:  ",$href))
 :)
  };
 
@@ -257,7 +257,7 @@ return
 (:~ resolve input port bindings
  :
  : Will process p:empty, p:inline, p:document, p:data, p:pipe
- : or throw err:XD0001 
+ : or throw xprocerr:XD0001 
  :
  :
  : @param $input - 
@@ -282,7 +282,7 @@ return
        return $outputs[@xproc:default-name eq $input/@xproc:step-name][@port eq $input/@port]/node()
      default 
        return
-         u:dynamicError('err:XD0001',concat("cannot bind to port: ",$input/@port," step: ",$input/@step,' ',u:serialize($currentstep,$const:TRACE_SERIALIZE)))
+         u:dynamicError('xprocerr:XD0001',concat("cannot bind to port: ",$input/@port," step: ",$input/@step,' ',u:serialize($currentstep,$const:TRACE_SERIALIZE)))
 };
 
 
@@ -339,8 +339,8 @@ return
              if ($result) then
                $result
              else
-               <error type="eval-secondary"/>
-           (:    u:dynamicError('err:XD0016',concat("xproc step ",$step-name, "did not select anything from p:input")) :)
+               <xprocerror type="eval-secondary"/>
+           (:    u:dynamicError('xprocerr:XD0016',concat("xproc step ",$step-name, "did not select anything from p:input")) :)
    }
  </xproc:input>
  };
@@ -349,7 +349,7 @@ return
  (:~ evaluates primary input bindings to a step
   :
   : a) checks to see if there are multiple children to p:input and uses xproc:resolve-port-binding to resolve them
-  : b) applies xpath select processesing (if did not select anything this is an error)
+  : b) applies xpath select processesing (if did not select anything this is an xprocerror)
   : c) 
   :
   :
@@ -382,8 +382,8 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
    if ($result) then
      document{$result}
    else
-     <error1 type="eval-primary"/>
-   (:  u:dynamicError('err:XD0016',concat("xproc step ",$step-name, "did not select anything from p:input")) :)
+     <xprocerror1 type="eval-primary"/>
+   (:  u:dynamicError('xprocerr:XD0016',concat("xproc step ",$step-name, "did not select anything from p:input")) :)
 };
 
 
@@ -511,7 +511,7 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
    xmlns:p="http://www.w3.org/ns/xproc"
    xmlns:ext="http://xproc.net/xproc/ext"
    xmlns:c="http://www.w3.org/ns/xproc-step"
-   xmlns:err="http://www.w3.org/ns/xproc-error"
+   xmlns:xprocerr="http://www.w3.org/ns/xproc-error"
    xmlns:xxq-error="http://xproc.net/xproc/error"
    xmlns:opt="http://xproc.net/xproc/opt"
    >
@@ -641,7 +641,7 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
    namespace ext {"http://xproc.net/xproc/ext"},
    namespace opt {"http://xproc.net/xproc/opt"},
    namespace c {"http://www.w3.org/ns/xproc-step"},
-   namespace err {"http://www.w3.org/ns/xproc-error"},
+   namespace xprocerr {"http://www.w3.org/ns/xproc-error"},
    namespace xxq-error {"http://xproc.net/xproc/error"},
    parse:pipeline-step-sort( $b,  <p:declare-step xproc:default-name="{$const:init_unique_id}"/> )
  }
