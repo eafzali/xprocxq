@@ -183,15 +183,13 @@ $pipeline)
   : @returns element(p:xpath-context)
   :)
  (: --------------------------------------------------------------------------------------------------------- :)
- declare function parse:xpath-context($node as element(p:input)*, $step-definition) as element(p:input)*{
+ declare function parse:xpath-context($node as element(p:xpath-context)*, $step-definition) as element(p:xpath-context)*{
  (: --------------------------------------------------------------------------------------------------------- :)
-  for $input in $step-definition/p:input
-  let $name as xs:string := fn:string($input/@port)  
-  let $s := $node[@port eq $name]
+  for $input in $step-definition/p:xpath-context
+  let $s := $node
   return 
-    element p:input {
+    element p:xpath-context {
       attribute xproc:type {'comp'},
-      $input/@*[name(.) ne 'select'],
       ($s/@select, $input/@select)[1],
       $s/*
     }
@@ -397,9 +395,9 @@ $pipeline)
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                        attribute xproc:step {"true"},
                        $node/p:variable,
-                       $node/p:xpath-context,
-                       parse:xpath-context($node/p:input, $step-definition),
-                       parse:output-port($node/p:output, $step-definition)
+                       parse:input-port($node/p:input, $step-definition),
+                       parse:output-port($node/p:output, $step-definition),
+                       parse:xpath-context($node/p:xpath-context, $step-definition)
                      },
                      parse:AST($node/*[@xproc:type ne 'comp'])
                    }
@@ -409,7 +407,7 @@ $pipeline)
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                        attribute xproc:step {"true"},
                        $node/p:log,
-                       parse:xpath-context($node/p:input, $step-definition),
+                       parse:xpath-context($node/p:xpath-context, $step-definition),
                        parse:output-port($node/p:output, $step-definition)
                      },
                      parse:AST($node/*[@xproc:type ne 'comp'])

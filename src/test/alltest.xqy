@@ -1,7 +1,7 @@
 xquery version "3.0";
 
 (: w3c test runner :)
-declare boundary-space preserve;
+declare boundary-space strip;
 declare copy-namespaces no-preserve,no-inherit;
 
 declare namespace p="http://www.w3.org/ns/xproc";
@@ -39,6 +39,8 @@ return
 </pipeline>
 <expected>{if ($expected) then try{u:strip-whitespace($expected)} catch * {<error/>} else ()}</expected>
 <result>{
+
+ $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag),
 u:strip-whitespace(document{
 try{
   $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)

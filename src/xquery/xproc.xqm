@@ -2,7 +2,7 @@ xquery version "3.0"  encoding "UTF-8";
 
 module namespace xproc = "http://xproc.net/xproc";
 
- declare boundary-space preserve;
+ declare boundary-space strip;
  declare copy-namespaces no-preserve,no-inherit;
 
  (: declare namespaces :)
@@ -60,6 +60,7 @@ return
 
  (:~ p:choose step implementation
  :
+ :  I have decided to 
  :
  : @param $primary -
  : @param $secondary -
@@ -73,9 +74,25 @@ declare function xproc:choose($primary,$secondary,$options,$currentstep) {
 (: -------------------------------------------------------------------------- :)
 let $namespaces  := xproc:enum-namespaces($currentstep)
 let $defaultname as xs:string := string($currentstep/@xproc:default-name)
-let $xpath-context as xs:string   := string($currentstep/ext:pre/p:xpath-context/@select)
 let $ast-otherwise := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/p:otherwise/node()}</p:declare-step>
-let $context := (u:evalXPATH($xpath-context,document{$primary}))
+
+let $xpath-context as element(p:xpath-context) := $currentstep/ext:pre/p:xpath-context
+let $xpath-context-select as xs:string   :=string($xpath-context/@select)
+let $xpath-context-binding   := $xpath-context/node()
+let $xpath-context-data := typeswitch($xpath-context-binding)
+     case element(p:empty)
+       return <empty/>
+     case element(p:inline)
+       return $xpath-context-binding/*
+     case element(p:document)
+       return xproc:resolve-document-binding($xpath-context-binding/@href)
+     case element(p:data)
+       return xproc:resolve-data-binding($xpath-context-binding/@href,'')
+     default 
+       return
+         u:dynamicError('xprocerr:XD0001',concat("cannot bind to xpath-context : ",u:serialize($currentstep,$const:TRACE_SERIALIZE)))
+
+let $context := if ($primary) then (u:evalXPATH($xpath-context-select,document{$primary})) else u:evalXPATH('/',document{$xpath-context-data})
 let $when-test := for $when at $count in $currentstep/p:when
           return
             if(string($when/@test) ne '') then
@@ -83,12 +100,15 @@ let $when-test := for $when at $count in $currentstep/p:when
             else
               ()
 return
-  if($when-test) then 
+<test>{ $when-test }</test>
+
+(:  if($when-test) then 
     let $ast-when := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/p:when[$when-test]/node()}</p:declare-step>
     return
       xproc:output(xproc:evalAST($ast-when,$xproc:eval-step,$namespaces,$primary,(),()), 0)
     else
       xproc:output(xproc:evalAST($ast-otherwise,$xproc:eval-step,$namespaces,$primary,(),()), 0)
+:)
 };
 
 
@@ -406,8 +426,8 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
      let $currentstep  := $ast/*[@xproc:default-name eq $step][1]
      let $stepfunc     := name($currentstep)
      let $stepfunction := xproc:getstep($stepfunc)
-     let $primary      := xproc:eval-primary($ast,$currentstep,$primaryinput,$outputs)
-     let $secondary    := xproc:eval-secondary($ast,$currentstep,$primaryinput,$outputs)
+     let $primary      := if(empty($primaryinput) or $primaryinput eq '') then () else  xproc:eval-primary($ast,$currentstep,$primaryinput,$outputs)
+     let $secondary    :=  xproc:eval-secondary($ast,$currentstep,$primaryinput,$outputs) 
 
      let $log-href := $currentstep/p:log/@href
      let $log-port := $currentstep/p:log/@port

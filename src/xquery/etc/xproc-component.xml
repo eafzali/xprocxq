@@ -18,11 +18,13 @@
   </xproc:element>
 
   <xproc:element type="p:choose" xproc:step="true" xproc:support="true">
+    <p:xpath-context port="source" primary="true" select="/"/>
     <p:input port="source" primary="true" select="/"/>
     <p:output port="result" primary="true" select="/"/>	
   </xproc:element>
 
   <xproc:element type="p:for-each" xproc:step="true" xproc:support="true">
+    <p:xpath-context port="source" primary="true" select="/"/>
     <p:input port="source" primary="true" select="/"/>
     <p:output port="result" primary="true" select="/"/>
   </xproc:element>
