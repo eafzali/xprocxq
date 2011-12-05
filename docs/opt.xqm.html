@@ -1,4 +1,4 @@
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta http-equiv="Generator" content="xquerydoc - https://github.com/xquery/xquerydoc"/><meta http-equiv="Authors" content="Copyright 2011 - John Snelson, James Fuller"/><title>xqDoc - </title><style type="text/css">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta http-equiv="Generator" content="xquerydoc - https://github.com/xquery/xquerydoc"/><title>xqDoc - </title><style type="text/css">
           body {
           font-family: Helvetica;
           padding: 0.5em  1em;
@@ -61,7 +61,7 @@
           width:50%;
           vertical-align:text-top;
           }
-        </style><script src="lib/prettify.js" type="text/javascript"> </script><script src="lib/lang-xq.js" type="text/javascript"> </script><link rel="stylesheet" type="text/css" href="lib/prettify.css"/></head><body class="home"><div style="text-align:right;"><a href="index.html">XQuery API index</a></div><div id="main"><h1><span class="namespace"/>  library module </h1><div><h3>Variables</h3><ul/></div><div><h3>Functions</h3></div><div><h3>Original Source Code</h3><pre class="prettyprint lang-xq">(: ------------------------------------------------------------------------------------- &#xD;
+        </style><script src="lib/prettify.js" type="text/javascript"> </script><script src="lib/lang-xq.js" type="text/javascript"> </script><link rel="stylesheet" type="text/css" href="lib/prettify.css"/></head><body class="home"><div style="text-align:right;"><a href="index.html">XQuery API index</a></div><div id="main"><h1><span class="namespace">http://xproc.net/xproc/opt</span>  library module </h1><div id="variables"><h3>Variables</h3><div id="var_exec"><h4><pre class="prettyprint lang-xq"><u>Variable</u>: $exec as </pre></h4></div><div id="var_hash"><h4><pre class="prettyprint lang-xq"><u>Variable</u>: $hash as </pre></h4></div><div id="var_uuid"><h4><pre class="prettyprint lang-xq"><u>Variable</u>: $uuid as </pre></h4></div><div id="var_www-form-urldecode"><h4><pre class="prettyprint lang-xq"><u>Variable</u>: $www-form-urldecode as </pre></h4></div><div id="var_www-form-urlencode"><h4><pre class="prettyprint lang-xq"><u>Variable</u>: $www-form-urlencode as </pre></h4></div><div id="var_validate-with-xml-schema"><h4><pre class="prettyprint lang-xq"><u>Variable</u>: $validate-with-xml-schema as </pre></h4></div><div id="var_validate-with-schematron"><h4><pre class="prettyprint lang-xq"><u>Variable</u>: $validate-with-schematron as </pre></h4></div><div id="var_validate-with-relax-ng"><h4><pre class="prettyprint lang-xq"><u>Variable</u>: $validate-with-relax-ng as </pre></h4></div><div id="var_xquery"><h4><pre class="prettyprint lang-xq"><u>Variable</u>: $xquery as </pre></h4></div><div id="var_xsl-formatter"><h4><pre class="prettyprint lang-xq"><u>Variable</u>: $xsl-formatter as </pre></h4></div></div><div id="functions"><h3>Functions</h3><div id="func_exec_4"><h4><pre class="prettyprint lang-xq"><u>Function</u>: exec($primary,$secondary,$options,$variables)</pre></h4><h5>Params</h5><ul><li>primary as </li><li>secondary as </li><li>options as </li><li>variables as </li></ul></div><div id="func_hash_4"><h4><pre class="prettyprint lang-xq"><u>Function</u>: hash($primary,$secondary,$options,$variables)</pre></h4><h5>Params</h5><ul><li>primary as </li><li>secondary as </li><li>options as </li><li>variables as </li></ul></div><div id="func_uuid_4"><h4><pre class="prettyprint lang-xq"><u>Function</u>: uuid($primary,$secondary,$options,$variables)</pre></h4><h5>Params</h5><ul><li>primary as </li><li>secondary as </li><li>options as </li><li>variables as </li></ul></div><div id="func_www-form-urldecode_4"><h4><pre class="prettyprint lang-xq"><u>Function</u>: www-form-urldecode($primary,$secondary,$options,$variables)</pre></h4><h5>Params</h5><ul><li>primary as </li><li>secondary as </li><li>options as </li><li>variables as </li></ul></div><div id="func_www-form-urlencode_4"><h4><pre class="prettyprint lang-xq"><u>Function</u>: www-form-urlencode($primary,$secondary,$options,$variables)</pre></h4><h5>Params</h5><ul><li>primary as </li><li>secondary as </li><li>options as </li><li>variables as </li></ul></div><div id="func_validate_4"><h4><pre class="prettyprint lang-xq"><u>Function</u>: validate($primary,$secondary,$options,$variables)</pre></h4><h5>Params</h5><ul><li>primary as </li><li>secondary as </li><li>options as </li><li>variables as </li></ul></div><div id="func_xsl-formatter_4"><h4><pre class="prettyprint lang-xq"><u>Function</u>: xsl-formatter($primary,$secondary,$options,$variables)</pre></h4><h5>Params</h5><ul><li>primary as </li><li>secondary as </li><li>options as </li><li>variables as </li></ul></div><div id="func_xquery_4"><h4><pre class="prettyprint lang-xq"><u>Function</u>: xquery($primary,$secondary,$options,$variables)</pre></h4><h5>Params</h5><ul><li>primary as </li><li>secondary as </li><li>options as </li><li>variables as </li></ul></div></div><div><h3>Original Source Code</h3><pre class="prettyprint lang-xq">(: ------------------------------------------------------------------------------------- &#xD;
 &#xD;
 	opt.xqm - Implements all xproc optional steps.&#xD;
 	&#xD;
@@ -78,6 +78,7 @@ declare namespace err="http://www.w3.org/ns/xproc-error";&#xD;
 &#xD;
 (: module imports :)&#xD;
 import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";&#xD;
+import module namespace u = "http://xproc.net/xproc/util" at "util.xqm";&#xD;
 (: import module namespace xslfo = "http://exist-db.org/xquery/xslfo"; (: for p:xsl-formatter :) :)&#xD;
 &#xD;
 (: declare functions :)&#xD;
@@ -116,7 +117,16 @@ declare function opt:uuid($primary,$secondary,$options,$variables) {&#xD;
 (: -------------------------------------------------------------------------- :)&#xD;
 declare function opt:www-form-urldecode($primary,$secondary,$options,$variables) {&#xD;
 (: -------------------------------------------------------------------------- :)&#xD;
-()&#xD;
+let $value := u:get-option('value',$options,$primary)&#xD;
+let $params := tokenize($value,'&amp;amp;')&#xD;
+return&#xD;
+       &lt;c:param-set&gt;&#xD;
+        {&#xD;
+        for $child in $params&#xD;
+        return&#xD;
+            &lt;c:param name="{substring-before($child,'=')}" value="{substring-after($child,'=')}"/&gt;&#xD;
+        }&#xD;
+       &lt;/c:param-set&gt;&#xD;
 };&#xD;
 &#xD;
 &#xD;
@@ -145,11 +155,24 @@ declare function opt:xsl-formatter($primary,$secondary,$options,$variables) {&#x
 declare function opt:xquery($primary,$secondary,$options,$variables) {&#xD;
 (: -------------------------------------------------------------------------- :)&#xD;
 ()&#xD;
+(:&#xD;
+let $xquery := u:get-secondary('query',$secondary)/c:query&#xD;
+let $query  := if ($xquery/@xproc:escape = 'true') then&#xD;
+  u:serialize($xquery/node(),$const:TRACE_SERIALIZE)&#xD;
+else&#xD;
+  $xquery/node()&#xD;
+  let $preserve-context := u:get-option('xproc:preserve-context',$options,$v)&#xD;
+  return&#xD;
+    if ($preserve-context eq 'true') then&#xD;
+      u:xquery-with-context($query,$v,$variables)&#xD;
+    else&#xD;
+      u:xquery($query,$v,$variables)&#xD;
+:)&#xD;
 };&#xD;
 &#xD;
 &#xD;
 &#xD;
 </pre></div><br/><div class="footer"><p style="text-align:right"><i/> |
-          generated by xquerydoc <a href="https://github.com/xquery/xquerydoc" target="xquerydoc">https://github.com/xquery/xquerydoc</a></p></div></div><div><textarea rows="20" cols="100"><doc:xqdoc xmlns:doc="http://www.xqdoc.org/1.0"><doc:control><!--Generated by xquerydoc: http://github.com/xquery/xquerydoc--><doc:date>2011-11-28T20:25:28.069+01:00</doc:date><doc:version>N/A</doc:version></doc:control><doc:module type="library"><doc:uri/></doc:module><doc:variables/><doc:functions/></doc:xqdoc></textarea></div><script type="application/javascript">
+          generated by xquerydoc <a href="https://github.com/xquery/xquerydoc" target="xquerydoc">https://github.com/xquery/xquerydoc</a></p></div></div><script type="application/javascript">
 	  window.onload = function(){ prettyPrint(); }
 	</script></body></html>
