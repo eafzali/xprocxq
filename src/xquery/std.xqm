@@ -146,14 +146,22 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:delete($primary,$secondary,$options,$variables){
 (: -------------------------------------------------------------------------- :)
+let $ns := u:enum-ns(<dummy>{$primary}</dummy>)
+
 let $match  as xs:string := u:get-option('match',$options,$primary)
-let $template := <xsl:stylesheet version="2.0">
+let $template := <xsl:stylesheet version="2.0" xmlns:p="http://www.w3.org/ns/xproc">
+
 <xsl:template match=".">
     <xsl:apply-templates/>
 </xsl:template>
 
 <xsl:template match="@*|node()">
     <xsl:copy>
+       {for $n in $ns return
+       <xsl:namespace name="{$n/@prefix}" select="'{$n/@URI}'"/>
+       }
+       <xsl:namespace name="ex" select="'http://test.org'"/>
+
         <xsl:apply-templates select="@*|node()"/>
     </xsl:copy>
 </xsl:template>
