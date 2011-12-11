@@ -23,6 +23,18 @@
     <p:output port="result" primary="true" select="/"/>	
   </xproc:element>
 
+  <xproc:element type="p:when" xproc:support="true" xproc:step="true">
+    <p:xpath-context port="source" primary="true" select="/"/>
+    <p:input port="source" primary="true" select="/"/>
+    <p:output port="result" primary="true" select="/"/>	
+  </xproc:element>
+
+  <xproc:element type="p:otherwise" xproc:support="true" xproc:step="true">
+    <p:xpath-context port="source" primary="true" select="/"/>
+    <p:input port="source" primary="true" select="/"/>
+    <p:output port="result" primary="true" select="/"/>	
+  </xproc:element>     
+
   <xproc:element type="p:for-each" xproc:step="true" xproc:support="true">
     <p:xpath-context port="source" primary="true" select="/"/>
     <p:input port="source" primary="true" select="/"/>
@@ -64,15 +76,6 @@
 
   <!-- //-->    
 
-  <xproc:element type="p:when" xproc:support="true" xproc:step="true">
-    <p:input port="source" primary="true" select="/"/>
-    <p:output port="result" primary="true" select="/"/>	
-  </xproc:element>
-  <xproc:element type="p:otherwise" xproc:support="true"
-                 xproc:step="true">
-    <p:input port="source" primary="true" select="/"/>
-    <p:output port="result" primary="true" select="/"/>	
-  </xproc:element>     
 
   <!-- //-->    
 

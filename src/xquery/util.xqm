@@ -8,6 +8,9 @@ xquery version "3.0" encoding "UTF-8";
 
 module namespace u = "http://xproc.net/xproc/util";
 
+ declare boundary-space strip;
+ declare copy-namespaces no-preserve,no-inherit;
+
 (: declare namespaces :)
 declare namespace p="http://www.w3.org/ns/xproc";
 declare namespace c="http://www.w3.org/ns/xproc-step";

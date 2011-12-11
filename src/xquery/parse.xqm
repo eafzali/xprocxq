@@ -7,7 +7,9 @@ xquery version "3.0"  encoding "UTF-8";
 
 module namespace parse = "http://xproc.net/xproc/parse";
 
-declare boundary-space preserve;
+ declare boundary-space strip;
+ declare copy-namespaces no-preserve,no-inherit;
+
 
  (: declare namespaces :)
  declare namespace p="http://www.w3.org/ns/xproc";
@@ -147,8 +149,8 @@ declare boundary-space preserve;
                 element p:pipe{
                   $input/p:pipe/@port,
                   attribute xproc:type {"comp"},
-                  attribute step {$pipeline//*[@name eq $input/p:pipe/@step]/@xproc:default-name},
-                  attribute xproc:step-name {$pipeline//*[@name eq $input/p:pipe/@step]/@xproc:default-name}
+                  attribute step {($pipeline//*[@name eq $input/p:pipe/@step]/@xproc:default-name,concat($unique_id,'.',string($count - 2 )))[1]},
+                  attribute xproc:step-name {($pipeline//*[@name eq $input/p:pipe/@step]/@xproc:default-name,concat($unique_id,'.',string($count - 2 )))[1]}
                 }
               else if ($input/(p:data|p:document|p:inline)) then
                 $input/*
@@ -160,17 +162,38 @@ declare boundary-space preserve;
                   attribute xproc:step-name {if ($count eq 1) then $unique_id else concat($unique_id,'.',string($count - 2 ))}
                 }
             },
-            $step/p:input[@primary eq 'false'],
+(:            $step/p:input[@primary eq 'false' or not(@primary)] :)
+
+         for $input in $step/p:input[@primary eq "false"]
+         return
+            element p:input {
+              $input/@port,
+              $input/@select,
+              $input/@xproc:type,
+              attribute primary {false()},
+              if($input/p:pipe) then
+                element p:pipe{
+                  $input/p:pipe/@port,
+                  attribute xproc:type {"comp"},
+                  attribute step {($pipeline//*[@name eq $input/p:pipe/@step]/@xproc:default-name,concat($unique_id,'.',string($count - 2 )))[1]},
+                  attribute xproc:step-name {($pipeline//*[@name eq $input/p:pipe/@step]/@xproc:default-name,concat($unique_id,'.',string($count - 2 )))[1]}
+                }
+              else if ($input/(p:data|p:document|p:inline)) then
+                $input/*
+              else
+                element p:pipe{
+                  attribute port {"result"},
+                  attribute xproc:type {"comp"},
+                  attribute step {if ($count eq 1) then $unique_id else concat($unique_id,'.',string($count - 2 ))},
+                  attribute xproc:step-name {if ($count eq 1) then $unique_id else concat($unique_id,'.',string($count - 2 ))}
+                }
+            },
             $step/p:output,
             $step/p:with-option,
             $step/(p:iteration-source|p:viewport-source|p:xpath-context),
             parse:explicit-bindings($step[@xproc:step eq "true"],$ast[$count - 1]/p:output[@primary eq "true"]/@port,
-
-$step/@xproc:default-name,
-
-(: $ast[$count - 1]/@xproc:default-name, :)
-
-$pipeline)
+            $step/@xproc:default-name,      
+            $pipeline)
        }
  };
 
@@ -190,9 +213,7 @@ $pipeline)
   return 
     element p:xpath-context {
       attribute xproc:type {'comp'},
-      ($s/@select, $input/@select)[1],
-      $s/*
-    }
+      ($s/@select, $input/@select)[1],$s/*}
 };
 
 
@@ -236,6 +257,18 @@ $pipeline)
       ($s/@select, $input/@select)[1],
       $s/*
     }
+};
+
+ (:~
+  : parse input bindings
+  :
+  :
+  : @returns element(p:input)
+  :)
+ (: --------------------------------------------------------------------------------------------------------- :)
+ declare function parse:step-input-port($node as element(p:input)*, $step-definition) as element(p:input)*{
+ (: --------------------------------------------------------------------------------------------------------- :)
+ $node
 };
 
  (:~
@@ -348,7 +381,7 @@ $pipeline)
                      $node/@*,
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                        attribute xproc:step {"true"},
-                       parse:input-port($node/p:input, $step-definition),
+                       parse:step-input-port($node/p:input, $step-definition),
                        parse:output-port($node/p:output, $step-definition),
                        parse:options($node/p:with-option,$step-definition)
                      },
@@ -407,8 +440,9 @@ $pipeline)
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                        attribute xproc:step {"true"},
                        $node/p:log,
-                       parse:xpath-context($node/p:xpath-context, $step-definition),
-                       parse:output-port($node/p:output, $step-definition)
+                       parse:input-port($node/p:input, $step-definition),
+                       parse:output-port($node/p:output, $step-definition),
+                       parse:xpath-context($node/p:xpath-context, $step-definition)
                      },
                      parse:AST($node/*[@xproc:type ne 'comp'])
                    }
@@ -419,7 +453,8 @@ $pipeline)
                        attribute xproc:step {"true"},
                        $node/p:log,
                        parse:input-port($node/p:input, $step-definition),
-                       parse:output-port($node/p:output, $step-definition)
+                       parse:output-port($node/p:output, $step-definition),
+                       parse:xpath-context($node/p:xpath-context, $step-definition)
                      },
                      parse:AST($node/*[@xproc:type ne 'comp'])
                    }
@@ -506,7 +541,10 @@ $pipeline)
              attribute xproc:default-name {$name}
            else
              (),
-           if (empty($node/text())) then () else $node/text(),
+             for $a in $node/text()
+             return
+               normalize-space($a),
+
              parse:explicit-name($node/*,if($node/@xproc:step eq 'true') then $name else $cname)
          }
      default

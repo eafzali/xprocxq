@@ -10,7 +10,6 @@ import module namespace test = "http://www.marklogic.com/test"
 import module namespace txproc = "txproc"
     at "txproc.xqy";
 
-declare boundary-space preserve;
     
 test:html(
 <testsuite title="xproc module">
@@ -82,11 +81,10 @@ test:html(
     <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">1</c:result></expected>
     <result>{txproc:runChoose1()}</result>
   </test>
-
-
-
-
-
+  <test name="xproc13" desc="p:compare">
+    <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">false</c:result></expected>
+    <result>{txproc:runCompare1()}</result>
+  </test>
 
 
 

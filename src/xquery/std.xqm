@@ -115,7 +115,7 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:compare($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-let $alternate := u:get-secondary('alternate',$secondary)
+let $alternate := u:get-secondary('alternate',$secondary) 
 (: let $strict := u:get-option('xproc:strict',$options,$v)  ext attribute xproc:strict:) 
 let $fail-if-not-equal as xs:string := u:get-option('fail-if-not-equal',$options,$primary)
 let $result := deep-equal($primary,$alternate)

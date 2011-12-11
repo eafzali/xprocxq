@@ -2,8 +2,6 @@ xquery version "3.0";
 
 module namespace txproc ="txproc";
 
-declare boundary-space strip;
-
 declare namespace p="http://www.w3.org/ns/xproc";
 declare namespace c="http://www.w3.org/ns/xproc-step";
 declare namespace err="http://www.w3.org/ns/xproc-error";
@@ -18,6 +16,7 @@ import module namespace xproc = "http://xproc.net/xproc"
 import module namespace parse = "http://xproc.net/xproc/parse"
     at "../../xquery/parse.xqm";
     
+
 declare function (:TEST:) txproc:loadModuleTest() { 
   let $actual := <test/>
   return
@@ -66,7 +65,6 @@ declare function (:TEST:) txproc:runEntryPointTest() {
   return
     $result
 };
-
 
 
 declare function (:TEST:) txproc:runEntryPointTest1() { 
@@ -240,6 +238,39 @@ declare function (:TEST:) txproc:runChoose1() {
   let $bindings := ()
   let $options  := ()
   let $outputs   := ()
+  return
+   $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
+};
+
+
+declare function (:TEST:) txproc:runCompare1() { 
+  let $pipeline := <p:declare-step version='1.0' name="main"
+	    xmlns:p="http://www.w3.org/ns/xproc">
+  <p:input port="source" primary="true"/>
+  <p:input port="alternate" primary="false">
+    <p:inline>
+      <c>here</c>
+    </p:inline>
+  </p:input>
+
+  <p:output port="result" primary="true"/>
+
+  <p:compare name="compare">
+    <p:input port="source">
+      <p:pipe step="main" port="source"/>
+    </p:input>
+    <p:input port="alternate">
+      <p:pipe step="main" port="alternate"/>
+    </p:input>
+  </p:compare>
+</p:declare-step>
+
+  let $stdin    := <c><a>test1</a><a>test2</a></c>
+  let $dflag    := 0
+  let $tflag    := 0
+  let $bindings := ()
+  let $options  := ()
+  let $outputs   :=  ()
   return
    $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
 };

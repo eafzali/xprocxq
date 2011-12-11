@@ -19,7 +19,7 @@
    <p:declare-step type="p:compare" xml:id="compare">
       <p:input port="source" primary="true"/>
       <p:input port="alternate"/>
-      <p:output port="result" primary="false"/>
+      <p:output port="result" primary="true"/>
       <p:option name="fail-if-not-equal" select="'false'"/>
    </p:declare-step>
    <p:declare-step type="p:count" xml:id="count">

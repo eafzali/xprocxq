@@ -34,9 +34,6 @@ module namespace xproc = "http://xproc.net/xproc";
  declare variable $xproc:pipeline      := ();
  declare variable $xproc:variable      := ();
 
- (: declare options :)
- declare option saxon:output "indent=yes";
-
 
  (:~ p:group step implementation
  :
@@ -76,39 +73,25 @@ let $namespaces  := xproc:enum-namespaces($currentstep)
 let $defaultname as xs:string := string($currentstep/@xproc:default-name)
 let $ast-otherwise := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/p:otherwise/node()}</p:declare-step>
 
-let $xpath-context as element(p:xpath-context) := $currentstep/ext:pre/p:xpath-context
+let $xpath-context as element(p:xpath-context) := $currentstep/ext:pre/p:xpath-context[1]
 let $xpath-context-select as xs:string   :=string($xpath-context/@select)
-let $xpath-context-binding   := $xpath-context/node()
-let $xpath-context-data := typeswitch($xpath-context-binding)
-     case element(p:empty)
-       return <empty/>
-     case element(p:inline)
-       return $xpath-context-binding/*
-     case element(p:document)
-       return xproc:resolve-document-binding($xpath-context-binding/@href)
-     case element(p:data)
-       return xproc:resolve-data-binding($xpath-context-binding/@href,'')
-     default 
-       return
-         u:dynamicError('xprocerr:XD0001',concat("cannot bind to xpath-context : ",u:serialize($currentstep,$const:TRACE_SERIALIZE)))
-
-let $context := if ($primary) then (u:evalXPATH($xpath-context-select,document{$primary})) else u:evalXPATH('/',document{$xpath-context-data})
+let $xpath-context-binding   := $xpath-context[1]/node()[1]
+let $xpath-context-data := $xpath-context-binding/p:inline
+let $context := if ($primary ne '') then u:evalXPATH($xpath-context-select,document{$primary}) else u:evalXPATH($xpath-context-select,document{$xpath-context/p:inline/node()}) 
 let $when-test := for $when at $count in $currentstep/p:when
           return
             if(string($when/@test) ne '') then
-              if (u:evalXPATH(string($when/@test),document{$context})) then $count else ()
+             if (u:evalXPATH(string($when/@test),document{$context})) then $when/@test else ()
             else
               ()
 return
-<test>{ $when-test }</test>
 
-(:  if($when-test) then 
-    let $ast-when := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/p:when[$when-test]/node()}</p:declare-step>
+  if($when-test[1]) then 
+    let $ast-when := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/p:when[@test eq $when-test[1]]/node()}</p:declare-step>
     return
       xproc:output(xproc:evalAST($ast-when,$xproc:eval-step,$namespaces,$primary,(),()), 0)
-    else
+  else
       xproc:output(xproc:evalAST($ast-otherwise,$xproc:eval-step,$namespaces,$primary,(),()), 0)
-:)
 };
 
 
@@ -338,29 +321,29 @@ return
  (: -------------------------------------------------------------------------- :)
  let $step-name as xs:string := string($currentstep/@xproc:default-name)
  return
- for $input in $currentstep/p:input[@primary eq 'false']
+
+ for $pinput in $currentstep/p:input[@primary eq "false"]
  return
- <xproc:input port="{$input/@port}" select="{$input/@select}">
+ <xproc:input port="{$pinput/@port}" select="/">
    {
-     let $primaryresult := document{
-     for $child in $input/node()
-     return
-       xproc:resolve-port-binding($child,$outputs,$ast,$currentstep)
-     }
-     let $data :=  if($input/node()) then
-       (: resolve each nested port binding :)
-       for $input1 in $input/*
+
+ let $data :=  if($pinput/node() (: and empty($primaryinput) :)) then
+       for $input in $pinput/*
        return
-         xproc:resolve-port-binding($input1,$outputs,$ast,$currentstep)
+         xproc:resolve-port-binding($input,$outputs,$ast,$currentstep)
        else
-         if(name($primaryinput) eq 'xproc:output') then $primaryinput/node() else $primaryinput
-           let $result :=  u:evalXPATH(string($input/@select),$data)
-           return
-             if ($result) then
-               $result
-             else
-               <xprocerror type="eval-secondary"/>
-           (:    u:dynamicError('xprocerr:XD0016',concat("xproc step ",$step-name, "did not select anything from p:input")) :)
+         if(name($primaryinput) eq 'xproc:output') then (: DEPRECATE ? :)
+           $primaryinput/node() 
+         else 
+           $primaryinput
+           
+let $result :=  u:evalXPATH(string($pinput/@select),$data)
+ return
+   if ($result) then
+     document{$result}
+   else
+     <xprocerror1 type="eval-secondary"/>
+   (:  u:dynamicError('xprocerr:XD0016',concat("xproc step ",$step-name, "did not select anything from p:input")) :)
    }
  </xproc:input>
  };
@@ -392,7 +375,7 @@ return
        return
          xproc:resolve-port-binding($input,$outputs,$ast,$currentstep)
        else
-         if(name($primaryinput) eq 'xproc:output') then 
+         if(name($primaryinput) eq 'xproc:output') then (: DEPRECATE ? :)
            $primaryinput/node() 
          else 
            $primaryinput
@@ -426,8 +409,8 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
      let $currentstep  := $ast/*[@xproc:default-name eq $step][1]
      let $stepfunc     := name($currentstep)
      let $stepfunction := xproc:getstep($stepfunc)
-     let $primary      := if(empty($primaryinput) or $primaryinput eq '') then () else  xproc:eval-primary($ast,$currentstep,$primaryinput,$outputs)
-     let $secondary    :=  xproc:eval-secondary($ast,$currentstep,$primaryinput,$outputs) 
+     let $primary      := if ($primaryinput) then xproc:eval-primary($ast,$currentstep,$primaryinput,$outputs) else ()
+     let $secondary    := xproc:eval-secondary($ast,$currentstep,$primaryinput,$outputs) 
 
      let $log-href := $currentstep/p:log/@href
      let $log-port := $currentstep/p:log/@port
@@ -449,7 +432,7 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
              func="{$stepfunc}">{$primary}</xproc:output>
              ,
              (: all other input ports :)
-             (  for $child in $secondary/xproc:input
+             (  for $child in $secondary
              return
              <xproc:output step="{$step}"
              xproc:default-name="{$step}"
@@ -457,7 +440,7 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
              href="{if ($log-port eq $child/@port) then u:result-document($log-href,$child/node()) else ()}"
              primary="false"
              select="{$child/@select}"
-             port="{$currentstep/p:input[1][@primary eq 'false']/@port}"
+             port="{$child/@port}"
              func="{$stepfunc}">{$child/node()}</xproc:output>
              )
              ,
@@ -481,15 +464,15 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
              port="result"
              func="{$stepfunc}">{$stepfunction($primary,$secondary,$options,$currentstep)}</xproc:output>
              else
-             (: all other primary output ports @TODO - needs to be handled :)
-             <xproc:output step="{$step}"
+                <xproc:output step="{$step}"
              port-type="output"
-             href="{if ($log-port eq $currentstep/p:output[1][@primary eq 'false']/@port) then $log-href else ()}"
-             primary="false"
+             href="{if ($log-port eq $currentstep/p:output[1][@primary eq 'true']/@port) then $log-href else ()}"
+             primary="true"
              xproc:default-name="{$step}"
-             select="{$currentstep/p:output[@primary eq 'false']/@select}"
-             port="{$currentstep/p:output[@primary eq 'false']/@port}"
-             func="{$stepfunc}"/>
+             select="{$currentstep/p:output[@primary eq 'true']/@select}"
+             port="result"
+             func="{$stepfunc}">{$stepfunction($primary,$secondary,$options,$variables)}</xproc:output>
+             (: all other primary output ports @TODO - needs to be handled :)
          )
  };
 
@@ -673,7 +656,7 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
 let $g := parse:AST(parse:explicit-name(parse:explicit-type($pipeline)))
 return
    $serialized_result
- };
+};
 
 
 
