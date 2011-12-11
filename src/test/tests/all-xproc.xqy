@@ -89,7 +89,10 @@ test:html(
     <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">3</c:result></expected>
     <result>{txproc:runCount1()}</result>
   </test>
-
+  <test name="xproc14a" desc="p:count">
+    <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">1</c:result></expected>
+    <result>{txproc:runCount2()}</result>
+  </test>
 
 
 

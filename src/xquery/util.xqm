@@ -114,10 +114,12 @@ $xml
 (: -------------------------------------------------------------------------- :)
 declare function u:evalXPATH($xpath, $xml){
 (: -------------------------------------------------------------------------- :)
+ let $document := document{$xml}
+ return
   if ($xpath eq '/' or $xpath eq '' or empty($xml)) then
-    $xml
+    $document
   else
-    ($xml/.)/saxon:evaluate($xpath)
+    ($document/.)/saxon:evaluate($xpath)
 };
 
 (: -------------------------------------------------------------------------- :)

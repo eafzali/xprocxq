@@ -293,7 +293,7 @@ declare function (:TEST:) txproc:runCount1() {
   <document>
     <doc xmlns=""/>
   </document>)
-  let $dflag    := 1
+  let $dflag    := 0
   let $tflag    := 0
   let $bindings := ()
   let $options  := ()
@@ -301,3 +301,33 @@ declare function (:TEST:) txproc:runCount1() {
   return
    $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
 };
+
+
+
+declare function (:TEST:) txproc:runCount2() { 
+  let $pipeline :=     <p:declare-step version='1.0'>
+    <p:input port="source" sequence="true"/>
+    <p:output port="result"/>
+    <p:count>
+        <p:input port="source" select="/node()"/>
+    </p:count>
+  </p:declare-step>
+
+  let $stdin    :=  <doc>
+    <p>This is a para</p>
+    <p>This is a para</p>
+    <p>This is a para</p>
+    <p>This is a para</p>
+    <p>This is a para</p>
+</doc>
+
+  let $dflag    := 0
+  let $tflag    := 0
+  let $bindings := ()
+  let $options  := ()
+  let $outputs   :=  ()
+  return
+   $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
+};
+
+
