@@ -356,3 +356,37 @@ declare function (:TEST:) txproc:runDelete1() {
    $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
 };
 
+
+
+declare function (:TEST:) txproc:runPack1() { 
+  let $pipeline := <p:declare-step version='1.0' name="pipeline"
+	    xmlns:p="http://www.w3.org/ns/xproc">
+<p:input port="source" sequence="true"/>
+<p:input port="alt" sequence="true"/>
+<p:output port="result"/>
+
+<p:pack wrapper="wrapper">
+  <p:input port="source">
+    <p:pipe step="pipeline" port="source"/>
+  </p:input>
+  <p:input port="alternate">
+    <p:pipe step="pipeline" port="alt"/>
+  </p:input>
+</p:pack>
+
+<!--p:wrap-sequence wrapper="sequence-wrapper"/-->
+
+</p:declare-step>
+  let $stdin    := (<doc1/>,<doc2/>,<doc3/>)
+  let $dflag    := 1
+  let $tflag    := 0
+  let $bindings := ()
+  let $options  := ()
+  let $outputs   := <xproc:output port="alt">{
+    (<doc-a/>,<doc-b/>,<doc-c/>)
+}</xproc:output> 
+  return
+   $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
+};
+
+

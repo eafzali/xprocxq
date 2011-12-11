@@ -93,6 +93,28 @@ test:html(
     <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">1</c:result></expected>
     <result>{txproc:runCount2()}</result>
   </test>
+  <test name="xproc16" desc="p:pack">
+    <expected><sequence-wrapper><wrapper><doc1/><doc-a/></wrapper><wrapper><doc2/><doc-b/></wrapper><wrapper><doc3/><doc-c/></wrapper></sequence-wrapper></expected>
+    <result>{txproc:runPack1()}</result>
+  </test>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   <!--test name="xproc15" desc="p:delete">
     <expected><p:pipeline name="pipeline" xmlns:p="http://www.w3.org/ns/xproc">
 
