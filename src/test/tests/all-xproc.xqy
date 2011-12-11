@@ -93,11 +93,14 @@ test:html(
     <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">1</c:result></expected>
     <result>{txproc:runCount2()}</result>
   </test>
+  <!--test name="xproc15" desc="p:delete">
+    <expected><p:pipeline name="pipeline" xmlns:p="http://www.w3.org/ns/xproc">
 
 
 
-
-
+</p:pipeline></expected>
+    <result>{txproc:runDelete1()}</result>
+  </test-->
 
   <!--test name="xproc6" desc="test throwing dynamic error">
     <expected></expected>

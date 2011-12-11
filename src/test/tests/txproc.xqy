@@ -331,3 +331,28 @@ declare function (:TEST:) txproc:runCount2() {
 };
 
 
+declare function (:TEST:) txproc:runDelete1() { 
+  let $pipeline := <pipeline version='1.0' name="pipeline" xmlns="http://www.w3.org/ns/xproc">
+
+<delete match="p:delete"/>
+
+</pipeline>
+
+
+  let $stdin    := <pipeline name="pipeline" xmlns="http://www.w3.org/ns/xproc">
+
+<delete>
+  <option name="target" value="delete"/>
+</delete>
+
+</pipeline>
+
+  let $dflag    := 0
+  let $tflag    := 0
+  let $bindings := ()
+  let $options  := ()
+  let $outputs   :=  ()
+  return
+   $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
+};
+
