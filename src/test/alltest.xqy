@@ -19,9 +19,9 @@ import module namespace test1 = "http://www.marklogic.com/test"
  test1:html(
 <testsuite title="w3c required and optional tests" xmlns:xqyerr="http://www.w3.org/2005/xqt-errors">
 {
-for $test in collection("tests.xproc.org/required?select=*.xml")
+for $test in collection("tests.xproc.org/required?select=count*.xml")
  let $pipeline  := $test/t:test/t:pipeline/*
- let $stdin     := $test/t:test/t:input[@port eq 'source']/*
+ let $stdin     := ($test/t:test/t:input[@port eq 'source']/*)
  let $alternate := $test/t:test/t:input[@port eq 'alternate']/*
  let $expected  := $test/t:test/t:output/*
  let $dflag     := 0

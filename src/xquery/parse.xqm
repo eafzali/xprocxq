@@ -268,8 +268,15 @@ module namespace parse = "http://xproc.net/xproc/parse";
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:step-input-port($node as element(p:input)*, $step-definition) as element(p:input)*{
  (: --------------------------------------------------------------------------------------------------------- :)
- $node
-};
+  for $input in $node
+  return
+  element p:input {
+      if ($input/@xproc:type) then () else attribute xproc:type {'comp'},
+      if ($input/@primary) then () else attribute primary { if($input/@port eq 'source') then 'true' else 'false'},
+      $input/@*,
+      $input/*
+    }
+ };
 
  (:~
   : parse input bindings

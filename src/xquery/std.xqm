@@ -115,10 +115,10 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:compare($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-let $alternate := u:get-secondary('alternate',$secondary) 
+let $alternate := document{u:get-secondary('alternate',$secondary) }
 (: let $strict := u:get-option('xproc:strict',$options,$v)  ext attribute xproc:strict:) 
 let $fail-if-not-equal as xs:string := u:get-option('fail-if-not-equal',$options,$primary)
-let $result := deep-equal($primary,$alternate)
+let $result := deep-equal(u:strip-whitespace(document{$primary}),u:strip-whitespace($alternate))
 return
   if($fail-if-not-equal eq "true") then
     if ($result) then          
@@ -134,7 +134,7 @@ return
 declare function std:count($primary,$secondary,$options,$variables) as element(c:result){
 (: --------------------------------------------------------------------------------------- :)
 let $limit as xs:integer := xs:integer(replace(u:get-option('limit',$options,$primary),"'","")) 
-let $count as xs:integer := count($primary)
+let $count as xs:integer := if(name($primary[1]) eq '') then count($primary/*)  else count($primary)
 return
     if ($limit eq 0 or $count lt $limit ) then
       u:outputResultElement($count)

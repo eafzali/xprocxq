@@ -375,7 +375,7 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
        return
          xproc:resolve-port-binding($input,$outputs,$ast,$currentstep)
        else
-         if(name($primaryinput) eq 'xproc:output') then (: DEPRECATE ? :)
+         if(name($primaryinput[1]) eq 'xproc:output') then (: DEPRECATE ? :)
            $primaryinput/node() 
          else 
            $primaryinput
@@ -385,7 +385,9 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
    if ($result) then
      document{$result}
    else
-     <xprocerror1 type="eval-primary"/>
+     <xprocerror1 type="eval-primary">
+     {$currentstep}
+     </xprocerror1>
    (:  u:dynamicError('xprocerr:XD0016',concat("xproc step ",$step-name, "did not select anything from p:input")) :)
 };
 
@@ -401,7 +403,7 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
   : @returns item()*
  :)
  (: -------------------------------------------------------------------------- :)
- declare function xproc:evalstep ($step,$namespaces,$primaryinput as item()?,$ast as element(p:declare-step),$outputs) {
+ declare function xproc:evalstep ($step,$namespaces,$primaryinput as item()*,$ast as element(p:declare-step),$outputs) {
  (: -------------------------------------------------------------------------- :)
      let $declarens    := u:declare-ns($namespaces)
      let $variables    := $outputs/xproc:variable
@@ -595,7 +597,7 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
                               $namespaces as element(namespace),
                               $steps as xs:string*,
                               $evalstep-function,
-                              $primary as item()?,
+                              $primary as item()*,
                               $outputs as item()*  ) {
  (: -------------------------------------------------------------------------- :)
 
@@ -632,7 +634,7 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
   : @returns item()*
   :)
  (: ------------------------------------------------------------------------------------------------------------- :)
- declare function xproc:run($pipeline,$stdin as item()?,$bindings,$options,$outputs,$dflag as xs:integer ,$tflag as xs:integer) as item()*{
+ declare function xproc:run($pipeline,$stdin as item()*,$bindings,$options,$outputs,$dflag as xs:integer ,$tflag as xs:integer) as item()*{
  (: ------------------------------------------------------------------------------------------------------------- :)
  let $validate   := () (: validation:jing($pipeline,fn:doc($const:xproc-rng-schema)) :)
  let $namespaces := xproc:enum-namespaces($pipeline)
