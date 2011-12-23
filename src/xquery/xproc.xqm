@@ -639,7 +639,7 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
  let $validate   := () (: validation:jing($pipeline,fn:doc($const:xproc-rng-schema)) :)
  let $namespaces := xproc:enum-namespaces($pipeline)
  let $parse      := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
- let $b := $parse/*
+ let $b          := $parse/*
  let $ast        := element p:declare-step {$parse/@*,
    namespace p {"http://www.w3.org/ns/xproc"},
    namespace xproc {"http://xproc.net/xproc"},
@@ -731,6 +731,8 @@ else if($stepname eq 'p:unwrap') then
   $std:unwrap
 else if($stepname eq 'p:xslt') then
   $std:xslt
+else if($stepname eq 'p:xquery') then
+  $opt:xquery
 else if($stepname eq 'ext:post') then
   $ext:post
 else if($stepname eq 'p:group') then

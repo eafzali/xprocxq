@@ -698,14 +698,19 @@ declare function std:xinclude($primary,$secondary,$options,$variables){
 (: -------------------------------------------------------------------------- :)
 declare function std:wrap($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
+let $ns := u:enum-ns(<dummy>{$primary}</dummy>)
 let $match  := u:get-option('match',$options,$primary)
 let $wrapper as xs:string := u:get-option('wrapper',$options,$primary)
 let $wrapper-prefix as xs:string := u:get-option('wrapper-prefix',$options,$primary)
 let $wrapper-namespace as xs:string := u:get-option('wrapper-namespace',$options,$primary)
 let $group-adjacent as xs:string := u:get-option('group-adjacent',$options,$primary)
 
-let $template := <xsl:stylesheet version="2.0">
+let $template := <xsl:stylesheet version="2.0" xmlns:p="http://www.w3.org/ns/xproc">
+
 <xsl:template match=".">
+       {for $n in $ns return
+       <xsl:namespace name="{$n/@prefix}" select="'{$n/@URI}'"/>
+       }
     <xsl:apply-templates/>
 </xsl:template>
 
@@ -734,9 +739,17 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:wrap-sequence($primary,$secondary,$options,$variables) as item()*{
 (: -------------------------------------------------------------------------- :)
+let $wrapper as xs:string := u:get-option('wrapper',$options,$primary)
+return
 for $v in $primary
 return
+if ($primary) then 
   std:wrap($v,$secondary,$options,$variables)
+else
+  element {$wrapper}{
+    ()
+  }
+
 };
 
 

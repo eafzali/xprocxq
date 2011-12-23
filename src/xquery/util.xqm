@@ -130,6 +130,14 @@ declare function u:transform($stylesheet,$xml){
     saxon:transform($rendition, $xml)
 };
 
+(: -------------------------------------------------------------------------- :)
+declare function u:xquery($query, $xml){
+(: -------------------------------------------------------------------------- :)
+ let $context := document{$xml}
+ let $compile :=  saxon:compile-query($query)
+ return
+   saxon:query($compile, $context)
+};
 
 (: -------------------------------------------------------------------------- :)
 (: STEP UTILITIES                                                             :)

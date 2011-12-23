@@ -163,17 +163,18 @@ module namespace parse = "http://xproc.net/xproc/parse";
                 }
             },
 (:            $step/p:input[@primary eq 'false' or not(@primary)] :)
-
-         for $input in $step/p:input[@primary eq "false"]
+         for $input in $step/p:input[@primary eq "false" or not(@primary)]
          return
             element p:input {
               $input/@port,
               $input/@select,
               $input/@xproc:type,
               attribute primary {false()},
+
               if($input/p:pipe) then
                 element p:pipe{
                   $input/p:pipe/@port,
+                  
                   attribute xproc:type {"comp"},
                   attribute step {($pipeline//*[@name eq $input/p:pipe/@step]/@xproc:default-name,concat($unique_id,'.',string($count - 2 )))[1]},
                   attribute xproc:step-name {($pipeline//*[@name eq $input/p:pipe/@step]/@xproc:default-name,concat($unique_id,'.',string($count - 2 )))[1]}
@@ -182,18 +183,20 @@ module namespace parse = "http://xproc.net/xproc/parse";
                 $input/*
               else
                 element p:pipe{
-                  attribute port {"result"},
+                  attribute port {$input/@port},
+                  attribute external {"true"},
                   attribute xproc:type {"comp"},
                   attribute step {if ($count eq 1) then $unique_id else concat($unique_id,'.',string($count - 2 ))},
                   attribute xproc:step-name {if ($count eq 1) then $unique_id else concat($unique_id,'.',string($count - 2 ))}
                 }
-            },
+            }
+            ,
             $step/p:output,
             $step/p:with-option,
             $step/(p:iteration-source|p:viewport-source|p:xpath-context),
             parse:explicit-bindings($step[@xproc:step eq "true"],$ast[$count - 1]/p:output[@primary eq "true"]/@port,
-            $step/@xproc:default-name,      
-            $pipeline)
+                 $step/@xproc:default-name,      
+                 $pipeline)
        }
  };
 
@@ -260,22 +263,15 @@ module namespace parse = "http://xproc.net/xproc/parse";
 };
 
  (:~
-  : parse input bindings
-  :
+  : parse input bindings of top level steps
+  : which could have an unknown number of ports
   :
   : @returns element(p:input)
   :)
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:step-input-port($node as element(p:input)*, $step-definition) as element(p:input)*{
  (: --------------------------------------------------------------------------------------------------------- :)
-  for $input in $node
-  return
-  element p:input {
-      if ($input/@xproc:type) then () else attribute xproc:type {'comp'},
-      if ($input/@primary) then () else attribute primary { if($input/@port eq 'source') then 'true' else 'false'},
-      $input/@*,
-      $input/*
-    }
+ $node
  };
 
  (:~
@@ -388,7 +384,8 @@ module namespace parse = "http://xproc.net/xproc/parse";
                      $node/@*,
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                        attribute xproc:step {"true"},
-                       parse:step-input-port($node/p:input, $step-definition),
+                       $node/p:input[@port ne 'source'],
+                       parse:input-port($node/p:input[@port eq 'source'], $step-definition), 
                        parse:output-port($node/p:output, $step-definition),
                        parse:options($node/p:with-option,$step-definition)
                      },
@@ -536,11 +533,6 @@ module namespace parse = "http://xproc.net/xproc/parse";
    typeswitch($node)
      case text()
          return $node/text()
-     case element(p:documentation)
-         return element p:documentation {
-           $node/@*,
-           $node/node()
-         }
      case element()
          return element {node-name($node)} {
            $node/@*,
@@ -573,11 +565,6 @@ module namespace parse = "http://xproc.net/xproc/parse";
         typeswitch($node)
             case text()
                    return $node/text()
-            case element(p:documentation)
-                   return element p:documentation {
-                     attribute xproc:type {'comp'}, 
-                     $node/node()
-                     }
             case element(p:inline)
                    return element p:inline {
                      attribute xproc:type {'comp'}, 

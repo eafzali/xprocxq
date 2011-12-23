@@ -91,20 +91,10 @@ declare function opt:xsl-formatter($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 declare function opt:xquery($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
-(:
-let $xquery := u:get-secondary('query',$secondary)/c:query
-let $query  := if ($xquery/@xproc:escape = 'true') then
-  u:serialize($xquery/node(),$const:TRACE_SERIALIZE)
-else
-  $xquery/node()
-  let $preserve-context := u:get-option('xproc:preserve-context',$options,$v)
-  return
-    if ($preserve-context eq 'true') then
-      u:xquery-with-context($query,$v,$variables)
-    else
-      u:xquery($query,$v,$variables)
-:)
+
+let $query := u:get-secondary('query',$secondary)
+return
+      u:evalXPATH($query/text(),$primary)
 };
 
 
