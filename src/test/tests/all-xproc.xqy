@@ -98,7 +98,10 @@ test:html(
     <result>{txproc:runPack1()}</result>
   </test>
 
-
+  <test name="xproc17" desc="p:pack">
+    <expected><sequence-wrapper><wrapper><doc1/><doc-a/></wrapper><wrapper><doc2/><doc-b/></wrapper><wrapper><doc3/><doc-c/></wrapper></sequence-wrapper></expected>
+    <result>{txproc:runPack1()}</result>
+  </test>
 
 
 

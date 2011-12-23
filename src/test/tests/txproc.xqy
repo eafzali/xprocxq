@@ -374,15 +374,15 @@ declare function (:TEST:) txproc:runPack1() {
   </p:input>
 </p:pack>
 
-<!--p:wrap-sequence wrapper="sequence-wrapper"/-->
+<p:wrap-sequence wrapper="sequence-wrapper"/>
 
 </p:declare-step>
   let $stdin    := (<doc1/>,<doc2/>,<doc3/>)
-  let $dflag    := 1
+  let $dflag    := 0
   let $tflag    := 0
   let $bindings := ()
   let $options  := ()
-  let $outputs   := <xproc:output port="alt">{
+  let $outputs   := <xproc:output port="alt" port-type="external" xproc:default-name="!1" step="!1">{
     (<doc-a/>,<doc-b/>,<doc-c/>)
 }</xproc:output> 
   return

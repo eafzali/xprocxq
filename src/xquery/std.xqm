@@ -449,12 +449,15 @@ let $wrapper := u:get-option('wrapper',$options,$primary)
 let $wrapper-prefix := u:get-option('wrapper-prefix',$options,$primary)
 let $wrapper-namespace := u:get-option('wrapper-namespace',$options,$primary)
 return
-    for $child in $primary
+(   for $child at $count in $primary/*
     return
+      document{
 	    element {$wrapper}{
 	        $child,
-	        $alternate
+	        $alternate[$count]
 	    }
+      }
+)
 };
 
 
@@ -744,7 +747,9 @@ return
 for $v in $primary
 return
 if ($primary) then 
-  std:wrap($v,$secondary,$options,$variables)
+  element {$wrapper}{
+    $v
+  }
 else
   element {$wrapper}{
     ()

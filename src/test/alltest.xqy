@@ -24,8 +24,12 @@ import module namespace test1 = "http://www.marklogic.com/test"
 for $test in collection("tests.xproc.org/required?select=*.xml")
  let $pipeline  := if($test/t:test/t:pipeline/@href) then doc(concat("tests.xproc.org/required/",$test/t:test/t:pipeline/@href)) else $test/t:test/t:pipeline/*
  let $stdin     := if($test/t:test/t:input[@port eq 'source']/t:document) then (for $doc in $test/t:test/t:input[@port eq 'source']/t:document/* return $doc) else ($test/t:test/t:input[@port eq 'source']/*)
- let $alternate := $test/t:test/t:input[@port eq 'alternate']/node()
+ let $alternate := if($test/t:test/t:input[@port eq 'alternate']/t:document) then (for $doc in $test/t:test/t:input[@port eq 'alternate']/t:document return $doc/*) else $test/t:test/t:input[@port eq 'alternate']/node()
+
+let $alt :=  if($test/t:test/t:input[@port eq 'alt']/t:document) then (for $doc in $test/t:test/t:input[@port eq 'alt']/t:document return $doc/*) else $test/t:test/t:input[@port eq 'alt']/node()
+
  let $style := $test/t:test/t:input[@port eq 'style']/node()
+
  let $expected  := if($test/t:test/t:output/t:document) then (for $doc in $test/t:test/t:output/t:document return $doc/*) else $test/t:test/t:output/*
  let $error  as xs:string  := string($test//@*:error)
  let $err := if (starts-with($error,'err:') and $error ne 'test
@@ -36,12 +40,17 @@ for $test in collection("tests.xproc.org/required?select=*.xml")
  let $options   := ()
  let $outputs   := (
 if ($alternate) then      
-<xproc:output port="alternate" primary="true" port-type="external" func="" xproc:default-name="!1" step="!1">{$alternate}</xproc:output>
+<xproc:output port="alternate" primary="false" port-type="external" func="" xproc:default-name="!1" step="!1">{$alternate}</xproc:output>
 else
 ()
 ,
 if ($style) then      
-<xproc:output port="style" primary="true" port-type="external" func="" xproc:default-name="!1" step="!1">{$style}</xproc:output>
+<xproc:output port="style" primary="false" port-type="external" func="" xproc:default-name="!1" step="!1">{$style}</xproc:output>
+else
+()
+,
+if($alt) then
+<xproc:output port="alt" primary="false" port-type="external" func="" xproc:default-name="!1" step="!1">{$alt}</xproc:output>
 else
 ()
 )
@@ -79,12 +88,13 @@ u:strip-whitespace(document{$result})
 
 {
 
-for $test in collection("tests.xproc.org/optional?select=*.xml")
+for $test in collection("tests.xproc.org/optional?select=*.xml1")
  let $pipeline := $test/t:test/t:pipeline/*
  let $stdin    := $test/t:test/t:input[@port eq 'source']/*
  let $expected := $test/t:test/t:output/*
  let $error    := string($test/@error)
- let $alternate := $test/t:test/t:input[@port eq 'alternate']/node()
+ let $alternate := if($test/t:test/t:input[@port eq 'alternate']/t:document) then (for $doc in $test/t:test/t:input[@port eq 'alternate']/t:document return $doc/*) else $test/t:test/t:input[@port eq 'alternate']/node()
+ let $alt :=  if($test/t:test/t:input[@port eq 'alt']/t:document) then (for $doc in $test/t:test/t:input[@port eq 'alt']/t:document return $doc/*) else $test/t:test/t:input[@port eq 'alt']/node()
  let $style := $test/t:test/t:input[@port eq 'style']/node()
  let $query := $test/t:test/t:input[@port eq 'query']/node()
  let $dflag    := 0
@@ -93,6 +103,11 @@ for $test in collection("tests.xproc.org/optional?select=*.xml")
  let $options  := ()
  let $outputs   := (if ($alternate) then      
 <xproc:output port="alternate" primary="true" port-type="external" func="" xproc:default-name="!1" step="!1">{$alternate}</xproc:output>
+else
+()
+,
+if ($alt) then      
+<xproc:output port="alt" primary="true" port-type="external" func="" xproc:default-name="!1" step="!1">{$alt}</xproc:output>
 else
 ()
 ,
