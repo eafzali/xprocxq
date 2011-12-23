@@ -243,14 +243,26 @@ return
  : @returns c:data
  :)
  (: -------------------------------------------------------------------------- :)
- declare function xproc:resolve-data-binding($href as xs:string,$wrapper as xs:string) as element(c:data){
+ declare function xproc:resolve-data-binding($input as element(p:data)*){
  (: -------------------------------------------------------------------------- :)
+
+if($input/@wrapper) then
+  element {$input/@wrapper} {
+    $input/node()
+  }
+else if ($input/@href) then
 <c:data
-  content-type =""
-  charset = ""
-  encoding = "">
-    string
+  content-type ="{$input/@content-type}">
+  {fn:unparsed-text(concat('file:///',$input/@href))}
 </c:data>
+else
+<c:data
+  content-type ="{$input/@content-type}"
+  charset = "{$input/@charset}"
+  encoding = "{$input/@encoding}">
+  {$input/text()}
+</c:data>
+
 (:
     u:dynamicError('xprocerr:XD0002',concat("cannot access file:  ",$href))
 :)
@@ -280,7 +292,7 @@ return
      case element(p:document)
        return xproc:resolve-document-binding($input/@href)
      case element(p:data)
-       return xproc:resolve-data-binding($input/@href,'')
+       return xproc:resolve-data-binding($input)
      case element(p:pipe)
        return $outputs[@xproc:default-name eq $input/@xproc:step-name][@port eq $input/@port]/node()
      default 
