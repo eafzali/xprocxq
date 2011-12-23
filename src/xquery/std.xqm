@@ -56,6 +56,7 @@ declare variable $std:xslt               := std:xslt#4;
 (: -------------------------------------------------------------------------- :)
 declare function std:add-attribute($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
+let $ns := u:enum-ns(<dummy>{$primary}</dummy>)
 let $match  := u:get-option('match',$options,$primary)
 let $attribute-name as xs:string := u:get-option('attribute-name',$options,$primary)
 let $attribute-value := u:get-option('attribute-value',$options,$primary)
@@ -63,6 +64,9 @@ let $attribute-prefix := u:get-option('attribute-prefix',$options,$primary)
 let $attribute-namespace := u:get-option('attribute-namespace',$options,$primary)
 let $template := <xsl:stylesheet version="2.0">
 <xsl:template match=".">
+       {for $n in $ns return
+       <xsl:namespace name="{$n/@prefix}" select="'{$n/@URI}'"/>
+       }
     <xsl:apply-templates/>
 </xsl:template>
 
@@ -207,9 +211,7 @@ let $standalone             := u:get-option('standalone',$options,$primary)
 let $undeclare-prefixes     := u:get-option('undeclare-prefixes',$options,$primary)
 let $version                := u:get-option('version',$options,$primary)
 return
-  <c:result>{
-    u:serialize($primary)
-  }</c:result>
+  u:serialize($primary) 
 };
 
 

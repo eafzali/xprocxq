@@ -73,8 +73,7 @@ declare function u:serialize($xml) as xs:string{
 (: -------------------------------------------------------------------------- :)
 saxon:serialize($xml, <xsl:output method="xml" 
                              omit-xml-declaration="yes" 
-                             indent="yes" 
-                             saxon:indent-spaces="1"/>) 
+                             indent="no"/>) 
 };
 
 
