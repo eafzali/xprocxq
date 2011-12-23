@@ -31,7 +31,7 @@ declare variable $std:directory-list     := std:directory-list#4;
 declare variable $std:escape-markup      := std:escape-markup#4;
 declare variable $std:http-request       := ();
 declare variable $std:identity           := std:identity#4;
-declare variable $std:insert             := ();
+declare variable $std:insert             := std:insert#4;
 declare variable $std:label-elements     := std:label-elements#4;
 declare variable $std:load               := std:load#4;
 declare variable $std:make-absolute-uris := std:make-absolute-uris#4;
@@ -320,7 +320,68 @@ $primary
 (: -------------------------------------------------------------------------- :)
 declare function std:insert($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-()
+let $insertion := u:get-secondary('insertion',$secondary)
+let $match     := u:get-option('match',$options,$primary)
+let $position  := u:get-option('position',$options,$primary)
+
+let $template := <xsl:stylesheet version="2.0">
+<xsl:template match=".">
+    <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="@*|node()">
+    <xsl:copy>
+        <xsl:apply-templates select="@*|node()"/>
+    </xsl:copy>
+</xsl:template>
+
+{
+if ($position eq 'before') then
+
+<xsl:template match="{$match}">
+  {$insertion}
+  <xsl:copy>
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates/>
+  </xsl:copy>
+</xsl:template>
+
+else if ($position eq 'after') then
+
+<xsl:template match="{$match}">
+  <xsl:copy>
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates/>
+  </xsl:copy>
+  {$insertion}
+</xsl:template>
+
+else if ($position eq 'first-child') then
+
+<xsl:template match="{$match}[1]">
+  <xsl:copy>
+    <xsl:apply-templates select="@*"/>
+    {$insertion}
+    <xsl:apply-templates/>
+  </xsl:copy>
+</xsl:template>
+
+else
+
+<xsl:template match="{$match}[last()]">
+  <xsl:copy>
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates/>
+    {$insertion}
+  </xsl:copy>
+</xsl:template>
+
+}
+
+</xsl:stylesheet>      
+
+return
+  u:transform($template,$primary)
 };
 
 

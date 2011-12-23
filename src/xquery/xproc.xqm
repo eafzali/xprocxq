@@ -749,6 +749,8 @@ else if($stepname eq 'p:choose') then
   $xproc:choose
 else if($stepname eq 'p:replace') then
   $std:replace
+else if($stepname eq 'p:insert') then
+  $std:insert
 else
  $std:identity
 };
