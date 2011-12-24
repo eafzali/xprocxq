@@ -293,8 +293,7 @@ module namespace parse = "http://xproc.net/xproc/parse";
       ($s/@select, $input/@select)[1],
       $s/*
     }
-};
-
+ };
 
  (:~
   : parse output bindings
@@ -595,7 +594,8 @@ module namespace parse = "http://xproc.net/xproc/parse";
                      $node/@*,
                      if (fn:contains($type,'step')) then attribute xproc:step {fn:true()} else (),
                      attribute xproc:type {$type},
-                     if (fn:contains($type,'step')) then
+                     parse:explicit-type($node/node()) ,
+                    if (fn:contains($type,'step')) then
                        for $option in $node/@*[name(.) ne 'name']      (: normalize all step attribute options to be represented as p:with-option elements :)
                        return
                          element p:with-option {
@@ -604,10 +604,8 @@ module namespace parse = "http://xproc.net/xproc/parse";
                            attribute select {data($option)}
                          }
                        else
-                         ()
-                         ,
-                         parse:explicit-type($node/node())} 
-            case element(p:when)
+                         () }
+           case element(p:when)
                    return element p:when {$node/@*,
                      attribute xproc:type {$type}, 
                      parse:explicit-type($node/node())}                 

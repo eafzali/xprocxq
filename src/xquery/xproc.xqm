@@ -9,6 +9,7 @@ module namespace xproc = "http://xproc.net/xproc";
  declare namespace p="http://www.w3.org/ns/xproc";
  declare namespace c="http://www.w3.org/ns/xproc-step";
  declare namespace xprocerr="http://www.w3.org/ns/xproc-error";
+ declare namespace xsl="http://www.w3.org/1999/XSL/Transform";
 
  (: module imports :)
  import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
@@ -160,8 +161,28 @@ let $namespaces  := xproc:enum-namespaces($currentstep)
 let $defaultname as xs:string := string($currentstep/@xproc:default-name)
 let $iteration-select as xs:string   := string($currentstep/ext:pre/p:viewport-source/@select)
 let $ast := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/node()}</p:declare-step>
+let $template := <xsl:stylesheet version="2.0">
+<xsl:template match=".">
+    <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="@*|node()">
+    <xsl:copy>
+        <xsl:apply-templates select="@*|node()"/>
+    </xsl:copy>
+</xsl:template>
+
+<xsl:template match="{$iteration-select}">
+  <xsl:copy>
+    <xsl:apply-templates/>
+  </xsl:copy>
+</xsl:template>
+
+</xsl:stylesheet>      
+
+let $input := u:transform($template,$primary)
 return
-for $item at $count in u:evalXPATH($iteration-select,document{$primary})
+for $item at $count in $input
 return
   xproc:output(xproc:evalAST($ast,$xproc:eval-step,$namespaces,$item,(),()), 0)
 };
