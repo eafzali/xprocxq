@@ -193,6 +193,7 @@ module namespace parse = "http://xproc.net/xproc/parse";
             ,
             $step/p:output,
             $step/p:with-option,
+            $step/p:option,
             $step/(p:iteration-source|p:viewport-source|p:xpath-context),
             parse:explicit-bindings($step[@xproc:step eq "true"],$ast[$count - 1]/p:output[@primary eq "true"]/@port,
                  $step/@xproc:default-name,      
@@ -319,13 +320,32 @@ module namespace parse = "http://xproc.net/xproc/parse";
  };
 
 
+
  (:~
   : parse a steps options, converting all options to a nested p:with-option element
   :
   : @returns element(p:with-option)
   :)
  (: --------------------------------------------------------------------------------------------------------- :)
- declare function parse:options($node as element(p:with-option)*, $step-definition) as element(p:with-option)*{
+ declare function parse:options($node as element(p:option)*, $step-definition) as element(p:option)*{
+ (: --------------------------------------------------------------------------------------------------------- :)
+for $option in $node
+return
+     element p:option {
+       attribute xproc:type {'comp'},
+       attribute name {$option/@name},
+       attribute select {($option/@select,'/')[1]}
+       }
+ };
+
+
+ (:~
+  : parse a steps options, converting all options to a nested p:with-option element
+  :
+  : @returns element(p:with-option)
+  :)
+ (: --------------------------------------------------------------------------------------------------------- :)
+ declare function parse:with-options($node as element(p:with-option)*, $step-definition) as element(p:with-option)*{
  (: --------------------------------------------------------------------------------------------------------- :)
  for $option in $step-definition/p:option
  let $name as xs:string := fn:string($option/@name)
@@ -386,7 +406,8 @@ module namespace parse = "http://xproc.net/xproc/parse";
                        $node/p:input[@port ne 'source'],
                        parse:input-port($node/p:input[@port eq 'source'], $step-definition), 
                        parse:output-port($node/p:output, $step-definition),
-                       parse:options($node/p:with-option,$step-definition)
+                       parse:with-options($node/p:with-option,$step-definition),
+                       parse:options($node/p:option,$step-definition)
                      },
                      parse:AST($node/*[@xproc:type ne 'comp'])
                    }
@@ -489,7 +510,7 @@ module namespace parse = "http://xproc.net/xproc/parse";
                      $node/p:log,
                      parse:input-port($node/p:input, $step-definition),
                      parse:output-port($node/p:output, $step-definition),
-                     parse:options($node/p:with-option,$step-definition),
+                     parse:with-options($node/p:with-option,$step-definition),
                      parse:AST($node/*[@xproc:type ne 'comp'])
                    }
             default

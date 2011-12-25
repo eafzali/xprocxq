@@ -28,7 +28,7 @@ declare function (:TEST:) tstd:testIdentity() {
 };
 
 declare function (:TEST:) tstd:testCount() { 
-  let $actual := $std:count(<test/>,(),<xproc:options><p:with-option name='limit' select='0'/></xproc:options>,())
+  let $actual := $std:count(<test/>,(),<xproc:options><p:with-option name='limit' select="'0'"/></xproc:options>,())
   return
     $actual
 };

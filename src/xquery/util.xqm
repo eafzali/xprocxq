@@ -42,16 +42,24 @@ let $template := <xsl:stylesheet version="2.0">
     <xsl:apply-templates/>
 </xsl:template>
 
-<xsl:template match="@*|node()">
+<xsl:template match="@*|*">
     <xsl:copy>
         <xsl:apply-templates select="@*|node()"/>
     </xsl:copy>
 </xsl:template>
+
+<xsl:template match="text()">
+<xsl:value-of select="replace(.,'&#xa;','')"/>
+</xsl:template>
+
 </xsl:stylesheet>
 return
   u:transform($template,$xml)
 };
 
+declare function u:string-to-base64($string as xs:string){
+  saxon:string-to-base64Binary($string, "UTF8")
+};
 
 (: -------------------------------------------------------------------------- :)
 declare function u:store($href as xs:string,$data as item()){

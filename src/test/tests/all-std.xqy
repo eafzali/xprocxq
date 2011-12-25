@@ -21,7 +21,7 @@ test:html(
     <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">1</c:result></expected>
     <result>{tstd:testCount()}</result>
   </test>
-  <test name="std41" desc="std:count step with limit set">
+  <test name="std4a" desc="std:count step with limit set">
     <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">4</c:result></expected>
     <result>{tstd:testCount2()}</result>
   </test>

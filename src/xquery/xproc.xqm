@@ -273,16 +273,19 @@ if($input/@wrapper) then
   }
 else if ($input/@href) then
 <c:data
-  content-type ="{$input/@content-type}">
-  {fn:unparsed-text(concat('file:///',$input/@href))}
-</c:data>
+  content-type ="{($input/@content-type,'application/octet-stream')[1]}" >{
+
+  if (starts-with($input/@content-type,'text')) then
+    fn:unparsed-text(concat('file:///',$input/@href))
+  else
+    (attribute encoding {"base64"},
+    u:string-to-base64(fn:unparsed-text(concat('file:///',$input/@href))))
+}</c:data>
 else
 <c:data
   content-type ="{$input/@content-type}"
-  charset = "{$input/@charset}"
-  encoding = "{$input/@encoding}">
-  {$input/text()}
-</c:data>
+   charset ="{$input/@charset}"
+  encoding ="{$input/@encoding}">{u:string-to-base64($input/text())}</c:data>
 
 (:
     u:dynamicError('xprocerr:XD0002',concat("cannot access file:  ",$href))

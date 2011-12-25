@@ -331,12 +331,6 @@ let $template := <xsl:stylesheet version="2.0">
     <xsl:apply-templates/>
 </xsl:template>
 
-<xsl:template match="@*|node()">
-    <xsl:copy>
-        <xsl:apply-templates select="@*|node()"/>
-    </xsl:copy>
-</xsl:template>
-
 {
 if ($position eq 'before') then
 
@@ -377,8 +371,13 @@ else
     {$insertion}
   </xsl:copy>
 </xsl:template>
-
 }
+
+<xsl:template match="@*|node()|comment()|processing-instruction()">
+    <xsl:copy>
+        <xsl:apply-templates select="@*|node()|comment()|processing-instruction()"/>
+    </xsl:copy>
+</xsl:template>
 
 </xsl:stylesheet>      
 
