@@ -18,6 +18,8 @@ import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
 import module namespace u = "http://xproc.net/xproc/util" at "util.xqm";
 (: import module namespace xslfo = "http://exist-db.org/xquery/xslfo"; (: for p:xsl-formatter :) :)
 
+declare default function namespace "http://www.w3.org/2005/xpath-functions";
+
 (: declare functions :)
 declare variable $opt:exec := opt:exec#4;
 declare variable $opt:hash := opt:hash#4;

@@ -19,6 +19,8 @@ module namespace xproc = "http://xproc.net/xproc";
  import module namespace   opt = "http://xproc.net/xproc/opt"   at "opt.xqm";
  import module namespace   ext = "http://xproc.net/xproc/ext"   at "ext.xqm";
 
+ declare default function namespace "http://www.w3.org/2005/xpath-functions";
+
  (: declare variables :)
  declare variable $xproc:eval-step      := xproc:evalstep#5;
 
@@ -480,7 +482,7 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
      let $options      := xproc:eval-options($ast,$step)
      let $currentstep  := $ast/*[@xproc:default-name eq $step][1]
      let $stepfunc     := name($currentstep)
-     let $stepfunction := if ($currentstep/@type) then xproc:getstep('p:identity') else xproc:getstep($stepfunc)
+     let $stepfunction := if ($currentstep/@type) then $std:identity else xproc:getstep($stepfunc)
      let $primary      := xproc:eval-primary($ast,$currentstep,$primaryinput,$outputs) 
      let $secondary    := xproc:eval-secondary($ast,$currentstep,$primaryinput,$outputs) 
 
@@ -517,7 +519,22 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
              )
              ,
              (: primary output port :)
-             if($currentstep/p:output[@primary='true']) then
+             if($currentstep/@xproc:type eq 'defined') then
+             <xproc:output step="{$step}"
+             port-type="output"
+             href="{if ($log-port eq $currentstep/p:output[1][@primary eq 'true']/@port) then $log-href else ()}"
+             primary="true"
+             xproc:default-name="{$step}"
+             select="/"
+             port="result"
+             func="{$stepfunc}">{
+               let $pipeline := element p:declare-step {
+                 attribute version {'1.0'},
+                 $ast/*[@type eq $stepfunc]/*
+               }
+               return
+                 $xproc:run-step($pipeline,$primary,(),(),(),0,0)}</xproc:output>
+             else if($currentstep/p:output[@primary='true']) then
              <xproc:output step="{$step}"
              port-type="output"
              href="{if ($log-port eq $currentstep/p:output[1][@primary eq 'true']/@port) then $log-href else ()}"
@@ -670,7 +687,6 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
                               $primary as item()*,
                               $outputs as item()*  ) {
  (: -------------------------------------------------------------------------- :)
-
     if (empty($steps)) then
       ($ast,$outputs)                       
     else
@@ -721,12 +737,11 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
    parse:pipeline-step-sort( $b,  <p:declare-step xproc:default-name="{$const:init_unique_id}"/> )
  }
  let $checkAST          := u:assert(not(empty($ast/*[@xproc:step])),"pipeline AST has no steps")
- let $eval_result       := xproc:evalAST($ast,$xproc:eval-step,$namespaces,$stdin,$bindings,$outputs)
+ let $eval_result       := xproc:evalAST($ast,$xproc:eval-step,$namespaces,$stdin,$bindings,($outputs))
  let $serialized_result := xproc:output($eval_result,$dflag)
  return
    $serialized_result
 };
-
 
 
 (:~ waiting for fn:function-lookup() to be supported by XQuery implementations

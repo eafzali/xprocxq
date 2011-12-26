@@ -19,6 +19,8 @@ import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
 import module namespace u = "http://xproc.net/xproc/util" at "util.xqm";
 declare namespace http = "http://www.expath.org/mod/http-client";
 
+declare default function namespace "http://www.w3.org/2005/xpath-functions";
+
 (: declare functions :)
 declare variable $std:add-attribute      := std:add-attribute#4;
 declare variable $std:add-xml-base       := std:add-xml-base#4;

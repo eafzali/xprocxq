@@ -390,3 +390,27 @@ declare function (:TEST:) txproc:runPack1() {
 };
 
 
+declare function (:TEST:) txproc:runDeclareStep1() { 
+  let $pipeline := <p:declare-step version='1.0' xmlns:foo="http://acme.com/test">
+      <p:input port="source" sequence="true"/>
+      <p:output port="result"/>
+      <p:declare-step type="foo:test">
+        <p:input port="source" sequence="true"/>
+        <p:output port="result"/>
+        <p:count/>
+      </p:declare-step>
+      <foo:test/>
+    </p:declare-step>
+
+  let $stdin    := (<doc/>,<doc/>)
+  let $dflag    := 0
+  let $tflag    := 0
+  let $bindings := ()
+  let $options  := ()
+  let $outputs  := ()
+  return
+   $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
+};
+
+
+

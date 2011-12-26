@@ -102,9 +102,10 @@ test:html(
     <expected><sequence-wrapper><wrapper><doc1/><doc-a/></wrapper><wrapper><doc2/><doc-b/></wrapper><wrapper><doc3/><doc-c/></wrapper></sequence-wrapper></expected>
     <result>{txproc:runPack1()}</result>
   </test>
-
-
-
+  <test name="xproc18" desc="p:declare-step">
+    <expected><c:result>2</c:result></expected>
+    <result>{txproc:runDeclareStep1()}</result>
+  </test>
 
 
 

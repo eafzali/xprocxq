@@ -28,6 +28,8 @@ declare namespace xxq-error = "http://xproc.net/xproc/error";
 (: Module Imports :)
 import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
 
+declare default function namespace "http://www.w3.org/2005/xpath-functions";
+
 
 (: set to 1 to enable debugging :)
 declare variable $u:NDEBUG :=$const:NDEBUG;

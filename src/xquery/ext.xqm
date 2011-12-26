@@ -17,7 +17,7 @@ declare namespace xproc = "http://xproc.net/xproc";
 import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
 import module namespace u = "http://xproc.net/xproc/util" at "util.xqm";
 
-
+declare default function namespace "http://www.w3.org/2005/xpath-functions";
 
 (: declare functions :)
 declare variable $ext:pre       := ext:pre#4;
