@@ -95,3 +95,6 @@ declare variable $const:directory-list-xslt := 'resource:net/xproc/xprocxq/etc/d
 (: RELAXNG Schema for XPROC :)
 (: -------------------------------------------------------------------------- :)
 declare variable $const:xproc-rng-schema := 'resource:net/xproc/xprocxq/etc/xproc.rng';
+
+
+declare variable $const:xslt-output := <xsl:output omit-xml-declaration="yes"/>;

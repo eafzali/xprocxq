@@ -77,8 +77,8 @@ let $ast-otherwise := <p:declare-step name="{$defaultname}" xproc:default-name="
 let $xpath-context as element(p:xpath-context) := $currentstep/ext:pre/p:xpath-context[1]
 let $xpath-context-select as xs:string   :=string($xpath-context/@select)
 let $xpath-context-binding   := $xpath-context[1]/node()[1]
-let $xpath-context-data := $xpath-context-binding/p:inline
-let $context := if ($primary ne '') then u:evalXPATH($xpath-context-select,document{$primary}) else u:evalXPATH($xpath-context-select,document{$xpath-context/p:inline/node()}) 
+let $xpath-context-data := xproc:resolve-inline-binding($xpath-context-binding/p:inline,$currentstep)
+let $context := if ($primary ne '') then u:evalXPATH($xpath-context-select,document{$primary}) else u:evalXPATH($xpath-context-select,document{$xpath-context}) 
 let $when-test := for $when at $count in $currentstep/p:when
           return
             if(string($when/@test) ne '') then
@@ -162,6 +162,8 @@ let $defaultname as xs:string := string($currentstep/@xproc:default-name)
 let $iteration-select as xs:string   := string($currentstep/ext:pre/p:viewport-source/@select)
 let $ast := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/node()}</p:declare-step>
 let $template := <xsl:stylesheet version="2.0">
+{$const:xslt-output}
+
 <xsl:template match=".">
     <xsl:apply-templates/>
 </xsl:template>
@@ -249,7 +251,14 @@ return
  declare function xproc:resolve-document-binding($href as xs:string) as item(){
  (: -------------------------------------------------------------------------- :)
     if (doc-available($href)) then
-        doc($href)
+        try { 
+        let $doc := doc($href) 
+        return
+          element {name($doc/node())} {
+         (:   if ($doc/node()/@xml:base) then () else attribute xml:base {$href}, :)
+            $doc/*/*
+          }
+         } catch * { u:dynamicError('xprocerr:XD0002',concat(" cannot access document ",$href))}
     else
         u:dynamicError('xprocerr:XD0002',concat(" cannot access document ",$href))
  };
@@ -293,6 +302,31 @@ else
  };
 
 
+(:~ resolve p:inline input port bindings
+ :
+ :
+ : @param $inline - p:inline
+ :
+ : @returns item()*
+ :)
+ (: -------------------------------------------------------------------------- :)
+ declare function xproc:resolve-inline-binding($inline as item()*,$currentstep){
+ (: -------------------------------------------------------------------------- :)
+let $ns := u:enum-ns(<dummy>{$currentstep}</dummy>)
+let $exclude-result-prefixes as xs:string := string($inline/@exclude-inline-prefixes)
+let $template := <xsl:stylesheet version="2.0" >
+{$const:xslt-output}
+<xsl:template match="@*|*|processing-instruction()|comment()">
+  <xsl:copy>
+    <xsl:apply-templates select="*|@*|text()|processing-instruction()|comment()"/>
+  </xsl:copy>
+</xsl:template>
+</xsl:stylesheet>      
+return
+  u:transform($template,document{$inline/node()})
+ };
+
+
 (:~ resolve input port bindings
  :
  : Will process p:empty, p:inline, p:document, p:data, p:pipe
@@ -312,7 +346,7 @@ else
      case element(p:empty)
        return <empty/>
      case element(p:inline)
-       return $input/*
+       return xproc:resolve-inline-binding($input,$currentstep)
      case element(p:document)
        return xproc:resolve-document-binding($input/@href)
      case element(p:data)
@@ -406,7 +440,7 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
  (: -------------------------------------------------------------------------- :)
  let $step-name as xs:string := string($currentstep/@xproc:default-name)
  let $pinput as element(p:input)? := $currentstep/p:input[@primary eq 'true']
- let $data :=  if($pinput/node() (: and empty($primaryinput) :)) then
+ let $data :=  if($pinput/*(: and empty($primaryinput) :)) then
        for $input in $pinput/*
        return
          xproc:resolve-port-binding($input,$outputs,$ast,$currentstep)
@@ -418,7 +452,7 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
            
 let $result :=  u:evalXPATH(string($pinput/@select),$data)
  return
-   if ($result) then
+   if ($result) then     
      document{$result}
    else
      <xprocerror1 type="eval-primary">
@@ -446,8 +480,8 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
      let $options      := xproc:eval-options($ast,$step)
      let $currentstep  := $ast/*[@xproc:default-name eq $step][1]
      let $stepfunc     := name($currentstep)
-     let $stepfunction := xproc:getstep($stepfunc)
-     let $primary      := if ($primaryinput) then xproc:eval-primary($ast,$currentstep,$primaryinput,$outputs) else ()
+     let $stepfunction := if ($currentstep/@type) then xproc:getstep('p:identity') else xproc:getstep($stepfunc)
+     let $primary      := xproc:eval-primary($ast,$currentstep,$primaryinput,$outputs) 
      let $secondary    := xproc:eval-secondary($ast,$currentstep,$primaryinput,$outputs) 
 
      let $log-href := $currentstep/p:log/@href
@@ -690,9 +724,6 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
  let $eval_result       := xproc:evalAST($ast,$xproc:eval-step,$namespaces,$stdin,$bindings,$outputs)
  let $serialized_result := xproc:output($eval_result,$dflag)
  return
-
-let $g := parse:AST(parse:explicit-name(parse:explicit-type($pipeline)))
-return
    $serialized_result
 };
 

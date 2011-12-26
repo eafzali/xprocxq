@@ -52,7 +52,6 @@ declare variable $std:wrap-sequence      := std:wrap-sequence#4;
 declare variable $std:unwrap             := std:unwrap#4;
 declare variable $std:xslt               := std:xslt#4;
 
-
 (: -------------------------------------------------------------------------- :)
 declare function std:add-attribute($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
@@ -63,6 +62,7 @@ let $attribute-value := u:get-option('attribute-value',$options,$primary)
 let $attribute-prefix := u:get-option('attribute-prefix',$options,$primary)
 let $attribute-namespace := u:get-option('attribute-namespace',$options,$primary)
 let $template := <xsl:stylesheet version="2.0">
+{$const:xslt-output}
 <xsl:template match=".">
        {for $n in $ns return
        <xsl:namespace name="{$n/@prefix}" select="'{$n/@URI}'"/>
@@ -95,18 +95,24 @@ declare function std:add-xml-base($primary,$secondary,$options,$variables) {
 let $all as xs:string := u:get-option('add',$options,$primary)
 let $relative as xs:string := u:get-option('relative',$options,$primary)
 let $template := <xsl:stylesheet version="2.0">
+{$const:xslt-output}
+
 <xsl:template match=".">
+<xsl:copy>
     <xsl:apply-templates/>
+</xsl:copy>
 </xsl:template>
 
-<xsl:template match="@*">
-    <xsl:copy/>
+<xsl:template match="node()|@*">
+  <xsl:copy>
+    <xsl:apply-templates select="node()|@*"/>
+  </xsl:copy>
 </xsl:template>
 
 <xsl:template match="node()">
   <xsl:copy>
+    <xsl:attribute name="xml:base" select="base-uri(.)"/>
     <xsl:apply-templates select="@*"/>
-    <xsl:attribute name="xml:base" select="''"/>
     <xsl:apply-templates/>
   </xsl:copy>
 </xsl:template>
@@ -153,6 +159,7 @@ declare function std:delete($primary,$secondary,$options,$variables){
 let $ns := u:enum-ns(<dummy>{$primary}</dummy>)
 let $match  as xs:string := u:get-option('match',$options,$primary)
 let $template := <xsl:stylesheet version="2.0">
+{$const:xslt-output}
 
 <xsl:template match=".">
         <xsl:apply-templates select="@*|node()"/>
@@ -327,6 +334,8 @@ let $match     := u:get-option('match',$options,$primary)
 let $position  := u:get-option('position',$options,$primary)
 
 let $template := <xsl:stylesheet version="2.0">
+{$const:xslt-output}
+
 <xsl:template match=".">
     <xsl:apply-templates/>
 </xsl:template>
@@ -397,6 +406,8 @@ let $attribute-prefix  := u:get-option('attribute-prefix',$options,$primary)
 let $attribute-namespace  := u:get-option('attribute-namespace',$options,$primary)
 
 let $template := <xsl:stylesheet version="2.0">
+{$const:xslt-output}
+
 <xsl:template match=".">
     <xsl:apply-templates/>
 </xsl:template>
@@ -455,6 +466,8 @@ let $new-uri  := if ($base-uri) then <xsl:value-of select="resolve-uri('{$base-u
 else <xsl:value-of select="base-uri($closest-element)"/>
 
 let $template := <xsl:stylesheet version="2.0">
+{$const:xslt-output}
+
 <xsl:template match="/">
     <xsl:apply-templates/>
 </xsl:template>
@@ -540,6 +553,8 @@ let $new-prefix  := u:get-option('new-prefix',$options,$primary)
 let $new-namespace  := u:get-option('new-namespace',$options,$primary)
 
 let $template := <xsl:stylesheet version="2.0">
+{$const:xslt-output}
+
 <xsl:template match=".">
     <xsl:apply-templates/>
 </xsl:template>
@@ -584,6 +599,8 @@ let $match  := u:get-option('match',$options,$primary)
 let $replacement := u:get-secondary('replacement',$secondary)
 
 let $template := <xsl:stylesheet version="2.0">
+{$const:xslt-output}
+
 <xsl:template match=".">
     <xsl:apply-templates/>
 </xsl:template>
@@ -625,6 +642,8 @@ let $attribute-name := name($attributes/@*[1])
 let $attribute-value := $attributes/@*[1]
 (: TODO - this is limited to only a single attribute currently :)
 let $template := <xsl:stylesheet version="2.0">
+{$const:xslt-output}
+
 <xsl:template match=".">
     <xsl:apply-templates/>
 </xsl:template>
@@ -704,6 +723,8 @@ declare function std:string-replace($primary,$secondary,$options,$variables) {
 let $match  := u:get-option('match',$options,$primary)
 let $replace as xs:string := u:get-option('replace',$options,$primary)
 let $template := <xsl:stylesheet version="2.0">
+{$const:xslt-output}
+
 <xsl:template match=".">
     <xsl:apply-templates/>
 </xsl:template>
@@ -770,12 +791,10 @@ let $wrapper-prefix as xs:string := u:get-option('wrapper-prefix',$options,$prim
 let $wrapper-namespace as xs:string := u:get-option('wrapper-namespace',$options,$primary)
 let $group-adjacent as xs:string := u:get-option('group-adjacent',$options,$primary)
 
-let $template := <xsl:stylesheet version="2.0" xmlns:p="http://www.w3.org/ns/xproc">
+let $template := <xsl:stylesheet version="2.0"  xmlns:p="http://www.w3.org/ns/xproc">
+{$const:xslt-output}
 
 <xsl:template match=".">
-       {for $n in $ns return
-       <xsl:namespace name="{$n/@prefix}" select="'{$n/@URI}'"/>
-       }
     <xsl:apply-templates/>
 </xsl:template>
 
@@ -825,6 +844,8 @@ declare function std:unwrap($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 let $match  := u:get-option('match',$options,$primary)
 let $template := <xsl:stylesheet version="2.0">
+{$const:xslt-output}
+
 <xsl:template match=".">
     <xsl:apply-templates/>
 </xsl:template>
