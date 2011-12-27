@@ -534,25 +534,11 @@ return
 declare function std:namespace-rename($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 let $ns        := u:get-secondary('xproc:namespaces',$secondary)
-let $ns1        := u:enum-ns(<dummy>{$primary}</dummy>)
-
 let $from      := u:get-option('from',$options,$primary)
 let $to        := u:get-option('to',$options,$primary)
 let $apply-to  := u:get-option('apply-to',$options,$primary)
 
-let $template := <xsl:stylesheet version="2.0">
-       {for $n in $ns return
-        namespace {$n/@prefix} {$n/@URI}
-       }
-{$const:xslt-output}
-
-<xsl:template match="node()|@*">
-  <xsl:copy>
-    <xsl:apply-templates select="node()|@*"/>
-  </xsl:copy>
-</xsl:template>
-
-  <xsl:template match="*">
+let $element-template :=   <xsl:template match="node()">
   <xsl:choose>
   <xsl:when test="namespace-uri(.) eq '{$from}'">
     <xsl:element name="{{name()}}" namespace="{$to}">
@@ -569,6 +555,42 @@ let $template := <xsl:stylesheet version="2.0">
   </xsl:otherwise>
   </xsl:choose>
   </xsl:template>
+
+let $attribute-template :=   <xsl:template match="@*">
+  <xsl:choose>
+  <xsl:when test="namespace-uri(.) eq '{$from}'">
+    <xsl:attribute name="{{name()}}" namespace="{$to}">
+    <xsl:value-of select="."/>
+    </xsl:attribute>
+  </xsl:when>
+  <xsl:otherwise>
+    <xsl:attribute name="{{name()}}" namespace="{{namespace-uri()}}">
+    <xsl:value-of select="."/>
+    </xsl:attribute>
+  </xsl:otherwise>
+  </xsl:choose>
+  </xsl:template>
+
+
+let $template := <xsl:stylesheet version="2.0">
+       {for $n in $ns return
+        namespace {$n/@prefix} {$n/@URI}
+       }
+{$const:xslt-output}
+
+  <xsl:template match="node()|@*">
+  <xsl:copy>
+    <xsl:apply-templates select="node()|@*"/>
+  </xsl:copy>
+  </xsl:template>
+
+{if($apply-to eq 'elements') then 
+$element-template 
+else if($apply-to eq 'attributes') then
+$attribute-template 
+else
+($element-template,$attribute-template)
+} 
 
 </xsl:stylesheet>      
 return

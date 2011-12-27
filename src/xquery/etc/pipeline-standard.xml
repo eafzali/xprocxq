@@ -122,7 +122,7 @@
       <p:output port="result" primary="true" select="/"/>
       <p:option name="from"/>
       <p:option name="to"/>
-      <p:option name="elements-only" select="&#34;false&#34;"/>
+      <p:option name="apply-to" select="&#34;all&#34;"/>
    </p:declare-step>
    <p:declare-step type="p:pack" xml:id="pack" xproc:support="true">
       <p:input port="source" sequence="true" primary="true" select="/"/>
