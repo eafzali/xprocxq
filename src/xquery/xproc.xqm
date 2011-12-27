@@ -5,13 +5,13 @@ module namespace xproc = "http://xproc.net/xproc";
  declare boundary-space strip;
  declare copy-namespaces preserve,no-inherit;
 
- (: declare namespaces :)
+ (:~ declare namespaces :)
  declare namespace p="http://www.w3.org/ns/xproc";
  declare namespace c="http://www.w3.org/ns/xproc-step";
  declare namespace xprocerr="http://www.w3.org/ns/xproc-error";
  declare namespace xsl="http://www.w3.org/1999/XSL/Transform";
 
- (: module imports :)
+ (:~ module imports :)
  import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
  import module namespace parse = "http://xproc.net/xproc/parse" at "parse.xqm";
  import module namespace     u = "http://xproc.net/xproc/util"  at "util.xqm";
@@ -21,22 +21,22 @@ module namespace xproc = "http://xproc.net/xproc";
 
  declare default function namespace "http://www.w3.org/2005/xpath-functions";
 
- (: declare variables :)
- declare variable $xproc:eval-step      := xproc:evalstep#5;
+ (:~ declare variables :)
+ declare variable $xproc:eval-step    := xproc:evalstep#5;
 
- (: declare steps :)
- declare variable $xproc:run-step      := xproc:run#7;
- declare variable $xproc:xproc-run     := xproc:xproc-run#4;
- declare variable $xproc:choose        := xproc:choose#4;
- declare variable $xproc:try           := xproc:try#4;
- declare variable $xproc:group         := xproc:group#4;
- declare variable $xproc:for-each      := xproc:for-each#4;
- declare variable $xproc:viewport      := xproc:viewport#4; (: partial implementation :)
+ (:~ declare steps :)
+ declare variable $xproc:run-step     := xproc:run#7;
+ declare variable $xproc:xproc-run    := xproc:xproc-run#4;
+ declare variable $xproc:choose       := xproc:choose#4;
+ declare variable $xproc:try          := xproc:try#4;
+ declare variable $xproc:group        := xproc:group#4;
+ declare variable $xproc:for-each     := xproc:for-each#4;
+ declare variable $xproc:viewport     := xproc:viewport#4; (: partial implementation :)
 
- declare variable $xproc:declare-step  := ();
- declare variable $xproc:library       := ();
- declare variable $xproc:pipeline      := ();
- declare variable $xproc:variable      := ();
+ declare variable $xproc:declare-step := ();
+ declare variable $xproc:library      := ();
+ declare variable $xproc:pipeline     := ();
+ declare variable $xproc:variable     := ();
 
 
  (:~ xproc:xproc-run impl for ext:xproc extension step
@@ -338,17 +338,22 @@ else
  (: -------------------------------------------------------------------------- :)
 let $ns := u:enum-ns(<dummy>{$currentstep}</dummy>)
 let $exclude-result-prefixes as xs:string := string($inline/@exclude-inline-prefixes)
-let $template := <xsl:stylesheet version="2.0" >
+let $template := <xsl:stylesheet version="2.0" exclude-result-prefixes="{$exclude-result-prefixes}">
+       {for $n in $ns return
+       namespace {$n/@prefix} {$n/@URI}
+       }
 {$const:xslt-output}
-<xsl:template match="@*|*|processing-instruction()|comment()">
+
+<xsl:template match="@*|*">
   <xsl:copy>
-    <xsl:apply-templates select="*|@*|text()|processing-instruction()|comment()"/>
+    <xsl:apply-templates select="*|@*|text()"/>
   </xsl:copy>
 </xsl:template>
+
 </xsl:stylesheet>      
 return
   u:transform($template,document{$inline/node()})
- };
+};
 
 
 (:~ resolve input port bindings
@@ -512,7 +517,6 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
      let $log-port := $currentstep/p:log/@port
 
      return
-
          if(name($currentstep) = "p:declare-step") then
             ()
          else
@@ -589,7 +593,7 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
 
 
  (:~
-  : lists all namespaces which are declared and in use within pipeline 
+  : DEPRECATE - REPLACE WITH u:enum-ns ... lists all namespaces which are declared and in use within pipeline 
   : @TODO possibly move to util.xqm and delineate between declared and in use
   :
   : @param $pipeline - returns all in use namespaces

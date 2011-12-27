@@ -13,7 +13,7 @@ module namespace u = "http://xproc.net/xproc/util";
  declare copy-namespaces no-preserve,no-inherit;
 :)
 
-(: declare namespaces :)
+(:~ declare namespaces :)
 declare namespace p="http://www.w3.org/ns/xproc";
 declare namespace c="http://www.w3.org/ns/xproc-step";
 declare namespace err="http://www.w3.org/ns/xproc-error";
@@ -25,18 +25,18 @@ declare namespace ext = "http://xproc.net/xproc/ext";
 declare namespace xxq-error = "http://xproc.net/xproc/error";
 
 
-(: Module Imports :)
+(:~ Module Imports :)
 import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
 
 declare default function namespace "http://www.w3.org/2005/xpath-functions";
 
 
-(: set to 1 to enable debugging :)
-declare variable $u:NDEBUG :=$const:NDEBUG;
+(:~ set to 1 to enable debugging :)
+declare variable $u:NDEBUG := $const:NDEBUG;
 
 
 (: -------------------------------------------------------------------------- :)
-(: Processor Specific                                                         :)
+(:~ Processor Specific                                                         :)
 (: -------------------------------------------------------------------------- :)
 
 declare function u:strip-whitespace($xml){
@@ -126,12 +126,31 @@ $xml
 declare function u:evalXPATH($xpath, $xml){
 (: -------------------------------------------------------------------------- :)
  let $document := document{$xml}
+
+
+
+
  return
   if ($xpath eq '/' or $xpath eq '' or empty($xml)) then
     $document
   else
-    ($document/.)/saxon:evaluate($xpath)
+
+u:xquery($xpath,$xml)
+
+(:    ($document/.)/saxon:evaluate($xpath)
+:)
 };
+
+
+(: -------------------------------------------------------------------------- :)
+declare function u:xquery($query, $xml){
+(: -------------------------------------------------------------------------- :)
+ let $context := document{$xml}
+ let $compile :=  saxon:compile-query(concat($const:default-ns,$query))
+ return
+   saxon:query($compile, $context)
+};
+
 
 (: -------------------------------------------------------------------------- :)
 declare function u:transform($stylesheet,$xml){
@@ -141,14 +160,6 @@ declare function u:transform($stylesheet,$xml){
     saxon:transform($rendition, $xml)
 };
 
-(: -------------------------------------------------------------------------- :)
-declare function u:xquery($query, $xml){
-(: -------------------------------------------------------------------------- :)
- let $context := document{$xml}
- let $compile :=  saxon:compile-query($query)
- return
-   saxon:query($compile, $context)
-};
 
 (: -------------------------------------------------------------------------- :)
 (: STEP UTILITIES                                                             :)

@@ -3,7 +3,7 @@
 	const.xqm - contains all constants used by xprocxq.
 	
 ---------------------------------------------------------------------------------------- :)
-xquery version "3.0" encoding "UTF-8";
+xquery version "1.0" encoding "UTF-8";
 
 module namespace const = "http://xproc.net/xproc/const";
 
@@ -101,3 +101,14 @@ declare variable $const:xproc-rng-schema := 'resource:net/xproc/xprocxq/etc/xpro
 (:~ default XSLT output element used in std.xqm :)
 (: -------------------------------------------------------------------------- :)
 declare variable $const:xslt-output := <xsl:output omit-xml-declaration="yes"/>;
+
+
+declare variable $const:default-ns :='
+xquery version "1.0" encoding "UTF-8";
+
+    declare namespace c="http://www.w3.org/ns/xproc-step";
+    declare namespace err="http://www.w3.org/ns/xproc-error";
+    declare namespace xsl="http://www.w3.org/1999/XSL/Transform";
+
+    import module namespace p="http://www.w3.org/ns/xproc" at "src/xquery/functions.xqm";
+';

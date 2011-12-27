@@ -180,7 +180,6 @@ let $template := <xsl:stylesheet version="2.0">
 
 <xsl:template match="@*|node()">
     <xsl:copy>
-
         <xsl:apply-templates select="@*|node()"/>
     </xsl:copy>
 </xsl:template>
@@ -548,7 +547,7 @@ let $element-template :=   <xsl:template match="node()">
   </xsl:when>
   <xsl:otherwise>
   <xsl:copy>
-      <xsl:namespace name="" select="string(@targetNamespace)"/>
+    <xsl:namespace name="" select="string(@targetNamespace)"/>
     <xsl:apply-templates select="@*"/>
     <xsl:apply-templates/>
   </xsl:copy>
