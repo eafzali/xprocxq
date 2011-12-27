@@ -85,5 +85,5 @@ declare function func:iteration-position(){
 (: -------------------------------------------------------------------------- :)
 declare function func:xpath-version-available($version as xs:double) as xs:boolean{
 (: -------------------------------------------------------------------------- :)
-    if ($version = 1.0 or $version = 2.0) then true() else false()
+    if ($version = 2.0) then true() else false()
 };
