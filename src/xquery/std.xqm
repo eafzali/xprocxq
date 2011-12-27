@@ -57,9 +57,7 @@ declare variable $std:xslt               := std:xslt#4;
 (: -------------------------------------------------------------------------- :)
 declare function std:add-attribute($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-(:let $ns := u:enum-ns(<dummy>{$primary}</dummy>) :)
 let $ns := u:get-secondary('xproc:namespaces',$secondary)
-
 let $match  := u:get-option('match',$options,$primary)
 let $attribute-name as xs:string := u:get-option('attribute-name',$options,$primary)
 let $attribute-value := u:get-option('attribute-value',$options,$primary)

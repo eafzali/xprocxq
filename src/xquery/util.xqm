@@ -126,19 +126,12 @@ $xml
 declare function u:evalXPATH($xpath, $xml){
 (: -------------------------------------------------------------------------- :)
  let $document := document{$xml}
-
-
-
-
  return
   if ($xpath eq '/' or $xpath eq '' or empty($xml)) then
     $document
   else
-
-u:xquery($xpath,$xml)
-
-(:    ($document/.)/saxon:evaluate($xpath)
-:)
+    u:xquery($xpath,$xml)
+    (:    ($document/.)/saxon:evaluate($xpath) :)
 };
 
 

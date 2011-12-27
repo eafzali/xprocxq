@@ -1,24 +1,35 @@
 xquery version "1.0" encoding "UTF-8";
-module namespace func = "http://www.w3.org/ns/xproc";
-(: ------------------------------------------------------------------------------------- 
- 
-	functions.xqm - defines xproc xpath extensions.
-	
----------------------------------------------------------------------------------------- :)
 
-(: XProc Namespaces :)
+module namespace func = "http://www.w3.org/ns/xproc";
+(:~
+ :
+ :	functions.xqm - defines xproc xpath extensions.
+ :
+ :
+ :	
+ :)
+
+
+(: declare namespaces :)
 
 declare namespace c     = "http://www.w3.org/ns/xproc-step";
 declare namespace err   = "http://www.w3.org/ns/xproc-error";
 declare namespace xproc = "http://xproc.net/xproc";
 declare namespace xsl   = "http://www.w3.org/1999/XSL/Transform";
 
+(:~ declare import :)
+
 import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";
+
+declare default function namespace "http://www.w3.org/2005/xpath-functions";
 
 (: -------------------------------------------------------------------------- :)
 
-declare function func:system-property($property){
 
+
+(: -------------------------------------------------------------------------- :)
+declare function func:system-property($property){
+(: -------------------------------------------------------------------------- :)
 if ($property eq 'p:version') then
   $const:version
 else if ($property eq 'p:episode') then
@@ -44,25 +55,35 @@ should throw a u:dynamicError('err:XD0015',"")
 :)
 };
 
+(: -------------------------------------------------------------------------- :)
 declare function func:version-available($version as xs:decimal){
+(: -------------------------------------------------------------------------- :)
   if ($version eq 1.0) then
     "true"
   else
     "false"
 };
 
+(: -------------------------------------------------------------------------- :)
 declare function func:value-available($value){
+(: -------------------------------------------------------------------------- :)
     "true"
 };
 
+(: -------------------------------------------------------------------------- :)
 declare function func:step-available($step-name){
+(: -------------------------------------------------------------------------- :)
     "true"
 };
 
+(: -------------------------------------------------------------------------- :)
 declare function func:iteration-position(){
+(: -------------------------------------------------------------------------- :)
     "true"
 };
 
-declare function func:xpath-version-available(){
+(: -------------------------------------------------------------------------- :)
+declare function func:xpath-version-available($version){
+(: -------------------------------------------------------------------------- :)
     "true"
 };

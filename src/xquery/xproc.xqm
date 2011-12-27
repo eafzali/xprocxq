@@ -397,7 +397,7 @@ return
  : @returns xproc:options
  :)
  (: -------------------------------------------------------------------------- :)
- declare function xproc:eval-options($ast,$stepname as xs:string) as element(xproc:options){
+ declare function xproc:eval-with-options($ast,$stepname as xs:string) as element(xproc:options){
  (: -------------------------------------------------------------------------- :)
      <xproc:options>
          {$ast/*[@xproc:default-name=$stepname]/p:with-option}
@@ -506,12 +506,21 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
  (: -------------------------------------------------------------------------- :)
      let $variables    := $outputs/xproc:variable
      let $currentstep  := $ast/*[@xproc:default-name eq $step][1]
-     let $options      := xproc:eval-options($ast,$step)
+    
+     let $with-options := xproc:eval-with-options($ast,$step)
      let $stepfunc     := name($currentstep)
      let $stepfunction := if ($currentstep/@type) then $std:identity else xproc:getstep($stepfunc)
      let $primary      := xproc:eval-primary($ast,$currentstep,$primaryinput,$outputs) 
      let $secondary    := (xproc:eval-secondary($ast,$currentstep,$primaryinput,$outputs), 
-     <xproc:input port="xproc:namespaces" select="/">{ u:enum-ns(<dummy>{$currentstep}</dummy>)}</xproc:input>)
+     <xproc:input port="xproc:namespaces">{ u:enum-ns(<dummy>{$currentstep}</dummy>)}</xproc:input>,         
+     <xproc:input port="xproc:options">{
+     for $option in $currentstep//p:option
+     return
+     <xproc:option name="{$option/@name}">{$option/@value}</xproc:option>
+     }
+     </xproc:input>
+
+                          )
 
      let $log-href := $currentstep/p:log/@href
      let $log-port := $currentstep/p:log/@port
@@ -568,7 +577,7 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
              xproc:default-name="{$step}"
              select="{$currentstep/p:output[@primary eq 'true']/@select}"
              port="{$currentstep/p:output[@primary eq 'true']/@port}"
-             func="{$stepfunc}">{$stepfunction($primary,$secondary,$options,$variables)}</xproc:output>
+             func="{$stepfunc}">{$stepfunction($primary,$secondary,$with-options,$variables)}</xproc:output>
              else if($currentstep/ext:pre) then
              <xproc:output step="{$step}"
              port-type="output"
@@ -577,16 +586,16 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
              xproc:default-name="{$step}"
              select="{$currentstep/p:output[@primary eq 'true']/@select}"
              port="result"
-             func="{$stepfunc}">{$stepfunction($primary,$secondary,$options,$currentstep)}</xproc:output>
+             func="{$stepfunc}">{$stepfunction($primary,$secondary,$with-options,$currentstep)}</xproc:output>
              else
-                <xproc:output step="{$step}"
+             <xproc:output step="{$step}"
              port-type="output"
              href="{if ($log-port eq $currentstep/p:output[1][@primary eq 'true']/@port) then $log-href else ()}"
              primary="true"
              xproc:default-name="{$step}"
              select="{$currentstep/p:output[@primary eq 'true']/@select}"
              port="result"
-             func="{$stepfunc}">{$stepfunction($primary,$secondary,$options,$variables)}</xproc:output>
+             func="{$stepfunc}">{$stepfunction($primary,$secondary,$with-options,$variables)}</xproc:output>
              (: all other primary output ports @TODO - needs to be handled :)
          )
  };
