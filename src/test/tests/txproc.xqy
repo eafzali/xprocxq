@@ -413,4 +413,21 @@ declare function (:TEST:) txproc:runDeclareStep1() {
 };
 
 
+declare function (:TEST:) txproc:runRename1() { 
+  let $pipeline := 
+    <p:pipeline version='1.0'>
 
+      <p:rename match="@test:foo" new-name="test2:bar"
+                xmlns:test="http://test.com" xmlns:test2="http://test2.com"/>
+
+    </p:pipeline>
+
+  let $stdin    := <doc test:foo="value" xmlns:test="http://test.com"/>
+  let $dflag    := 0
+  let $tflag    := 0
+  let $bindings := ()
+  let $options  := ()
+  let $outputs  := ()
+  return
+   $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
+};

@@ -7,8 +7,10 @@ xquery version "3.0"  encoding "UTF-8";
 
 module namespace parse = "http://xproc.net/xproc/parse";
 
+(:
  declare boundary-space strip;
  declare copy-namespaces preserve,inherit;
+:)
 
  (: declare namespaces :)
  declare namespace p="http://www.w3.org/ns/xproc";
@@ -146,6 +148,7 @@ module namespace parse = "http://xproc.net/xproc/parse";
      else 
        element {name($step)}{
          $step/@*,
+         $step/namespace::*,
          for $input in $step/p:input[@primary eq "true"]
          return
             element p:input {
@@ -408,6 +411,7 @@ return
                      namespace err {"http://www.w3.org/ns/xproc-error"},
                      namespace xxq-error {"http://xproc.net/xproc/error"},
                      $node/@*,
+                     $node/namespace::*,
                      if ($node/@type) then 
                        $node/*
                      else
@@ -424,6 +428,7 @@ return
             case element(p:group) 
                    return element p:group {
                      $node/@*,
+                     $node/namespace::*,
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                        attribute xproc:step {"true"},
                        $node/p:log,
@@ -435,6 +440,7 @@ return
             case element(p:for-each) 
                    return element p:for-each {
                      $node/@*,
+                     $node/namespace::*,
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                        attribute xproc:step {"true"},
                        $node/p:log,
@@ -447,6 +453,7 @@ return
             case element(p:viewport) 
                    return element p:viewport {
                      $node/@*,
+                     $node/namespace::*,
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                        attribute xproc:step {"true"},
                        $node/p:log,
@@ -459,6 +466,7 @@ return
             case element(p:choose) | element(p:when) | element(p:otherwise)
                    return element {node-name($node)} {
                      $node/@*,
+                     $node/namespace::*,
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                        attribute xproc:step {"true"},
                        $node/p:variable,
@@ -471,6 +479,7 @@ return
             case element(p:try) | element(p:catch)
                    return element {node-name($node)} {
                      $node/@*,
+                     $node/namespace::*,
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                        attribute xproc:step {"true"},
                        $node/p:log,
@@ -482,6 +491,7 @@ return
            case element()
                    return element {node-name($node)}{
                      $node/@*,
+                     $node/namespace::*,
                      $node/p:log,
                      parse:input-port($node/p:input, $step-definition),
                      parse:output-port($node/p:output, $step-definition),
@@ -503,6 +513,7 @@ return
  (: --------------------------------------------------------------------------------------------------------- :)
  element p:declare-step {
     $pipeline/@*,
+    $pipeline/namespace::*,
     namespace xproc {"http://xproc.net/xproc"},
     namespace ext {"http://xproc.net/xproc/ext"},
     namespace c {"http://www.w3.org/ns/xproc-step"},
@@ -531,6 +542,7 @@ return
      case element()
          return element {node-name($node)} {
            $node/@*,
+           $node/namespace::*,
            if($node/@xproc:step eq 'true') then
              attribute xproc:default-name {$name}
            else
@@ -565,6 +577,7 @@ return
                    return element p:inline {
                      attribute xproc:type {'comp'}, 
                      $node/@*,
+                     $node/namespace::*,
                      $node/*
                      }
             case element(p:import)
@@ -577,7 +590,8 @@ return
             case element(p:pipeline) | element(p:declare-step)
                    return 
                      if ($node/@type) then
-                       element p:declare-step {$node/@*,
+                       element p:declare-step {$node/@*,                     
+                       $node/namespace::*,
                        namespace xproc {"http://xproc.net/xproc"},
                        namespace ext {"http://xproc.net/xproc/ext"},
                        namespace c {"http://www.w3.org/ns/xproc-step"},
@@ -587,6 +601,7 @@ return
                        $node/*}
                      else
                        element p:declare-step {$node/@*,
+                       $node/namespace::*,
                        namespace xproc {"http://xproc.net/xproc"},
                        namespace ext {"http://xproc.net/xproc/ext"},
                        namespace c {"http://www.w3.org/ns/xproc-step"},
@@ -597,6 +612,7 @@ return
             case element()
                    return element {node-name($node)} {
                      $node/@*,
+                     $node/namespace::*,
                      if (contains($type,'step') or $type eq 'defined') then attribute xproc:step {fn:true()} else (),
                      attribute xproc:type {$type},
                      parse:explicit-type($node/node()) ,

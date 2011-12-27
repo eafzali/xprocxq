@@ -57,18 +57,20 @@ declare variable $std:xslt               := std:xslt#4;
 (: -------------------------------------------------------------------------- :)
 declare function std:add-attribute($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-let $ns := u:enum-ns(<dummy>{$primary}</dummy>)
+(:let $ns := u:enum-ns(<dummy>{$primary}</dummy>) :)
+let $ns := u:get-secondary('xproc:namespaces',$secondary)
+
 let $match  := u:get-option('match',$options,$primary)
 let $attribute-name as xs:string := u:get-option('attribute-name',$options,$primary)
 let $attribute-value := u:get-option('attribute-value',$options,$primary)
 let $attribute-prefix := u:get-option('attribute-prefix',$options,$primary)
 let $attribute-namespace := u:get-option('attribute-namespace',$options,$primary)
 let $template := <xsl:stylesheet version="2.0">
+       {for $n in $ns return
+       namespace {$n/@prefix} {$n/@URI}
+       }
 {$const:xslt-output}
 <xsl:template match=".">
-       {for $n in $ns return
-       <xsl:namespace name="{$n/@prefix}" select="'{$n/@URI}'"/>
-       }
     <xsl:apply-templates/>
 </xsl:template>
 
@@ -158,9 +160,14 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:delete($primary,$secondary,$options,$variables){
 (: -------------------------------------------------------------------------- :)
-let $ns := u:enum-ns(<dummy>{$primary}</dummy>)
+(: let $ns := u:enum-ns(<dummy>{$primary}</dummy>) :)
+let $ns := u:get-secondary('xproc:namespaces',$secondary)
+
 let $match  as xs:string := u:get-option('match',$options,$primary)
 let $template := <xsl:stylesheet version="2.0">
+       {for $n in $ns return
+       namespace {$n/@prefix} {$n/@URI}
+       }
 {$const:xslt-output}
 
 <xsl:template match=".">
@@ -169,9 +176,7 @@ let $template := <xsl:stylesheet version="2.0">
 
 <xsl:template match="@*|node()">
     <xsl:copy>
-       {for $n in $ns return
-       <xsl:namespace name="{$n/@prefix}" select="'{$n/@URI}'"/>
-       }
+
         <xsl:apply-templates select="@*|node()"/>
     </xsl:copy>
 </xsl:template>
@@ -549,12 +554,16 @@ declare function std:parameters($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 declare function std:rename($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
+let $ns := u:get-secondary('xproc:namespaces',$secondary)
 let $match  := u:get-option('match',$options,$primary)
 let $new-name  := u:get-option('new-name',$options,$primary)
 let $new-prefix  := u:get-option('new-prefix',$options,$primary)
 let $new-namespace  := u:get-option('new-namespace',$options,$primary)
 
-let $template := <xsl:stylesheet version="2.0">
+let $template := <xsl:stylesheet version="2.0" xmlns:p="http://www.w3.org/ns/xproc">
+       {for $n in $ns return
+        namespace {$n/@prefix} {$n/@URI}
+       }
 {$const:xslt-output}
 
 <xsl:template match=".">

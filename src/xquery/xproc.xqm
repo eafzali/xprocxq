@@ -2,8 +2,9 @@ xquery version "3.0"  encoding "UTF-8";
 
 module namespace xproc = "http://xproc.net/xproc";
 
+
  declare boundary-space strip;
- declare copy-namespaces no-preserve,no-inherit;
+ declare copy-namespaces preserve,no-inherit;
 
  (: declare namespaces :)
  declare namespace p="http://www.w3.org/ns/xproc";
@@ -346,7 +347,7 @@ return
  (: -------------------------------------------------------------------------- :)
    typeswitch($input)
      case element(p:empty)
-       return <empty/>
+       return ()
      case element(p:inline)
        return xproc:resolve-inline-binding($input,$currentstep)
      case element(p:document)
@@ -477,14 +478,14 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
  (: -------------------------------------------------------------------------- :)
  declare function xproc:evalstep ($step,$namespaces,$primaryinput as item()*,$ast as element(p:declare-step),$outputs) {
  (: -------------------------------------------------------------------------- :)
-     let $declarens    := u:declare-ns($namespaces)
      let $variables    := $outputs/xproc:variable
-     let $options      := xproc:eval-options($ast,$step)
      let $currentstep  := $ast/*[@xproc:default-name eq $step][1]
+     let $options      := xproc:eval-options($ast,$step)
      let $stepfunc     := name($currentstep)
      let $stepfunction := if ($currentstep/@type) then $std:identity else xproc:getstep($stepfunc)
      let $primary      := xproc:eval-primary($ast,$currentstep,$primaryinput,$outputs) 
-     let $secondary    := xproc:eval-secondary($ast,$currentstep,$primaryinput,$outputs) 
+     let $secondary    := (xproc:eval-secondary($ast,$currentstep,$primaryinput,$outputs), 
+     <xproc:input port="xproc:namespaces" select="/">{ u:enum-ns(<dummy>{$currentstep}</dummy>)}</xproc:input>)
 
      let $log-href := $currentstep/p:log/@href
      let $log-port := $currentstep/p:log/@port
@@ -727,6 +728,7 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
  let $parse      := parse:explicit-bindings( parse:AST(parse:explicit-name(parse:explicit-type($pipeline))))
  let $b          := $parse/*
  let $ast        := element p:declare-step {$parse/@*,
+   $parse/namespace::*,
    namespace p {"http://www.w3.org/ns/xproc"},
    namespace xproc {"http://xproc.net/xproc"},
    namespace ext {"http://xproc.net/xproc/ext"},

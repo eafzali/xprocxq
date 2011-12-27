@@ -106,6 +106,10 @@ test:html(
     <expected><c:result>2</c:result></expected>
     <result>{txproc:runDeclareStep1()}</result>
   </test>
+  <test name="xproc18" desc="p:declare-step">
+    <expected> <doc test2:bar="value" xmlns:test2="http://test2.com"/></expected>
+    <result>{txproc:runRename1()}</result>
+  </test>
 
 
 
