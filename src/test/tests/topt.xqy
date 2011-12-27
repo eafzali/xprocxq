@@ -13,3 +13,4 @@ declare function (:TEST:) topt:loadModuleTest() {
   return
     test:assertXMLEqual($actual,<test/>) 
 };
+

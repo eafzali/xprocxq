@@ -2,7 +2,6 @@ xquery version "3.0"  encoding "UTF-8";
 
 module namespace xproc = "http://xproc.net/xproc";
 
-
  declare boundary-space strip;
  declare copy-namespaces preserve,no-inherit;
 
@@ -27,6 +26,7 @@ module namespace xproc = "http://xproc.net/xproc";
 
  (: declare steps :)
  declare variable $xproc:run-step      := xproc:run#7;
+ declare variable $xproc:xproc-run     := xproc:xproc-run#4;
  declare variable $xproc:choose        := xproc:choose#4;
  declare variable $xproc:try           := xproc:try#4;
  declare variable $xproc:group         := xproc:group#4;
@@ -37,6 +37,27 @@ module namespace xproc = "http://xproc.net/xproc";
  declare variable $xproc:library       := ();
  declare variable $xproc:pipeline      := ();
  declare variable $xproc:variable      := ();
+
+
+ (:~ xproc:xproc-run impl for ext:xproc extension step
+ :
+ : @param $primary -
+ : @param $secondary -
+ : @param $options -
+ : @param $currentstep -
+ :
+ : @returns 
+ :)
+(: -------------------------------------------------------------------------- :)
+declare function xproc:xproc-run($primary,$secondary,$options,$currentstep) {
+(: -------------------------------------------------------------------------- :)
+let $pipeline := u:get-secondary('pipeline',$secondary)
+let $bindings := u:get-secondary('binding',$secondary)
+let $dflag  as xs:integer  := xs:integer(u:get-option('dflag',$options,$primary))
+let $tflag  as xs:integer  := xs:integer(u:get-option('tflag',$options,$primary))
+return
+  $xproc:run-step($pipeline,$primary,$bindings,$options,(),$dflag ,$tflag)
+};
 
 
  (:~ p:group step implementation
@@ -835,6 +856,10 @@ else if($stepname eq 'p:replace') then
   $std:replace
 else if($stepname eq 'p:insert') then
   $std:insert
+else if($stepname eq 'ext:xproc') then
+  $xproc:xproc-run
+else if($stepname eq 'p:namespace-rename') then
+  $std:namespace-rename
 else
  $std:identity
 };

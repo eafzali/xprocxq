@@ -106,11 +106,15 @@ test:html(
     <expected><c:result>2</c:result></expected>
     <result>{txproc:runDeclareStep1()}</result>
   </test>
-  <test name="xproc18" desc="p:declare-step">
+  <test name="xproc19" desc="p:rename">
     <expected> <doc test2:bar="value" xmlns:test2="http://test2.com"/></expected>
     <result>{txproc:runRename1()}</result>
   </test>
 
+  <test name="xproc20" desc="ext:xproc">
+    <expected><c:result xmlns:c="http://www.w3.org/ns/xproc-step">2</c:result></expected>
+    <result>{txproc:runExtXProc1()}</result>
+  </test>
 
 
 

@@ -431,3 +431,30 @@ declare function (:TEST:) txproc:runRename1() {
   return
    $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
 };
+
+declare function (:TEST:) txproc:runExtXProc1() { 
+  let $pipeline := 
+    <p:pipeline version='1.0'>
+
+      <ext:xproc>
+      <p:input port="pipeline">
+      <p:inline>
+        <p:pipeline version='1.0'>
+          <p:identity/>
+          <p:count/>
+        </p:pipeline>
+      </p:inline>
+      </p:input>
+      </ext:xproc>
+
+    </p:pipeline>
+
+  let $stdin    := (<doc test:foo="value" xmlns:test="http://test.com"/>,<test/>)
+  let $dflag    := 0
+  let $tflag    := 0
+  let $bindings := ()
+  let $options  := ()
+  let $outputs  := ()
+  return
+   $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
+};

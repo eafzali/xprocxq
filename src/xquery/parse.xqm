@@ -7,10 +7,6 @@ xquery version "3.0"  encoding "UTF-8";
 
 module namespace parse = "http://xproc.net/xproc/parse";
 
-(:
- declare boundary-space strip;
- declare copy-namespaces preserve,inherit;
-:)
 
  (: declare namespaces :)
  declare namespace p="http://www.w3.org/ns/xproc";

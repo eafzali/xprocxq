@@ -116,7 +116,8 @@
       <p:option name="match" required="true"/>
       <p:option name="base-uri"/>
    </p:declare-step>
-   <p:declare-step type="p:namespace-rename" xml:id="namespace-rename">
+   <p:declare-step type="p:namespace-rename" xml:id="namespace-rename"
+                   xproc:support="true">
       <p:input port="source" primary="true" select="/"/>
       <p:output port="result" primary="true" select="/"/>
       <p:option name="from"/>

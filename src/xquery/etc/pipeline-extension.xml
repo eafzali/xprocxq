@@ -15,13 +15,13 @@
 " primary="true" sequence="true" select="/"/>
     </p:declare-step> 
 
-    <p:declare-step type="ext:xproc" xproc:step="true" xproc:support="false">
+    <p:declare-step type="ext:xproc" xproc:step="true" xproc:support="true">
         <p:input port="source" primary="true" select="/"/>
         <p:input port="pipeline" primary="false" select="/"/>
         <p:input port="bindings" primary="false" select="/"/>
         <p:output port="result" primary="true"/>
-        <p:option name="dflag" select="'0'"/>
-        <p:option name="tflag" select="'0'"/>
+        <p:option name="dflag" select="0"/>
+        <p:option name="tflag" select="0"/>
     </p:declare-step>
 
     <p:declare-step type="ext:xsltforms"  xproc:step="true" xproc:support="false">

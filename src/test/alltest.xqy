@@ -2,6 +2,7 @@ xquery version "3.0";
 
 (: w3c test runner :)
 
+
 declare boundary-space strip;
 declare copy-namespaces no-preserve,no-inherit;
 
