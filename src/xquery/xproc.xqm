@@ -873,6 +873,8 @@ else if($stepname eq 'ext:xproc') then
   $xproc:xproc-run
 else if($stepname eq 'p:namespace-rename') then
   $std:namespace-rename
+else if($stepname eq 'p:xinclude') then
+  $std:xinclude
 else
  $std:identity
 };
