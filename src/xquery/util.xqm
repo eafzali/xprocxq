@@ -131,7 +131,6 @@ declare function u:evalXPATH($xpath, $xml){
     $document
   else
     u:xquery($xpath,$xml)
-    (:    ($document/.)/saxon:evaluate($xpath) :)
 };
 
 
@@ -144,7 +143,6 @@ declare function u:evalXPATH($xpath, $xml, $options){
     $document
   else
     u:xquery($xpath,$xml,$options)
-    (:    ($document/.)/saxon:evaluate($xpath) :)
 };
 
 
@@ -160,11 +158,12 @@ declare function u:xquery($query, $xml, $options){
    u:xquery($q,$xml)
 };
 
+
 (: -------------------------------------------------------------------------- :)
 declare function u:xquery($query, $xml){
 (: -------------------------------------------------------------------------- :)
- let $context := document{$xml}
- let $compile :=  saxon:compile-query(concat($const:default-ns,$query))
+ let $context := document{$xml}       
+let $compile  :=  saxon:compile-query(concat($const:default-ns,string($query)))
  return
    saxon:query($compile, $context)
 };
@@ -200,9 +199,17 @@ declare function u:get-secondary($name as xs:string,$secondary as element(xproc:
 (: -------------------------------------------------------------------------- :)
 declare function u:get-option($option-name as xs:string,$options as element(xproc:options),$primary) as xs:string*{
 (: -------------------------------------------------------------------------- :)
-let $value as xs:string := replace(string($options//p:with-option[@name eq $option-name]/@select),'&quot;','')
+let $xpath as xs:string := string($options//p:with-option[@name eq $option-name]/@select)
 return
-  $value
+if(starts-with($xpath,'&quot;') or starts-with($xpath,'http') or starts-with($xpath,'file')) then 
+  replace($xpath,"'","")
+else
+  replace($xpath,"'","")
+
+(:string(
+  u:evalXPATH($xpath,$primary,$options[@name])
+):)
+
 };
 
 

@@ -156,7 +156,7 @@ return
 (: --------------------------------------------------------------------------------------- :)
 declare function std:count($primary,$secondary,$options,$variables) as element(c:result){
 (: --------------------------------------------------------------------------------------- :)
-let $limit as xs:integer := xs:integer(replace(u:get-option('limit',$options,$primary),"'","")) 
+let $limit as xs:integer := xs:integer(u:get-option('limit',$options,$primary)) 
 let $count as xs:integer := if(name($primary[1]) eq '') then count($primary/*)  else count($primary)
 return
     if ($limit eq 0 or $count lt $limit ) then

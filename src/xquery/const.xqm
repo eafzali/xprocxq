@@ -105,10 +105,20 @@ declare variable $const:xslt-output := <xsl:output omit-xml-declaration="yes"/>;
 
 declare variable $const:default-ns as xs:string:='
 
+
+    import module namespace p="http://www.w3.org/ns/xproc" at "src/xquery/functions.xqm";
+
+    declare namespace xproc = "http://xproc.net/xproc";
     declare namespace c="http://www.w3.org/ns/xproc-step";
     declare namespace err="http://www.w3.org/ns/xproc-error";
     declare namespace xsl="http://www.w3.org/1999/XSL/Transform";
+    declare namespace ex="http://www.example.org";
+    declare namespace tmp="http://www.example.org";
 
-    import module namespace p="http://www.w3.org/ns/xproc" at "src/xquery/functions.xqm";
+    declare namespace test="http://xproc.org/ns/testsuite";
+    declare namespace test2="http://xproc.org/ns/testsuite";
+    declare namespace n="http://xproc.org/ns/testsuite";
+
+    declare default function namespace "http://www.w3.org/2005/xpath-functions";
 
 ';

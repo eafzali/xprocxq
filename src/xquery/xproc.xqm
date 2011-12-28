@@ -516,19 +516,18 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
      let $primary      := xproc:eval-primary($ast,$currentstep,$primaryinput,$outputs) 
      let $secondary    := (xproc:eval-secondary($ast,$currentstep,$primaryinput,$outputs), 
      <xproc:input port="xproc:namespaces">{ u:enum-ns(<dummy>{$currentstep}</dummy>)}</xproc:input>,         
-     <xproc:input port="xproc:options">{
-     for $option in $currentstep//p:option
+      if($currentstep/p:option) then <xproc:input port="xproc:options">{
+     for $option in $currentstep/p:option
      return
      <xproc:option name="{$option/@name}">{if($option/@select ne '') then $option/@select else $option/@value}</xproc:option>
      }
-     </xproc:input>,
-     <xproc:input port="xproc:variables">{
-     for $variable in $currentstep//p:variable
+     </xproc:input> else (),
+     if($currentstep/p:variable) then <xproc:input port="xproc:variables">{
+     for $variable in $currentstep/p:variable
      return
      <xproc:option name="{$variable/@name}">{$variable/@select}</xproc:option>
      }
-     </xproc:input>
-                          )
+     </xproc:input> else ())
 
      let $log-href := $currentstep/p:log/@href
      let $log-port := $currentstep/p:log/@port
