@@ -155,7 +155,7 @@ declare function u:xquery($query, $xml, $options){
  let $value as xs:string := if($option/@select ne'') then string($option/@select) else concat('&quot;',$option/@value,'&quot;')
  return
    concat(' declare variable $',$option/@name,' := ',$value,';')
- let $q :=  concat($const:default-ns,$o,$query)
+ let $q :=  concat($o,' ',$query)
  return
    u:xquery($q,$xml)
 };

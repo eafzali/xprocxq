@@ -250,7 +250,7 @@ declare function std:filter($primary,$secondary,$options,$variables) {
 let $select := u:get-option('select',$options,$primary)
 return
   try {
-    u:evalXPATH($select,document{$primary})
+    u:evalXPATH($select,document{$primary},$options[@name])
   }
   catch * {
     u:dynamicError('err:XD0016',": p:filter did not select anything - ")
@@ -775,7 +775,7 @@ return
     for $child at $count in $primary
     return
       try {
-        if(u:evalXPATH($test,document{$primary})) then
+        if(u:evalXPATH($test,document{$primary},$options[@name])) then
           $child
         else
           ()

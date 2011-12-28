@@ -103,16 +103,16 @@ let $xpath-context-select as xs:string   :=string($xpath-context/@select)
 let $xpath-context-binding   := $xpath-context[1]/node()[1]
 let $xpath-context-data := xproc:resolve-inline-binding($xpath-context-binding/p:inline,$currentstep)
 let $context := if ($primary ne '') then 
-                  u:evalXPATH($xpath-context-select,document{$primary},$options[@name]) 
+                  u:evalXPATH($xpath-context-select,document{$primary}) 
                 else 
-                  u:evalXPATH($xpath-context-select,document{$xpath-context},$options[@name]) 
-let $when-test as xs:string :=  for $when at $count in $currentstep/p:when
+                  u:evalXPATH($xpath-context-select,document{$xpath-context}) 
+let $when-test as xs:boolean* :=  for $when at $count in $currentstep/p:when
           let $check-when-test := u:assert(not($when/@test eq ''),"p:choose when test attribute cannot be empty")
           return
-             if (u:evalXPATH(string($when/@test),document{$context},$options[@name])) then string($when/@test) else ()
+             if (u:evalXPATH(string($when/@test),document{$context},$options[@name])) then true() else false()
 return
-  if($when-test[1]) then 
-    let $ast-when := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/p:when[@test eq $when-test[1]]/node()}</p:declare-step>
+  if($when-test = true()) then 
+    let $ast-when := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/p:when[$when-test[1]]/node()}</p:declare-step>
     return
       xproc:output(xproc:evalAST($ast-when,$xproc:eval-step,$namespaces,$primary,(),()), 0)
   else
@@ -163,7 +163,7 @@ let $defaultname as xs:string := string($currentstep/@xproc:default-name)
 let $iteration-select as xs:string   := string($currentstep/ext:pre/p:iteration-source/@select)
 let $ast := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/node()}</p:declare-step>
 return
-for $item in u:evalXPATH($iteration-select,document{$primary})
+for $item in u:evalXPATH($iteration-select,document{$primary},$options[@name])
 return
   xproc:output(xproc:evalAST($ast,$xproc:eval-step,$namespaces,$item,(),()), 0)
 };
