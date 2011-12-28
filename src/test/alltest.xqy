@@ -23,7 +23,7 @@ import module namespace test1 = "http://www.marklogic.com/test"
  test1:html(
 <testsuite title="w3c required and optional tests" xmlns:xqyerr="http://www.w3.org/2005/xqt-errors">
 {
-for $test in collection("tests.xproc.org/required?select=*-*.xml")
+for $test in collection("tests.xproc.org/required?select=option*.xml")
  let $pipeline  := if($test/t:test/t:pipeline/@href) then doc(concat("tests.xproc.org/required/",$test/t:test/t:pipeline/@href)) else $test/t:test/t:pipeline/*
  let $stdin     := if($test/t:test/t:input[@port eq 'source']/t:document) then (for $doc in $test/t:test/t:input[@port eq 'source']/t:document/* return $doc) else ($test/t:test/t:input[@port eq 'source']/*)
  let $expected  := if($test/t:test/t:output/t:document) then (for $doc in $test/t:test/t:output/t:document return $doc/*) else $test/t:test/t:output/*
