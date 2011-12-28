@@ -187,7 +187,10 @@ let $iteration-select as xs:string   := string($currentstep/ext:pre/p:viewport-s
 let $ast := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/node()}</p:declare-step>
 let $template := <xsl:stylesheet version="2.0">
 {$const:xslt-output}
-
+{for $option in $options[@name]
+return
+<xsl:param name="{$option/@name}" select="{if($option/@select ne'') then string($option/@select) else concat('&quot;',$option/@value,'&quot;')}"/>
+}
 <xsl:template match=".">
     <xsl:apply-templates/>
 </xsl:template>
@@ -504,7 +507,7 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
  (: -------------------------------------------------------------------------- :)
  declare function xproc:evalstep ($step,$namespaces,$primaryinput as item()*,$ast as element(p:declare-step),$outputs) {
  (: -------------------------------------------------------------------------- :)
-     let $variables    := $outputs/xproc:variable
+     let $variables    := $outputs//xproc:variable
      let $currentstep  := $ast/*[@xproc:default-name eq $step][1]
      
      let $with-options := (xproc:eval-with-options($ast,$step), $outputs//xproc:option)
@@ -518,8 +521,13 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
      return
      <xproc:option name="{$option/@name}">{if($option/@select ne '') then $option/@select else $option/@value}</xproc:option>
      }
+     </xproc:input>,
+     <xproc:input port="xproc:variables">{
+     for $variable in $currentstep//p:variable
+     return
+     <xproc:option name="{$variable/@name}">{$variable/@select}</xproc:option>
+     }
      </xproc:input>
-
                           )
 
      let $log-href := $currentstep/p:log/@href

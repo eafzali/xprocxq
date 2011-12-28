@@ -200,6 +200,7 @@ module namespace parse = "http://xproc.net/xproc/parse";
             $step/p:output,
             $step/p:with-option,
             $step/p:option,
+            $step/p:variable,
             $step/(p:iteration-source|p:viewport-source|p:xpath-context),
             parse:explicit-bindings($step[@xproc:step eq "true"],$ast[$count - 1]/p:output[@primary eq "true"]/@port,
                  $step/@xproc:default-name,      
@@ -329,9 +330,28 @@ module namespace parse = "http://xproc.net/xproc/parse";
 
 
  (:~
-  : parse a steps options, converting all options to a nested p:with-option element
+  : parse variable
   :
-  : @returns element(p:with-option)
+  : @returns element(p:variable)
+  :)
+ (: --------------------------------------------------------------------------------------------------------- :)
+ declare function parse:variables($node as element(p:variable)*, $step-definition) as element(p:variable)*{
+ (: --------------------------------------------------------------------------------------------------------- :)
+for $variable in $node
+return
+     element p:variable {
+       attribute xproc:type {'comp'},
+       attribute name {$variable/@name},
+       attribute select {$variable/@select}
+       }
+ };
+
+
+
+ (:~
+  : parse p:option
+  :
+  : @returns element(p:option)
   :)
  (: --------------------------------------------------------------------------------------------------------- :)
  declare function parse:options($node as element(p:option)*, $step-definition) as element(p:option)*{
@@ -418,7 +438,8 @@ return
                        parse:input-port($node/p:input[@port eq 'source'], $step-definition), 
                        parse:output-port($node/p:output, $step-definition),
                        parse:with-options($node/p:with-option,$step-definition),
-                       parse:options($node/p:option,$step-definition)
+                       parse:options($node/p:option,$step-definition),
+                       parse:variables($node/p:variable,$step-definition)
                      },
                      parse:AST($node/*[@xproc:type ne 'comp'])
                    }
@@ -466,7 +487,6 @@ return
                      $node/namespace::*,
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                        attribute xproc:step {"true"},
-                       $node/p:variable,
                        parse:input-port($node/p:input, $step-definition),
                        parse:output-port($node/p:output, $step-definition),
                        parse:xpath-context($node/p:xpath-context, $step-definition)
@@ -570,6 +590,12 @@ return
         typeswitch($node)
             case text()
                    return $node/text()
+            case element(p:variable) 
+                   return element p:variable {
+                     attribute xproc:type {'comp'}, 
+                     $node/@name,
+                     $node/@select
+                     }
             case element(p:option) 
                    return element p:option {
                      attribute xproc:type {'comp'}, 

@@ -68,6 +68,10 @@ let $template := <xsl:stylesheet version="2.0">
        namespace {$n/@prefix} {$n/@URI}
        }
 {$const:xslt-output}
+{for $option in $options[@name]
+return
+<xsl:param name="{$option/@name}" select="{if($option/@select ne'') then string($option/@select) else concat('&quot;',$option/@value,'&quot;')}"/>
+}
 <xsl:template match=".">
     <xsl:apply-templates/>
 </xsl:template>
@@ -102,7 +106,10 @@ let $template := <xsl:stylesheet version="2.0">
         namespace {$n/@prefix} {$n/@URI}
        }
 {$const:xslt-output}
-
+{for $option in $options[@name]
+return
+<xsl:param name="{$option/@name}" select="{if($option/@select ne'') then string($option/@select) else concat('&quot;',$option/@value,'&quot;')}"/>
+}
 <xsl:template match=".">
 <xsl:copy>
     <xsl:apply-templates/>
@@ -171,7 +178,10 @@ let $template := <xsl:stylesheet version="2.0">
        namespace {$n/@prefix} {$n/@URI}
        }
 {$const:xslt-output}
-
+{for $option in $options[@name]
+return
+<xsl:param name="{$option/@name}" select="{if($option/@select ne'') then string($option/@select) else concat('&quot;',$option/@value,'&quot;')}"/>
+}
 <xsl:template match=".">
         <xsl:apply-templates select="@*|node()"/>
 </xsl:template>
@@ -346,7 +356,10 @@ let $template := <xsl:stylesheet version="2.0">
         namespace {$n/@prefix} {$n/@URI}
        }
 {$const:xslt-output}
-
+{for $option in $options[@name]
+return
+<xsl:param name="{$option/@name}" select="{if($option/@select ne'') then string($option/@select) else concat('&quot;',$option/@value,'&quot;')}"/>
+}
 <xsl:template match=".">
     <xsl:apply-templates/>
 </xsl:template>
@@ -422,7 +435,10 @@ let $template := <xsl:stylesheet version="2.0">
         namespace {$n/@prefix} {$n/@URI}
        }
 {$const:xslt-output}
-
+{for $option in $options[@name]
+return
+<xsl:param name="{$option/@name}" select="{if($option/@select ne'') then string($option/@select) else concat('&quot;',$option/@value,'&quot;')}"/>
+}
 <xsl:template match=".">
     <xsl:apply-templates/>
 </xsl:template>
@@ -486,7 +502,10 @@ let $template := <xsl:stylesheet version="2.0">
         namespace {$n/@prefix} {$n/@URI}
        }
 {$const:xslt-output}
-
+{for $option in $options[@name]
+return
+<xsl:param name="{$option/@name}" select="{if($option/@select ne'') then string($option/@select) else concat('&quot;',$option/@value,'&quot;')}"/>
+}
 <xsl:template match="/">
     <xsl:apply-templates/>
 </xsl:template>
@@ -574,7 +593,10 @@ let $template := <xsl:stylesheet version="2.0">
         namespace {$n/@prefix} {$n/@URI}
        }
 {$const:xslt-output}
-
+{for $option in $options[@name]
+return
+<xsl:param name="{$option/@name}" select="{if($option/@select ne'') then string($option/@select) else concat('&quot;',$option/@value,'&quot;')}"/>
+}
   <xsl:template match="node()|@*">
   <xsl:copy>
     <xsl:apply-templates select="node()|@*"/>
@@ -638,7 +660,10 @@ let $template := <xsl:stylesheet version="2.0" xmlns:p="http://www.w3.org/ns/xpr
         namespace {$n/@prefix} {$n/@URI}
        }
 {$const:xslt-output}
-
+{for $option in $options[@name]
+return
+<xsl:param name="{$option/@name}" select="{if($option/@select ne'') then string($option/@select) else concat('&quot;',$option/@value,'&quot;')}"/>
+}
 <xsl:template match=".">
     <xsl:apply-templates/>
 </xsl:template>
@@ -688,7 +713,10 @@ let $template := <xsl:stylesheet version="2.0">
         namespace {$n/@prefix} {$n/@URI}
        }
 {$const:xslt-output}
-
+{for $option in $options[@name]
+return
+<xsl:param name="{$option/@name}" select="{if($option/@select ne'') then string($option/@select) else concat('&quot;',$option/@value,'&quot;')}"/>
+}
 <xsl:template match=".">
     <xsl:apply-templates/>
 </xsl:template>
@@ -735,7 +763,10 @@ let $template := <xsl:stylesheet version="2.0">
         namespace {$n/@prefix} {$n/@URI}
        }
 {$const:xslt-output}
-
+{for $option in $options[@name]
+return
+<xsl:param name="{$option/@name}" select="{if($option/@select ne'') then string($option/@select) else concat('&quot;',$option/@value,'&quot;')}"/>
+}
 <xsl:template match=".">
     <xsl:apply-templates/>
 </xsl:template>
@@ -820,7 +851,10 @@ let $template := <xsl:stylesheet version="2.0">
         namespace {$n/@prefix} {$n/@URI}
        }
 {$const:xslt-output}
-
+{for $option in $options[@name]
+return
+<xsl:param name="{$option/@name}" select="{if($option/@select ne'') then string($option/@select) else concat('&quot;',$option/@value,'&quot;')}"/>
+}
 <xsl:template match=".">
     <xsl:apply-templates/>
 </xsl:template>
@@ -1148,7 +1182,10 @@ let $template := <xsl:stylesheet version="2.0"  xmlns:p="http://www.w3.org/ns/xp
         namespace {$n/@prefix} {$n/@URI}
        }
 {$const:xslt-output}
-
+{for $option in $options[@name]
+return
+<xsl:param name="{$option/@name}" select="{if($option/@select ne'') then string($option/@select) else concat('&quot;',$option/@value,'&quot;')}"/>
+}
 <xsl:template match=".">
     <xsl:apply-templates/>
 </xsl:template>
@@ -1205,7 +1242,10 @@ let $template := <xsl:stylesheet version="2.0">
         namespace {$n/@prefix} {$n/@URI}
        }
 {$const:xslt-output}
-
+{for $option in $options[@name]
+return
+<xsl:param name="{$option/@name}" select="{if($option/@select ne'') then string($option/@select) else concat('&quot;',$option/@value,'&quot;')}"/>
+}
 <xsl:template match=".">
     <xsl:apply-templates/>
 </xsl:template>
