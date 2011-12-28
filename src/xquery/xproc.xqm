@@ -22,21 +22,21 @@ module namespace xproc = "http://xproc.net/xproc";
  declare default function namespace "http://www.w3.org/2005/xpath-functions";
 
  (:~ declare variables :)
- declare variable $xproc:eval-step    := xproc:evalstep#5;
+ declare variable $xproc:eval-step   as function()  := xproc:evalstep#5;
 
  (:~ declare steps :)
- declare variable $xproc:run-step     := xproc:run#7;
- declare variable $xproc:xproc-run    := xproc:xproc-run#4;
- declare variable $xproc:choose       := xproc:choose#4;
- declare variable $xproc:try          := xproc:try#4;
- declare variable $xproc:group        := xproc:group#4;
- declare variable $xproc:for-each     := xproc:for-each#4;
- declare variable $xproc:viewport     := xproc:viewport#4; (: partial implementation :)
+ declare variable $xproc:run-step    as function()  := xproc:run#7;
+ declare variable $xproc:xproc-run   as function()  := xproc:xproc-run#4;
+ declare variable $xproc:choose      as function()  := xproc:choose#4;
+ declare variable $xproc:try         as function()  := xproc:try#4;
+ declare variable $xproc:group       as function()  := xproc:group#4;
+ declare variable $xproc:for-each    as function()  := xproc:for-each#4;
+ declare variable $xproc:viewport    as function()  := xproc:viewport#4; (: partial implementation :)
 
- declare variable $xproc:declare-step := ();
- declare variable $xproc:library      := ();
- declare variable $xproc:pipeline     := ();
- declare variable $xproc:variable     := ();
+ declare variable $xproc:declare-step as function() := ();
+ declare variable $xproc:library      as function() := ();
+ declare variable $xproc:pipeline     as function() := ();
+ declare variable $xproc:variable     as function() := ();
 
 
  (:~ xproc:xproc-run impl for ext:xproc extension step
@@ -800,7 +800,7 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
  :
  :)
 (: -------------------------------------------------------------------------- :)
-declare function xproc:getstep($stepname as xs:string){
+declare function xproc:getstep($stepname as xs:string) as function(){
 (: -------------------------------------------------------------------------- :)
 if ($stepname eq 'p:identity') then
   $std:identity
