@@ -136,12 +136,41 @@ declare function u:evalXPATH($xpath, $xml){
 
 
 (: -------------------------------------------------------------------------- :)
+declare function u:evalXPATH($xpath, $xml, $options){
+(: -------------------------------------------------------------------------- :)
+ let $document := document{$xml}
+ return
+  if ($xpath eq '/' or $xpath eq '' or empty($xml)) then
+    $document
+  else
+    u:xquery($xpath,$xml,$options)
+    (:    ($document/.)/saxon:evaluate($xpath) :)
+};
+
+
+
+(: -------------------------------------------------------------------------- :)
+declare function u:xquery($query, $xml, $options){
+(: -------------------------------------------------------------------------- :)
+ let $context := document{$xml}
+ let $o := for $option in $options 
+ let $value as xs:string := if($option/@select ne'') then string($option/@select) else concat('&quot;',$option/@value,'&quot;')
+ return
+   concat(' declare variable $',$option/@name,' := ',$value,';')
+ let $compile :=  saxon:compile-query(concat($const:default-ns,$o,$query))
+ return
+   saxon:query($compile, $context)
+};
+
+(: -------------------------------------------------------------------------- :)
 declare function u:xquery($query, $xml){
 (: -------------------------------------------------------------------------- :)
  let $context := document{$xml}
- let $compile :=  saxon:compile-query(concat($const:default-ns,$query))
+ let $option    := ' declare variable $opt := "value"; '  
+ let $compile :=  saxon:compile-query(concat($const:default-ns,$option,$query))
  return
    saxon:query($compile, $context)
+
 };
 
 

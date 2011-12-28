@@ -96,7 +96,7 @@ declare function opt:xquery($primary,$secondary,$options,$variables) {
 
 let $query := u:get-secondary('query',$secondary)
 return
-      u:xquery($query/text(),$primary)
+      u:xquery($query/text(),$primary,$options[@name])
 };
 
 

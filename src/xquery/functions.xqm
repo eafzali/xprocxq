@@ -65,7 +65,7 @@ declare function func:version-available($version as xs:decimal){
 };
 
 (: -------------------------------------------------------------------------- :)
-declare function func:value-available($value){
+declare function func:value-available($value1, $value2){
 (: -------------------------------------------------------------------------- :)
     "true"
 };

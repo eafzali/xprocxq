@@ -103,12 +103,12 @@ declare variable $const:xproc-rng-schema := 'resource:net/xproc/xprocxq/etc/xpro
 declare variable $const:xslt-output := <xsl:output omit-xml-declaration="yes"/>;
 
 
-declare variable $const:default-ns :='
-xquery version "1.0" encoding "UTF-8";
+declare variable $const:default-ns as xs:string:='
 
     declare namespace c="http://www.w3.org/ns/xproc-step";
     declare namespace err="http://www.w3.org/ns/xproc-error";
     declare namespace xsl="http://www.w3.org/1999/XSL/Transform";
 
     import module namespace p="http://www.w3.org/ns/xproc" at "src/xquery/functions.xqm";
+
 ';

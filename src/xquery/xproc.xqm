@@ -102,15 +102,15 @@ let $xpath-context as element(p:xpath-context) := $currentstep/ext:pre/p:xpath-c
 let $xpath-context-select as xs:string   :=string($xpath-context/@select)
 let $xpath-context-binding   := $xpath-context[1]/node()[1]
 let $xpath-context-data := xproc:resolve-inline-binding($xpath-context-binding/p:inline,$currentstep)
-let $context := if ($primary ne '') then u:evalXPATH($xpath-context-select,document{$primary}) else u:evalXPATH($xpath-context-select,document{$xpath-context}) 
-let $when-test := for $when at $count in $currentstep/p:when
+let $context := if ($primary ne '') then 
+                  u:evalXPATH($xpath-context-select,document{$primary},$options[@name]) 
+                else 
+                  u:evalXPATH($xpath-context-select,document{$xpath-context},$options[@name]) 
+let $when-test as xs:string :=  for $when at $count in $currentstep/p:when
+          let $check-when-test := u:assert(not($when/@test eq ''),"p:choose when test attribute cannot be empty")
           return
-            if(string($when/@test) ne '') then
-             if (u:evalXPATH(string($when/@test),document{$context})) then $when/@test else ()
-            else
-              ()
+             if (u:evalXPATH(string($when/@test),document{$context},$options[@name])) then string($when/@test) else ()
 return
-
   if($when-test[1]) then 
     let $ast-when := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/p:when[@test eq $when-test[1]]/node()}</p:declare-step>
     return
@@ -506,8 +506,8 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
  (: -------------------------------------------------------------------------- :)
      let $variables    := $outputs/xproc:variable
      let $currentstep  := $ast/*[@xproc:default-name eq $step][1]
-    
-     let $with-options := xproc:eval-with-options($ast,$step)
+     
+     let $with-options := (xproc:eval-with-options($ast,$step), $outputs//xproc:option)
      let $stepfunc     := name($currentstep)
      let $stepfunction := if ($currentstep/@type) then $std:identity else xproc:getstep($stepfunc)
      let $primary      := xproc:eval-primary($ast,$currentstep,$primaryinput,$outputs) 
@@ -516,7 +516,7 @@ let $result :=  u:evalXPATH(string($pinput/@select),$data)
      <xproc:input port="xproc:options">{
      for $option in $currentstep//p:option
      return
-     <xproc:option name="{$option/@name}">{$option/@value}</xproc:option>
+     <xproc:option name="{$option/@name}">{if($option/@select ne '') then $option/@select else $option/@value}</xproc:option>
      }
      </xproc:input>
 

@@ -341,7 +341,8 @@ return
      element p:option {
        attribute xproc:type {'comp'},
        attribute name {$option/@name},
-       attribute value {$option/@value}
+       attribute value {$option/@value},
+       attribute select {$option/@select}
        }
  };
 
@@ -573,7 +574,8 @@ return
                    return element p:option {
                      attribute xproc:type {'comp'}, 
                      $node/@name,
-                     $node/@value
+                     $node/@value,
+                     $node/@select
                      }
             case element(p:inline) 
                    return element p:inline {
