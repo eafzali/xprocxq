@@ -111,7 +111,6 @@ declare variable $const:default-ns as xs:string:='
     declare namespace xproc = "http://xproc.net/xproc";
     declare namespace c="http://www.w3.org/ns/xproc-step";
     declare namespace err="http://www.w3.org/ns/xproc-error";
-    declare namespace xsl="http://www.w3.org/1999/XSL/Transform";
     declare namespace ex="http://www.example.org";
     declare namespace tmp="http://www.example.org";
 

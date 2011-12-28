@@ -57,7 +57,7 @@ declare variable $std:xslt               as function()   := std:xslt#4;
 (: -------------------------------------------------------------------------- :)
 declare function std:add-attribute($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-let $ns := u:get-secondary('xproc:namespaces',$secondary)
+let $ns := u:get-secondary('xproc:namespaces',$secondary)/*
 let $match  := u:get-option('match',$options,$primary)
 let $attribute-name as xs:string := u:get-option('attribute-name',$options,$primary)
 let $attribute-value := u:get-option('attribute-value',$options,$primary)
@@ -98,7 +98,7 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:add-xml-base($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-let $ns := u:get-secondary('xproc:namespaces',$secondary)
+let $ns := u:get-secondary('xproc:namespaces',$secondary)/*
 let $all as xs:string := u:get-option('add',$options,$primary)
 let $relative as xs:string := u:get-option('relative',$options,$primary)
 let $template := <xsl:stylesheet version="2.0">
@@ -138,7 +138,7 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:compare($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-let $alternate := document{u:get-secondary('alternate',$secondary) }
+let $alternate := u:get-secondary('alternate',$secondary)/*
 (: let $strict := u:get-option('xproc:strict',$options,$v)  ext attribute xproc:strict:) 
 let $fail-if-not-equal as xs:string := u:get-option('fail-if-not-equal',$options,$primary)
 let $result := deep-equal(u:strip-whitespace(document{$primary}),u:strip-whitespace($alternate))
@@ -170,7 +170,7 @@ return
 declare function std:delete($primary,$secondary,$options,$variables){
 (: -------------------------------------------------------------------------- :)
 (: let $ns := u:enum-ns(<dummy>{$primary}</dummy>) :)
-let $ns := u:get-secondary('xproc:namespaces',$secondary)
+let $ns := u:get-secondary('xproc:namespaces',$secondary)/*
 
 let $match  as xs:string := u:get-option('match',$options,$primary)
 let $template := <xsl:stylesheet version="2.0">
@@ -347,8 +347,8 @@ $primary
 (: -------------------------------------------------------------------------- :)
 declare function std:insert($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-let $ns := u:get-secondary('xproc:namespaces',$secondary)
-let $insertion := u:get-secondary('insertion',$secondary)
+let $ns := u:get-secondary('xproc:namespaces',$secondary)/*
+let $insertion := u:get-secondary('insertion',$secondary)/*
 let $match     := u:get-option('match',$options,$primary)
 let $position  := u:get-option('position',$options,$primary)
 let $template := <xsl:stylesheet version="2.0">
@@ -422,7 +422,7 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:label-elements($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-let $ns := u:get-secondary('xproc:namespaces',$secondary)
+let $ns := u:get-secondary('xproc:namespaces',$secondary)/*
 let $match  := u:get-option('match',$options,$primary)
 let $attribute  := u:get-option('attribute',$options,$primary)
 let $label  := u:get-option('label',$options,$primary)
@@ -491,7 +491,7 @@ try {
 (: -------------------------------------------------------------------------- :)
 declare function std:make-absolute-uris($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-let $ns := u:get-secondary('xproc:namespaces',$secondary)
+let $ns := u:get-secondary('xproc:namespaces',$secondary)/*
 let $match    := u:get-option('match',$options,$primary)
 let $base-uri := u:get-option('base-uri',$options,$primary)
 let $new-uri  := if ($base-uri) then <xsl:value-of select="resolve-uri('{$base-uri}', base-uri($closest-element))"/>
@@ -549,7 +549,7 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:namespace-rename($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-let $ns        := u:get-secondary('xproc:namespaces',$secondary)
+let $ns        := u:get-secondary('xproc:namespaces',$secondary)/*
 let $from      := u:get-option('from',$options,$primary)
 let $to        := u:get-option('to',$options,$primary)
 let $apply-to  := u:get-option('apply-to',$options,$primary)
@@ -625,16 +625,29 @@ let $alternate := u:get-secondary('alternate',$secondary)
 let $wrapper := u:get-option('wrapper',$options,$primary)
 let $wrapper-prefix := u:get-option('wrapper-prefix',$options,$primary)
 let $wrapper-namespace := u:get-option('wrapper-namespace',$options,$primary)
-return
-(   for $child at $count in $primary/*
+
+let $result := for $child at $count in $primary/*
     return
       document{
 	    element {$wrapper}{
 	        $child,
-	        $alternate[$count]
+	        $alternate/*[$count]
 	    }
       }
-)
+return
+if(count($primary/*) gt 0 and count($alternate/*) gt 0) then
+ $result
+else if (count($primary/*) eq 0 and count($alternate/*) gt 0) then
+  for $a in $alternate/*
+  return
+    element {$wrapper} {$a}
+else if (count($primary/*) gt 0 and count($alternate/*) eq 0) then
+  for $a in $primary/*
+  return
+    element {$wrapper} {$a}
+else
+()
+
 };
 
 
@@ -649,7 +662,7 @@ declare function std:parameters($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 declare function std:rename($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-let $ns := u:get-secondary('xproc:namespaces',$secondary)
+let $ns := u:get-secondary('xproc:namespaces',$secondary)/*
 let $match  := u:get-option('match',$options,$primary)
 let $new-name  := u:get-option('new-name',$options,$primary)
 let $new-prefix  := u:get-option('new-prefix',$options,$primary)
@@ -704,9 +717,10 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:replace($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-let $ns := u:get-secondary('xproc:namespaces',$secondary)
+let $ns := u:get-secondary('xproc:namespaces',$secondary)/*
+let $replacement := u:get-secondary('replacement',$secondary)/*
+
 let $match  := u:get-option('match',$options,$primary)
-let $replacement := u:get-secondary('replacement',$secondary)
 
 let $template := <xsl:stylesheet version="2.0">
        {for $n in $ns return
@@ -751,9 +765,10 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:set-attributes($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-let $ns := u:get-secondary('xproc:namespaces',$secondary)
+let $ns := u:get-secondary('xproc:namespaces',$secondary)/*
+let $attributes := u:get-secondary('attributes',$secondary)/*
+
 let $match  := u:get-option('match',$options,$primary)
-let $attributes := u:get-secondary('attributes',$secondary)
 
 let $attribute-name := name($attributes/@*[1])
 let $attribute-value := $attributes/@*[1]
@@ -843,7 +858,7 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:string-replace($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-let $ns := u:get-secondary('xproc:namespaces',$secondary)
+let $ns := u:get-secondary('xproc:namespaces',$secondary)/*
 let $match  := u:get-option('match',$options,$primary)
 let $replace as xs:string := u:get-option('replace',$options,$primary)
 let $template := <xsl:stylesheet version="2.0">
@@ -893,7 +908,7 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:unescape-markup($primary,$secondary,$options,$variables){
 (: -------------------------------------------------------------------------- :)
-let $ns := u:get-secondary('xproc:namespaces',$secondary)
+let $ns := u:get-secondary('xproc:namespaces',$secondary)/*
 
 let $content-type := u:get-option('content-type',$options,$primary)
 let $encoding     := u:get-option('encoding',$options,$primary)
@@ -1170,7 +1185,7 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:wrap($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
-let $ns := u:get-secondary('xproc:namespaces',$secondary)
+let $ns := u:get-secondary('xproc:namespaces',$secondary)/*
 let $match  := u:get-option('match',$options,$primary)
 let $wrapper as xs:string := u:get-option('wrapper',$options,$primary)
 let $wrapper-prefix as xs:string := u:get-option('wrapper-prefix',$options,$primary)
@@ -1235,7 +1250,7 @@ else
 declare function std:unwrap($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 
-let $ns := u:get-secondary('xproc:namespaces',$secondary)
+let $ns := u:get-secondary('xproc:namespaces',$secondary)/*
 let $match  := u:get-option('match',$options,$primary)
 let $template := <xsl:stylesheet version="2.0">
        {for $n in $ns return
@@ -1269,7 +1284,7 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:xslt($primary,$secondary,$options,$variables){
 (: -------------------------------------------------------------------------- :)
-let $stylesheet := u:get-secondary('stylesheet',$secondary)
+let $stylesheet := u:get-secondary('stylesheet',$secondary)/*
 return
   u:transform($stylesheet,$primary) 
 };
