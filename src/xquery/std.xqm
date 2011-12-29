@@ -1230,17 +1230,21 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function std:wrap-sequence($primary,$secondary,$options,$variables) as item()*{
 (: -------------------------------------------------------------------------- :)
-let $wrapper as xs:string := u:get-option('wrapper',$options,$primary)
+let $wrapper           as xs:string  := u:get-option('wrapper',$options,$primary)
+let $wrapper-prefix    as xs:string  := (u:get-option('wrapper-prefix',$options,$primary),'')[1]
+let $wrapper-namespace as xs:string  := u:get-option('wrapper-namespace',$options,$primary)
+let $group-adjacent    as xs:string  := u:get-option('group-adjacent',$options,$primary)
 return
+if($primary instance of item()*) then 
 for $v in $primary
 return
-if ($primary) then 
   element {$wrapper}{
-    $v
+    if ($wrapper-namespace) then namespace {$wrapper-prefix} {"test"} else (),
+      $v
   }
 else
   element {$wrapper}{
-    ()
+      $primary
   }
 
 };

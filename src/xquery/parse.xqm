@@ -153,11 +153,13 @@ module namespace parse = "http://xproc.net/xproc/parse";
               $input/@xproc:type,
               attribute primary {true()},
               if($input/p:pipe) then
+                for $pipe in $input/p:pipe
+                 return
                 element p:pipe{
-                  $input/p:pipe/@port,
+                  $pipe/@port,
                   attribute xproc:type {"comp"},
-                  attribute step {($pipeline//*[@name eq $input/p:pipe/@step]/@xproc:default-name,concat($unique_id,'.',string($count - 2 )))[1]},
-                  attribute xproc:step-name {($pipeline//*[@name eq $input/p:pipe/@step]/@xproc:default-name,concat($unique_id,'.',string($count - 2 )))[1]}
+                  attribute step {($pipeline//*[@name eq $pipe/@step]/@xproc:default-name,concat($unique_id,'.',string($count - 2 )))[1]},
+                  attribute xproc:step-name {($pipeline//*[@name eq $pipe/@step]/@xproc:default-name,concat($unique_id,'.',string($count - 2 )))[1]}
                 }
               else if ($input/(p:data|p:document|p:inline|p:empty)) then
                 $input/*

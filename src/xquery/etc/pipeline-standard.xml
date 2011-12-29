@@ -205,7 +205,7 @@
    <p:declare-step type="p:wrap" xml:id="wrap" xmlns:xproc="http://xproc.net/xproc" xproc:support="true">
       <p:input port="source" primary="true" select="/"/>
       <p:output port="result" primary="true" select="/"/>
-      <p:option name="wrapper" required="true" default="/"/>
+      <p:option name="wrapper" required="true" default="''"/>
       <p:option name="match" required="true" default="/"/>
       <p:option name="group-adjacent" default="/"/>
    </p:declare-step>
@@ -213,7 +213,9 @@
       <p:input port="source" sequence="true" primary="true" select="/"/>
       <p:output port="result" sequence="true" primary="true" select="/"/>
       <p:option name="wrapper" required="true"/>
-      <p:option name="group-adjacent"/>
+      <p:option name="wrapper-prefix" />
+      <p:option name="wrapper-namespace" />
+      <p:option name="group-adjacent" />
    </p:declare-step>
    <p:declare-step type="p:xinclude" xml:id="xinclude" xproc:support="true">
       <p:input port="source" primary="true" select="/"/>
