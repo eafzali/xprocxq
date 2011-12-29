@@ -177,6 +177,14 @@ declare function u:transform($stylesheet,$xml){
     saxon:transform($rendition, $xml)
 };
 
+(: -------------------------------------------------------------------------- :)
+declare function u:transform($stylesheet,$xml,$data){
+(: -------------------------------------------------------------------------- :)
+  let $rendition := saxon:compile-stylesheet(document{$stylesheet})
+  return
+    saxon:transform($rendition, $xml,$data)
+};
+
 
 (: -------------------------------------------------------------------------- :)
 (: STEP UTILITIES                                                             :)
@@ -313,8 +321,10 @@ for $ns in distinct-values(
       $root/descendant-or-self::*/(.)/in-scope-prefixes(.))
 
 return
+  if($ns ne 'xml' or $ns ne '' or namespace-uri-for-prefix($ns,$root) ne '') then
   <ns prefix="{$ns}" URI="{namespace-uri-for-prefix($ns,$root)}"/>
-
+  else
+    ()
  } ;
 
 declare function u:enum-ns($element){
@@ -323,7 +333,7 @@ declare function u:enum-ns($element){
               if ($child instance of element() or $child instance of document-node()) then
                	 u:namespaces-in-use($child)
                 else
-                  <ns/>
+                  ()
 
 };
 

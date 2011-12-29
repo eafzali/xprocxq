@@ -51,8 +51,8 @@ module namespace xproc = "http://xproc.net/xproc";
 (: -------------------------------------------------------------------------- :)
 declare function xproc:xproc-run($primary,$secondary,$options,$currentstep) {
 (: -------------------------------------------------------------------------- :)
-let $pipeline := u:get-secondary('pipeline',$secondary)
-let $bindings := u:get-secondary('binding',$secondary)
+let $pipeline := u:get-secondary('pipeline',$secondary)/*
+let $bindings := u:get-secondary('binding',$secondary)/*
 let $dflag  as xs:integer  := xs:integer(u:get-option('dflag',$options,$primary))
 let $tflag  as xs:integer  := xs:integer(u:get-option('tflag',$options,$primary))
 return
@@ -183,14 +183,30 @@ declare function xproc:viewport($primary,$secondary,$options,$currentstep) {
 (: -------------------------------------------------------------------------- :)
 let $namespaces  := xproc:enum-namespaces($currentstep)
 let $defaultname as xs:string := string($currentstep/@xproc:default-name)
-let $iteration-select as xs:string   := string($currentstep/ext:pre/p:viewport-source/@select)
+let $match as xs:string   := string($currentstep/@match)
 let $ast := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/node()}</p:declare-step>
 let $template := <xsl:stylesheet version="2.0">
 {$const:xslt-output}
-{for $option in $options[@name]
+
+<xsl:template match="{$match}">
+<xsl:copy>
+<xsl:apply-templates select="@*|*"/>
+</xsl:copy>
+</xsl:template>
+
+</xsl:stylesheet>      
+
+let $data := (u:transform($template,$primary))
+let $results := (for $item at $count in $data/*
 return
-<xsl:param name="{$option/@name}" select="{if($option/@select ne'') then string($option/@select) else concat('&quot;',$option/@value,'&quot;')}"/>
-}
+  xproc:output(xproc:evalAST($ast,$xproc:eval-step,$namespaces,$item,(),()), 0)
+)
+
+let $final-template := <xsl:stylesheet version="2.0">
+{$const:xslt-output}
+
+<xsl:variable name="data" as="item()*">{$results}</xsl:variable>
+
 <xsl:template match=".">
     <xsl:apply-templates/>
 </xsl:template>
@@ -201,19 +217,17 @@ return
     </xsl:copy>
 </xsl:template>
 
-<xsl:template match="{$iteration-select}">
-  <xsl:copy>
-    <xsl:apply-templates/>
-  </xsl:copy>
+
+<xsl:template match="{$match}">
+<xsl:copy-of select="subsequence($data,1,1)"/>
 </xsl:template>
 
-</xsl:stylesheet>      
 
-let $input := u:transform($template,$primary)
+</xsl:stylesheet>  
+
 return
-for $item at $count in $input
-return
-  xproc:output(xproc:evalAST($ast,$xproc:eval-step,$namespaces,$item,(),()), 0)
+  u:transform($final-template,$primary)
+
 };
 
 
@@ -343,7 +357,7 @@ let $ns := u:enum-ns(<dummy>{$currentstep}</dummy>)
 let $exclude-result-prefixes as xs:string := string($inline/@exclude-inline-prefixes)
 let $template := <xsl:stylesheet version="2.0" exclude-result-prefixes="{$exclude-result-prefixes}">
        {for $n in $ns return
-       namespace {$n/@prefix} {$n/@URI}
+       if($n/@URI ne '') then namespace {$n/@prefix} {$n/@URI} else ()
        }
 {$const:xslt-output}
 

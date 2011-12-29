@@ -1,2 +1,2 @@
 ## temp xprocxq bash script
-java  -Xmx1024m -cp /Users/jfuller/Source/FLOSS/saxonpe9-3-0-1j/saxon9pe.jar net.sf.saxon.Query -qversion:3.0 /Users/jfuller/Source/Webcomposite/xprocxq/bin/xprocxq.xqy xml-uri=$1 pipe-uri=$2 
+java  -Xmx1024m -cp /Users/jfuller/Source/FLOSS/saxonpe9-4-0-1j/saxon9pe.jar net.sf.saxon.Query -qversion:3.0 /Users/jfuller/Source/Webcomposite/xprocxq/bin/xprocxq.xqy xml-uri=$1 pipe-uri=$2 

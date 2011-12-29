@@ -225,7 +225,7 @@ module namespace parse = "http://xproc.net/xproc/parse";
   return 
     element p:xpath-context {
       attribute xproc:type {'comp'},
-      ($s/@select, $input/@select)[1],$s/*}
+      $s/*}
 };
 
 
@@ -236,18 +236,14 @@ module namespace parse = "http://xproc.net/xproc/parse";
   : @returns element(p:viewport-source)
   :)
  (: --------------------------------------------------------------------------------------------------------- :)
- declare function parse:viewport-source($node as element(p:input)*, $step-definition) as element(p:input)*{
+ declare function parse:viewport-source($node as element(p:viewport-source)*, $step-definition) as element(p:viewport-source)*{
  (: --------------------------------------------------------------------------------------------------------- :)
-  for $input in $step-definition/p:input
-  let $name as xs:string := fn:string($input/@port)  
-  let $s := $node[@port eq $name]
+  for $input in $step-definition/p:viewport-source
+  let $s := $node
   return 
-    element p:input {
+    element p:viewport-source {
       attribute xproc:type {'comp'},
-      $input/@*[name(.) ne 'select'],
-      ($s/@select, $input/@select)[1],
-      $s/*
-    }
+      $s/*}
 };
 
  (:~
@@ -257,18 +253,14 @@ module namespace parse = "http://xproc.net/xproc/parse";
   : @returns element(p:iteration-source)
   :)
  (: --------------------------------------------------------------------------------------------------------- :)
- declare function parse:iteration-source($node as element(p:input)*, $step-definition) as element(p:input)*{
+ declare function parse:iteration-source($node as element(p:iteration-source)*, $step-definition) as element(p:iteration-source)*{
  (: --------------------------------------------------------------------------------------------------------- :)
-  for $input in $step-definition/p:input
-  let $name as xs:string := fn:string($input/@port)  
-  let $s := $node[@port eq $name]
+  for $input in $step-definition/p:iteration-source
+  let $s := $node
   return 
-    element p:input {
+    element p:iteration-source {
       attribute xproc:type {'comp'},
-      $input/@*[name(.) ne 'select'],
-      ($s/@select, $input/@select)[1],
-      $s/*
-    }
+      $s/*}
 };
 
  (:~
@@ -462,9 +454,9 @@ return
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                        attribute xproc:step {"true"},
                        $node/p:log,
-                       $node/p:iteration-source,
-                       parse:iteration-source($node/p:input, $step-definition),
-                       parse:output-port($node/p:output, $step-definition)
+                       parse:input-port($node/p:input, $step-definition),
+                       parse:output-port($node/p:output, $step-definition),
+                       parse:iteration-source($node/p:iteration-source, $step-definition)
                      },
                      parse:AST($node/*[@xproc:type ne 'comp'])
                    }
@@ -475,9 +467,9 @@ return
                      element ext:pre {attribute xproc:default-name {fn:concat($node/@xproc:default-name,'.0')},
                        attribute xproc:step {"true"},
                        $node/p:log,
-                       $node/p:viewport-source,
-                       parse:viewport-source($node/p:input, $step-definition),
-                       parse:output-port($node/p:output, $step-definition)
+                       parse:input-port($node/p:input, $step-definition),
+                       parse:output-port($node/p:output, $step-definition),
+                       parse:viewport-source($node/p:viewport-source, $step-definition)
                      },
                      parse:AST($node/*[@xproc:type ne 'comp'])
                    }

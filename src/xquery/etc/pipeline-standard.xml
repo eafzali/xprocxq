@@ -157,7 +157,7 @@
    </p:declare-step>
    <p:declare-step type="p:split-sequence" xml:id="split-sequence" xproc:support="true">
       <p:input port="source" sequence="true" primary="true" select="/"/>
-      <p:output port="matched" sequence="true" primary="true" select="/"/>
+      <p:output port="result" sequence="true" primary="true" select="/"/>
       <p:output port="not-matched" sequence="true" primary="false" select="/"/>
       <p:option name="initial-only" select="'false'"/>
       <p:option name="test" required="true"/>

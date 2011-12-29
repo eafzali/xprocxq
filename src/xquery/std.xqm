@@ -768,37 +768,38 @@ declare function std:set-attributes($primary,$secondary,$options,$variables) {
 let $ns := u:get-secondary('xproc:namespaces',$secondary)/*
 let $attributes := u:get-secondary('attributes',$secondary)/*
 
+return
+
 let $match  := u:get-option('match',$options,$primary)
 
-let $attribute-name := name($attributes/@*[1])
-let $attribute-value := $attributes/@*[1]
-(: TODO - this is limited to only a single attribute currently :)
 let $template := <xsl:stylesheet version="2.0">
        {for $n in $ns return
-        namespace {$n/@prefix} {$n/@URI}
+       
+       if($n/@URI ne '') then namespace {$n/@prefix} {$n/@URI} else ()
        }
 {$const:xslt-output}
 {for $option in $options[@name]
 return
 <xsl:param name="{$option/@name}" select="{if($option/@select ne'') then string($option/@select) else concat('&quot;',$option/@value,'&quot;')}"/>
 }
-<xsl:template match=".">
-    <xsl:apply-templates/>
-</xsl:template>
 
-<xsl:template match="@*|node()">
-    <xsl:copy>
-        <xsl:apply-templates select="@*|node()"/>
-    </xsl:copy>
+<xsl:attribute-set name="attribs">
+{for $attr in $attributes/@*
+return
+<xsl:attribute name="{name($attr)}">{string($attr)}</xsl:attribute>}
+</xsl:attribute-set>
+
+<xsl:template match="/">
+        <xsl:apply-templates select="@*|*"/>
 </xsl:template>
 
 <xsl:template match="{$match}">
-  <xsl:copy>
-    <xsl:apply-templates select="@*"/>
-    <xsl:attribute name="{$attribute-name}" select="'{$attribute-value}'"/>
-    <xsl:apply-templates/>
-  </xsl:copy>
+<xsl:element name="{{name(.)}}" use-attribute-sets="attribs">
+<xsl:apply-templates select="*"/>
+</xsl:element>
 </xsl:template>
+
+
 </xsl:stylesheet>      
 return
   u:transform($template,$primary)
@@ -818,10 +819,10 @@ declare function std:split-sequence($primary,$secondary,$options,$variables) {
 let $test         := u:get-option('test',$options,$primary)
 let $initial-only := u:get-option('initial-only',$options,$primary)
 return
-    for $child at $count in $primary
+    for $child at $count in $primary/*
     return
       try {
-        if(u:evalXPATH($test,document{$primary},$options[@name])) then
+        if(u:evalXPATH(replace($test,'position\(\)',string($count)),document{$primary},$options[@name])) then
           $child
         else
           ()
@@ -829,7 +830,6 @@ return
       catch * {
         u:dynamicError('err:XD0016',": p:split-sequence did not select anything - ")
       }
-
 };
 
 
