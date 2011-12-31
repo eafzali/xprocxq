@@ -161,9 +161,15 @@ declare function xproc:for-each($primary,$secondary,$options,$currentstep) {
 let $namespaces  := xproc:enum-namespaces($currentstep)
 let $defaultname as xs:string := string($currentstep/@xproc:default-name)
 let $iteration-select as xs:string   := string($currentstep/ext:pre/p:iteration-source/@select)
+
+let $source := if ($currentstep/ext:pre/p:iteration-source/*) then
+  $currentstep/ext:pre/p:iteration-source/p:inline/node()
+else
+  $primary
+
 let $ast := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/node()}</p:declare-step>
 return
-for $item in u:evalXPATH($iteration-select,document{$primary},$options[@name])
+for $item in u:evalXPATH($iteration-select,document{$source},$options[@name])
 return
   xproc:output(xproc:evalAST($ast,$xproc:eval-step,$namespaces,$item,(),()), 0)
 };
@@ -185,6 +191,12 @@ let $namespaces  := xproc:enum-namespaces($currentstep)
 let $defaultname as xs:string := string($currentstep/@xproc:default-name)
 let $match as xs:string   := string($currentstep/@match)
 let $ast := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/node()}</p:declare-step>
+
+let $source := if ($currentstep/ext:pre/p:viewport-source/*) then
+  $currentstep/ext:pre/p:viewport-source/p:inline/node()
+else
+  $primary
+
 let $template := <xsl:stylesheet version="2.0">
 {$const:xslt-output}
 
@@ -196,7 +208,7 @@ let $template := <xsl:stylesheet version="2.0">
 
 </xsl:stylesheet>      
 
-let $data := (u:transform($template,$primary))
+let $data := (u:transform($template,$source))
 let $results := (for $item at $count in $data/*
 return
   xproc:output(xproc:evalAST($ast,$xproc:eval-step,$namespaces,$item,(),()), 0)
@@ -226,7 +238,7 @@ let $final-template := <xsl:stylesheet version="2.0">
 </xsl:stylesheet>  
 
 return
-  u:transform($final-template,$primary)
+  u:transform($final-template,$source)
 
 };
 
