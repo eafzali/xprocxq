@@ -1,0 +1,195 @@
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta http-equiv="Generator" content="xquerydoc - https://github.com/xquery/xquerydoc"/><title>xqDoc - </title><style type="text/css">
+          body {
+          font-family: Helvetica;
+          padding: 0.5em  1em;
+          }
+          pre {
+          font-family: Inconsolata, Consolas, monospace;
+          }
+          ol.results {
+          padding-left: 0;
+          }
+          .footer {
+          text-align:right;
+          border-top: solid 4px;
+          padding: 0.25em 0.5em;
+          font-size: 85%;
+          color: #999;
+          }
+          li.result {
+          list-style-position: inside;
+          list-style: none;
+          height:140px;
+          }
+          h2 {
+          display: inline-block;
+          margin: 0;
+          }
+
+          h2 a,
+          .result h3 a {
+          text-decoration: inherit;
+          color: inherit;
+          }
+          h3{
+	  font-size: 140%;
+	  background-color: #aaa;
+	  border-bottom: 1px solid #000;
+	  width: 100%;
+	  }
+          h4{
+	  font-size: 100%;
+	  background-color: #ddd;
+	  width: 90%;
+	  }
+
+          .namespace {
+          color: #999;
+          }
+          .namespace:before {
+          content: "{";
+          }
+          .namespace:after {
+          content: "}";
+          }
+          table{
+          width:75%;
+          float:right;
+          }
+          td {
+          height:100px;
+          width:50%;
+          vertical-align:text-top;
+          }
+        </style><script src="lib/prettify.js" type="text/javascript"> </script><script src="lib/lang-xq.js" type="text/javascript"> </script><link rel="stylesheet" type="text/css" href="lib/prettify.css"/></head><body class="home"><div id="main"><h1><span class="namespace">http://www.w3.org/ns/xproc</span>  library module </h1><div id="variables"><h3>Variables</h3></div><div id="functions"><h3>Functions</h3><div id="func_system-property_1"><h4><pre class="prettyprint lang-xq"><u>Function</u>: system-property($property)</pre></h4><h5>Params</h5><ul><li>property as </li></ul></div><div id="func_version-available_1"><h4><pre class="prettyprint lang-xq"><u>Function</u>: version-available($version as xs:decimal)</pre></h4><h5>Params</h5><ul><li>version as  xs:decimal</li></ul></div><div id="func_value-available_2"><h4><pre class="prettyprint lang-xq"><u>Function</u>: value-available($value1, $value2)</pre></h4><h5>Params</h5><ul><li>value1 as </li><li>value2 as </li></ul></div><div id="func_value-available_1"><h4><pre class="prettyprint lang-xq"><u>Function</u>: value-available($value1)</pre></h4><h5>Params</h5><ul><li>value1 as </li></ul></div><div id="func_step-available_1"><h4><pre class="prettyprint lang-xq"><u>Function</u>: step-available($step-name) as  xs:boolean</pre></h4><h5>Params</h5><ul><li>step-name as </li></ul><h5>Returns</h5><ul><li> xs:boolean</li></ul></div><div id="func_iteration-position_0"><h4><pre class="prettyprint lang-xq"><u>Function</u>: iteration-position()</pre></h4></div><div id="func_xpath-version-available_1"><h4><pre class="prettyprint lang-xq"><u>Function</u>: xpath-version-available($version as xs:double) as  xs:boolean</pre></h4><h5>Params</h5><ul><li>version as  xs:double</li></ul><h5>Returns</h5><ul><li> xs:boolean</li></ul></div><div id="func_resolve-uri_1"><h4><pre class="prettyprint lang-xq"><u>Function</u>: resolve-uri($value1)</pre></h4><h5>Params</h5><ul><li>value1 as </li></ul></div><div id="func_resolve-uri_2"><h4><pre class="prettyprint lang-xq"><u>Function</u>: resolve-uri($value1,$value2)</pre></h4><h5>Params</h5><ul><li>value1 as </li><li>value2 as </li></ul></div><div id="func_base-uri_1"><h4><pre class="prettyprint lang-xq"><u>Function</u>: base-uri($value1)</pre></h4><h5>Params</h5><ul><li>value1 as </li></ul></div><div id="func_base-uri_0"><h4><pre class="prettyprint lang-xq"><u>Function</u>: base-uri()</pre></h4></div><div id="func_iteration-size_0"><h4><pre class="prettyprint lang-xq"><u>Function</u>: iteration-size()</pre></h4></div></div><div><h3>Original Source Code</h3><pre class="prettyprint lang-xq">xquery version "1.0" encoding "UTF-8";&#xD;
+&#xD;
+module namespace func = "http://www.w3.org/ns/xproc";&#xD;
+(:~&#xD;
+ :&#xD;
+ :	functions.xqm - defines xproc xpath extensions.&#xD;
+ :&#xD;
+ :&#xD;
+ :	&#xD;
+ :)&#xD;
+&#xD;
+&#xD;
+(: declare namespaces :)&#xD;
+&#xD;
+declare namespace c     = "http://www.w3.org/ns/xproc-step";&#xD;
+declare namespace err   = "http://www.w3.org/ns/xproc-error";&#xD;
+declare namespace xproc = "http://xproc.net/xproc";&#xD;
+declare namespace xsl   = "http://www.w3.org/1999/XSL/Transform";&#xD;
+&#xD;
+(:~ declare import :)&#xD;
+&#xD;
+import module namespace const = "http://xproc.net/xproc/const" at "const.xqm";&#xD;
+&#xD;
+declare default function namespace "http://www.w3.org/2005/xpath-functions";&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function func:system-property($property){&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+if ($property eq 'p:version') then&#xD;
+  $const:version&#xD;
+else if ($property eq 'p:episode') then&#xD;
+  $const:episode&#xD;
+else if ($property eq 'p:language') then&#xD;
+  $const:language&#xD;
+else if ($property eq 'p:product-name') then&#xD;
+  $const:product-name&#xD;
+else if ($property eq 'p:product-version') then&#xD;
+  $const:product-version&#xD;
+else if ($property eq 'p:vendor-uri') then&#xD;
+  $const:vendor-uri&#xD;
+else if ($property eq 'p:vendor') then&#xD;
+  $const:vendor&#xD;
+else if ($property eq 'p:xpath-version') then&#xD;
+  $const:xpath-version&#xD;
+else if ($property eq 'p:psvi-supported') then&#xD;
+  $const:psvi-supported&#xD;
+else&#xD;
+  ()	&#xD;
+(:&#xD;
+should throw a u:dynamicError('err:XD0015',"")&#xD;
+:)&#xD;
+};&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function func:version-available($version as xs:decimal){&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+  if ($version eq 1.0) then&#xD;
+    "true"&#xD;
+  else&#xD;
+    "false"&#xD;
+};&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function func:value-available($value1, $value2){&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+    "true"&#xD;
+};&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function func:value-available($value1){&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+    "true"&#xD;
+};&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function func:step-available($step-name) as xs:boolean{&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+    if(starts-with($step-name,'p')) then true() else false()&#xD;
+};&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function func:iteration-position(){&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+    "true"&#xD;
+};&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function func:xpath-version-available($version as xs:double) as xs:boolean{&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+    if ($version = 2.0) then true() else false()&#xD;
+};&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function func:resolve-uri($value1){&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+"true"&#xD;
+};&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function func:resolve-uri($value1,$value2){&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+"true"&#xD;
+};&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function func:base-uri($value1){&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+"true"&#xD;
+};&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function func:base-uri(){&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+"true"&#xD;
+};&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function func:iteration-size(){&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+"true"&#xD;
+};&#xD;
+&#xD;
+</pre></div><br/><div class="footer"><p style="text-align:right"><i/> |
+          generated by xquerydoc <a href="https://github.com/xquery/xquerydoc" target="xquerydoc">https://github.com/xquery/xquerydoc</a></p></div></div><script type="application/javascript">
+	  window.onload = function(){ prettyPrint(); }
+	</script></body></html>

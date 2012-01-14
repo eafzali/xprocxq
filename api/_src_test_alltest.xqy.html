@@ -1,0 +1,185 @@
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta http-equiv="Generator" content="xquerydoc - https://github.com/xquery/xquerydoc"/><title>xqDoc - </title><style type="text/css">
+          body {
+          font-family: Helvetica;
+          padding: 0.5em  1em;
+          }
+          pre {
+          font-family: Inconsolata, Consolas, monospace;
+          }
+          ol.results {
+          padding-left: 0;
+          }
+          .footer {
+          text-align:right;
+          border-top: solid 4px;
+          padding: 0.25em 0.5em;
+          font-size: 85%;
+          color: #999;
+          }
+          li.result {
+          list-style-position: inside;
+          list-style: none;
+          height:140px;
+          }
+          h2 {
+          display: inline-block;
+          margin: 0;
+          }
+
+          h2 a,
+          .result h3 a {
+          text-decoration: inherit;
+          color: inherit;
+          }
+          h3{
+	  font-size: 140%;
+	  background-color: #aaa;
+	  border-bottom: 1px solid #000;
+	  width: 100%;
+	  }
+          h4{
+	  font-size: 100%;
+	  background-color: #ddd;
+	  width: 90%;
+	  }
+
+          .namespace {
+          color: #999;
+          }
+          .namespace:before {
+          content: "{";
+          }
+          .namespace:after {
+          content: "}";
+          }
+          table{
+          width:75%;
+          float:right;
+          }
+          td {
+          height:100px;
+          width:50%;
+          vertical-align:text-top;
+          }
+        </style><script src="lib/prettify.js" type="text/javascript"> </script><script src="lib/lang-xq.js" type="text/javascript"> </script><link rel="stylesheet" type="text/css" href="lib/prettify.css"/></head><body class="home"><div id="main"><h1><span class="namespace"/>  main module </h1><div id="variables"><h3>Variables</h3></div><div id="functions"><h3>Functions</h3></div><div><h3>Original Source Code</h3><pre class="prettyprint lang-xq">xquery version "3.0";
+
+(: w3c test runner :)
+
+
+declare boundary-space strip;
+declare copy-namespaces no-preserve,no-inherit;
+
+declare namespace p="http://www.w3.org/ns/xproc";
+declare namespace c="http://www.w3.org/ns/xproc-step";
+declare namespace ext ="http://xproc.net/xproc/ext";
+declare namespace t="http://xproc.org/ns/testsuite";
+declare namespace test="http://xproc.org/ns/testsuite";
+
+declare namespace err="http://www.w3.org/2005/xqt-errors";
+
+import module namespace xproc = "http://xproc.net/xproc" at "../../src/xquery/xproc.xqm";
+import module namespace u = "http://xproc.net/xproc/util" at "../../src/xquery/util.xqm";
+
+import module namespace test1 = "http://www.marklogic.com/test"
+    at "lib/test.xqm";
+
+ test1:html(
+&lt;testsuite title="w3c required and optional tests" xmlns:xqyerr="http://www.w3.org/2005/xqt-errors"&gt;
+{
+for $test in collection("tests.xproc.org/required?select=*.xml")
+ let $pipeline  := if($test/t:test/t:pipeline/@href) then doc(concat("tests.xproc.org/required/",$test/t:test/t:pipeline/@href)) else $test/t:test/t:pipeline/*
+ let $stdin     := if($test/t:test/t:input[@port eq 'source']/t:document) then (for $doc in $test/t:test/t:input[@port eq 'source']/t:document/* return $doc) else ($test/t:test/t:input[@port eq 'source']/*)
+ let $expected  := if($test/t:test/t:output/t:document) then (for $doc in $test/t:test/t:output/t:document return $doc/*) else $test/t:test/t:output/*
+ let $error  as xs:string  := string($test//@*:error)
+ let $err := if (starts-with($error,'err:') and $error ne 'test') then xs:QName($error) else '*'
+ let $dflag     := 1
+ let $tflag     := 0
+ let $bindings  := ()
+ let $options   := ()
+ let $outputs   := (
+
+for $output in $test/t:test/t:input[@port ne 'source']
+return
+&lt;xproc:output port="{$output/@port}" primary="false" port-type="external" func="" xproc:default-name="!1" step="!1"&gt;{
+if ($output/t:document) then for $doc in $output/t:document return $doc/node() else $output/node()
+}&lt;/xproc:output&gt;
+)
+return
+
+if ($error) then
+()
+else
+&lt;test name="" desc="{$test//t:title}"&gt;
+&lt;input port="source"&gt;
+{$stdin}
+&lt;/input&gt;
+&lt;pipeline&gt;
+{$pipeline}
+&lt;/pipeline&gt;
+&lt;error&gt;{$error}&lt;/error&gt;
+&lt;expected&gt;{if ($expected) then try{u:strip-whitespace(document{$expected})} catch * {
+&lt;err/&gt;
+} else ()}&lt;/expected&gt;
+&lt;result&gt;{let $result := try{ $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)} catch * {&lt;error type="running w3c test"&gt;{$outputs}&lt;/error&gt;}
+return
+u:strip-whitespace(document{$result})
+}
+&lt;/result&gt;
+&lt;/test&gt;
+
+}
+
+{
+
+for $test in collection("tests.xproc.org/optional?select=*.xml1")
+ let $pipeline := $test/t:test/t:pipeline/*
+ let $stdin    := $test/t:test/t:input[@port eq 'source']/*
+ let $expected := $test/t:test/t:output/*
+ let $error    := string($test/@error)
+ let $dflag    := 0
+ let $tflag    := 0
+ let $bindings := ()
+ let $options  := ()
+ let $outputs   := (
+
+for $output in $test/t:test/t:input[@port ne 'source']
+return
+&lt;xproc:output port="{$output/@port}" primary="false" port-type="external" func="" xproc:default-name="!1" step="!1"&gt;{
+if ($output/t:document) then for $doc in $output/t:document return $doc/node() else $output/node()
+}&lt;/xproc:output&gt;
+
+)
+
+
+return
+if ($error) then
+()
+else
+&lt;test name="" desc="{$test//t:title}"&gt;
+&lt;input port="source"&gt;
+{$stdin}
+&lt;/input&gt;
+&lt;pipeline&gt;
+{$pipeline}
+&lt;/pipeline&gt;
+&lt;expected&gt;{if ($expected) then try{u:strip-whitespace($expected)} catch * {&lt;error/&gt;} else ()}&lt;/expected&gt;
+&lt;result&gt;{
+u:strip-whitespace(document{
+try{
+  $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)
+} catch * {&lt;error/&gt;
+}
+
+})
+
+}&lt;/result&gt;
+&lt;/test&gt;
+
+
+}
+&lt;/testsuite&gt;
+)
+</pre></div><br/><div class="footer"><p style="text-align:right"><i/> |
+          generated by xquerydoc <a href="https://github.com/xquery/xquerydoc" target="xquerydoc">https://github.com/xquery/xquerydoc</a></p></div></div><script type="application/javascript">
+	  window.onload = function(){ prettyPrint(); }
+	</script></body></html>

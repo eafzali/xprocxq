@@ -1,0 +1,229 @@
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta http-equiv="Generator" content="xquerydoc - https://github.com/xquery/xquerydoc"/><title>xqDoc - </title><style type="text/css">
+          body {
+          font-family: Helvetica;
+          padding: 0.5em  1em;
+          }
+          pre {
+          font-family: Inconsolata, Consolas, monospace;
+          }
+          ol.results {
+          padding-left: 0;
+          }
+          .footer {
+          text-align:right;
+          border-top: solid 4px;
+          padding: 0.25em 0.5em;
+          font-size: 85%;
+          color: #999;
+          }
+          li.result {
+          list-style-position: inside;
+          list-style: none;
+          height:140px;
+          }
+          h2 {
+          display: inline-block;
+          margin: 0;
+          }
+
+          h2 a,
+          .result h3 a {
+          text-decoration: inherit;
+          color: inherit;
+          }
+          h3{
+	  font-size: 140%;
+	  background-color: #aaa;
+	  border-bottom: 1px solid #000;
+	  width: 100%;
+	  }
+          h4{
+	  font-size: 100%;
+	  background-color: #ddd;
+	  width: 90%;
+	  }
+
+          .namespace {
+          color: #999;
+          }
+          .namespace:before {
+          content: "{";
+          }
+          .namespace:after {
+          content: "}";
+          }
+          table{
+          width:75%;
+          float:right;
+          }
+          td {
+          height:100px;
+          width:50%;
+          vertical-align:text-top;
+          }
+        </style><script src="lib/prettify.js" type="text/javascript"> </script><script src="lib/lang-xq.js" type="text/javascript"> </script><link rel="stylesheet" type="text/css" href="lib/prettify.css"/></head><body class="home"><div id="main"><h1><span class="namespace">http://xproc.net/xproc/opt</span>  library module </h1><div id="variables"><h3>Variables</h3><div id="var_exec"><h4><pre class="prettyprint lang-xq"><u>Variable</u>: $exec as </pre></h4></div><div id="var_hash"><h4><pre class="prettyprint lang-xq"><u>Variable</u>: $hash as </pre></h4></div><div id="var_uuid"><h4><pre class="prettyprint lang-xq"><u>Variable</u>: $uuid as </pre></h4></div><div id="var_www-form-urldecode"><h4><pre class="prettyprint lang-xq"><u>Variable</u>: $www-form-urldecode as </pre></h4></div><div id="var_www-form-urlencode"><h4><pre class="prettyprint lang-xq"><u>Variable</u>: $www-form-urlencode as </pre></h4></div><div id="var_validate-with-xml-schema"><h4><pre class="prettyprint lang-xq"><u>Variable</u>: $validate-with-xml-schema as </pre></h4></div><div id="var_validate-with-schematron"><h4><pre class="prettyprint lang-xq"><u>Variable</u>: $validate-with-schematron as </pre></h4></div><div id="var_validate-with-relax-ng"><h4><pre class="prettyprint lang-xq"><u>Variable</u>: $validate-with-relax-ng as </pre></h4></div><div id="var_xquery"><h4><pre class="prettyprint lang-xq"><u>Variable</u>: $xquery as </pre></h4></div><div id="var_xsl-formatter"><h4><pre class="prettyprint lang-xq"><u>Variable</u>: $xsl-formatter as </pre></h4></div></div><div id="functions"><h3>Functions</h3><div id="func_exec_4"><h4><pre class="prettyprint lang-xq"><u>Function</u>: exec($primary,$secondary,$options,$variables)</pre></h4><h5>Params</h5><ul><li>primary as </li><li>secondary as </li><li>options as </li><li>variables as </li></ul></div><div id="func_hash_4"><h4><pre class="prettyprint lang-xq"><u>Function</u>: hash($primary,$secondary,$options,$variables)</pre></h4><h5>Params</h5><ul><li>primary as </li><li>secondary as </li><li>options as </li><li>variables as </li></ul></div><div id="func_uuid_4"><h4><pre class="prettyprint lang-xq"><u>Function</u>: uuid($primary,$secondary,$options,$variables)</pre></h4><h5>Params</h5><ul><li>primary as </li><li>secondary as </li><li>options as </li><li>variables as </li></ul></div><div id="func_www-form-urldecode_4"><h4><pre class="prettyprint lang-xq"><u>Function</u>: www-form-urldecode($primary,$secondary,$options,$variables)</pre></h4><h5>Params</h5><ul><li>primary as </li><li>secondary as </li><li>options as </li><li>variables as </li></ul></div><div id="func_www-form-urlencode_4"><h4><pre class="prettyprint lang-xq"><u>Function</u>: www-form-urlencode($primary,$secondary,$options,$variables)</pre></h4><h5>Params</h5><ul><li>primary as </li><li>secondary as </li><li>options as </li><li>variables as </li></ul></div><div id="func_validate_4"><h4><pre class="prettyprint lang-xq"><u>Function</u>: validate($primary,$secondary,$options,$variables)</pre></h4><h5>Params</h5><ul><li>primary as </li><li>secondary as </li><li>options as </li><li>variables as </li></ul></div><div id="func_xsl-formatter_4"><h4><pre class="prettyprint lang-xq"><u>Function</u>: xsl-formatter($primary,$secondary,$options,$variables)</pre></h4><h5>Params</h5><ul><li>primary as </li><li>secondary as </li><li>options as </li><li>variables as </li></ul></div><div id="func_xquery_4"><h4><pre class="prettyprint lang-xq"><u>Function</u>: xquery($primary,$secondary,$options,$variables)</pre></h4><h5>Params</h5><ul><li>primary as </li><li>secondary as </li><li>options as </li><li>variables as </li></ul></div></div><div><h3>Original Source Code</h3><pre class="prettyprint lang-xq">xquery version "1.0" encoding "UTF-8";&#xD;
+module namespace opt = "http://xproc.net/xproc/opt";&#xD;
+(: ------------------------------------------------------------------------------------- &#xD;
+&#xD;
+	opt.xqm - Implements all xproc optional steps.&#xD;
+	&#xD;
+---------------------------------------------------------------------------------------- :)&#xD;
+&#xD;
+&#xD;
+(: XProc Namespace Declaration :)&#xD;
+declare namespace p="http://www.w3.org/ns/xproc";&#xD;
+declare namespace c="http://www.w3.org/ns/xproc-step";&#xD;
+declare namespace err="http://www.w3.org/ns/xproc-error";&#xD;
+declare namespace comp="http://xproc.net/xproc/comp";&#xD;
+declare namespace xproc = "http://xproc.net/xproc";&#xD;
+&#xD;
+(: Module Imports :)&#xD;
+import module namespace u = "http://xproc.net/xproc/util" at "resource:net/xproc/xprocxq/src/xquery/util.xqm";&#xD;
+import module namespace const = "http://xproc.net/xproc/const" at "resource:net/xproc/xprocxq/src/xquery/const.xqm";&#xD;
+(: import module namespace xslfo = "http://exist-db.org/xquery/xslfo"; (: for p:xsl-formatter :) :)&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+&#xD;
+(: Module Vars :)&#xD;
+declare variable $opt:exec := util:function(xs:QName("opt:exec"), 4);&#xD;
+declare variable $opt:hash := util:function(xs:QName("opt:hash"), 4);&#xD;
+declare variable $opt:uuid := util:function(xs:QName("opt:uuid"), 4);&#xD;
+declare variable $opt:www-form-urldecode := util:function(xs:QName("opt:www-form-urldecode"), 4);&#xD;
+declare variable $opt:www-form-urlencode := util:function(xs:QName("opt:www-form-urlencode"), 4);&#xD;
+declare variable $opt:validate-with-xml-schema := util:function(xs:QName("opt:validate"), 4);&#xD;
+declare variable $opt:validate-with-schematron := util:function(xs:QName("opt:validate"), 4);&#xD;
+declare variable $opt:validate-with-relax-ng := util:function(xs:QName("opt:validate"), 4);&#xD;
+declare variable $opt:xquery := util:function(xs:QName("opt:xquery"), 4);&#xD;
+declare variable $opt:xsl-formatter :=util:function(xs:QName("opt:xsl-formatter"), 4);&#xD;
+&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function opt:exec($primary,$secondary,$options,$variables) {&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+    u:outputResultElement(&lt;test3/&gt;)&#xD;
+};&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function opt:hash($primary,$secondary,$options,$variables) {&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+let $v := u:get-primary($primary)&#xD;
+let $match := u:get-option('match',$options,$v)&#xD;
+let $algorithm := u:get-option('algorithm',$options,$v)&#xD;
+let $matchresult :=  u:xsltmatchpattern($match,$v,$variables)&#xD;
+let $replacement := u:hash(string($matchresult),$algorithm)&#xD;
+return&#xD;
+	u:replace-matching-elements($v/*,$matchresult,$replacement)&#xD;
+};&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function opt:uuid($primary,$secondary,$options,$variables) {&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+let $v := u:get-primary($primary)&#xD;
+let $match := u:get-option('match',$options,$v)&#xD;
+let $replacement := u:uuid()&#xD;
+return&#xD;
+	u:replace-matching-elements($v/*, u:xsltmatchpattern($match,$v,$variables),$replacement)&#xD;
+};&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function opt:www-form-urldecode($primary,$secondary,$options,$variables) {&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+let $v := u:get-primary($primary)&#xD;
+let $value := u:get-option('value',$options,$v)&#xD;
+let $params := tokenize($value,'&amp;amp;')&#xD;
+return&#xD;
+       &lt;c:param-set xmlns:c="http://www.w3.org/ns/xproc-step"&gt;&#xD;
+        {&#xD;
+        for $child in $params&#xD;
+        return&#xD;
+            &lt;c:param name="{substring-before($child,'=')}" value="{substring-after($child,'=')}"/&gt;&#xD;
+        }&#xD;
+       &lt;/c:param-set&gt;&#xD;
+};&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function opt:www-form-urlencode($primary,$secondary,$options,$variables) {&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+let $v := u:get-primary($primary)&#xD;
+return&#xD;
+	$v&#xD;
+};&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function opt:validate($primary,$secondary,$options,$variables) {&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+let $v := u:get-primary($primary)&#xD;
+let $schema := u:get-secondary('schema',$secondary)&#xD;
+let $assert-valid := u:get-option('assert-valid',$options,$v)&#xD;
+let $validation-result :=  validation:jing($v,$schema/*)&#xD;
+&#xD;
+return&#xD;
+    if($assert-valid eq 'false' ) then&#xD;
+     $v&#xD;
+    else if ($assert-valid eq 'true' and xs:boolean($validation-result)) then&#xD;
+     $v&#xD;
+    else&#xD;
+	    u:dynamicError('err:XC0053',concat(": invalid ",u:serialize($v,$const:TRACE_SERIALIZE)))&#xD;
+};&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function opt:xsl-formatter($primary,$secondary,$options,$variables) {&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+let $v := u:get-primary($primary)&#xD;
+let $href-uri := u:get-option('href',$options,$v)&#xD;
+let $name := tokenize($href-uri, "/")[last()]&#xD;
+let $path := substring-before($href-uri,$name)&#xD;
+let $query := concat("xslfo:render(",u:serialize($v,$const:DEFAULT_SERIALIZE),",$const:pdf-mimetype,&lt;parameters/&gt;)")&#xD;
+let $pdf := u:eval($query)&#xD;
+let $store := if(starts-with($path,'file://')) then&#xD;
+				let $query := concat("file:serialize('",&#xD;
+									 $pdf,&#xD;
+								 	 "','",&#xD;
+									 substring-after($href-uri,'file://'),&#xD;
+									 "','method=text')")&#xD;
+				return&#xD;
+				(: u:eval($query) :)&#xD;
+				u:dynamicError('err:XC0050',"p:xsl-formatter cannot store pdf as xprocxq does not yet support file:// protocol yet (soon!).")&#xD;
+				&#xD;
+			  else&#xD;
+				xmldb:store($path,$name,$pdf)&#xD;
+				&#xD;
+return&#xD;
+	if($store) then&#xD;
+		u:outputResultElement(concat($path,$name))&#xD;
+	else&#xD;
+		u:dynamicError('err:XC0050',"p:xsl-formatter cannot store pdf.")&#xD;
+};&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+declare function opt:xquery($primary,$secondary,$options,$variables) {&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+u:assert(exists(u:get-secondary('query',$secondary)/c:query),'p:input query is required'),&#xD;
+(:TODO: need to sort out multiple c:query elements and implied cdata sections :)&#xD;
+	let $v := u:get-primary($primary)&#xD;
+    let $xquery := u:get-secondary('query',$secondary)/c:query&#xD;
+	let $query := if ($xquery/@xproc:escape = 'true') then&#xD;
+			u:serialize($xquery/node(),$const:TRACE_SERIALIZE)&#xD;
+		else&#xD;
+			$xquery/node()&#xD;
+    let $preserve-context := u:get-option('xproc:preserve-context',$options,$v)&#xD;
+    return&#xD;
+        if ($preserve-context eq 'true') then&#xD;
+            u:xquery-with-context($query,$v,$variables)&#xD;
+        else&#xD;
+            u:xquery($query,$v,$variables)&#xD;
+};&#xD;
+&#xD;
+&#xD;
+(: -------------------------------------------------------------------------- :)&#xD;
+</pre></div><br/><div class="footer"><p style="text-align:right"><i/> |
+          generated by xquerydoc <a href="https://github.com/xquery/xquerydoc" target="xquerydoc">https://github.com/xquery/xquerydoc</a></p></div></div><script type="application/javascript">
+	  window.onload = function(){ prettyPrint(); }
+	</script></body></html>
