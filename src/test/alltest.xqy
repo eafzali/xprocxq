@@ -29,7 +29,7 @@ for $test in collection("tests.xproc.org/required?select=*.xml")
  let $expected  := if($test/t:test/t:output/t:document) then (for $doc in $test/t:test/t:output/t:document return $doc/*) else $test/t:test/t:output/*
  let $error  as xs:string  := string($test//@*:error)
  let $err := if (starts-with($error,'err:') and $error ne 'test') then xs:QName($error) else '*'
- let $dflag     := 0
+ let $dflag     := 1
  let $tflag     := 0
  let $bindings  := ()
  let $options   := ()
@@ -57,7 +57,7 @@ else
 <expected>{if ($expected) then try{u:strip-whitespace(document{$expected})} catch * {
 <err/>
 } else ()}</expected>
-<result>{let $result := try{ $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)} catch * {<error test="1" type="{$error}">{$outputs}</error>}
+<result>{let $result := try{ $xproc:run-step($pipeline,$stdin,$bindings,$options,$outputs,$dflag,$tflag)} catch * {<error type="running w3c test">{$outputs}</error>}
 return
 u:strip-whitespace(document{$result})
 }

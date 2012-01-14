@@ -1,0 +1,193 @@
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta http-equiv="Generator" content="xquerydoc - https://github.com/xquery/xquerydoc"/><title>xqDoc - </title><style type="text/css">
+          body {
+          font-family: Helvetica;
+          padding: 0.5em  1em;
+          }
+          pre {
+          font-family: Inconsolata, Consolas, monospace;
+          }
+          ol.results {
+          padding-left: 0;
+          }
+          .footer {
+          text-align:right;
+          border-top: solid 4px;
+          padding: 0.25em 0.5em;
+          font-size: 85%;
+          color: #999;
+          }
+          li.result {
+          list-style-position: inside;
+          list-style: none;
+          height:140px;
+          }
+          h2 {
+          display: inline-block;
+          margin: 0;
+          }
+
+          h2 a,
+          .result h3 a {
+          text-decoration: inherit;
+          color: inherit;
+          }
+          h3{
+	  font-size: 140%;
+	  background-color: #aaa;
+	  border-bottom: 1px solid #000;
+	  width: 100%;
+	  }
+          h4{
+	  font-size: 100%;
+	  background-color: #ddd;
+	  width: 90%;
+	  }
+
+          .namespace {
+          color: #999;
+          }
+          .namespace:before {
+          content: "{";
+          }
+          .namespace:after {
+          content: "}";
+          }
+          table{
+          width:75%;
+          float:right;
+          }
+          td {
+          height:100px;
+          width:50%;
+          vertical-align:text-top;
+          }
+        </style><script src="lib/prettify.js" type="text/javascript"> </script><script src="lib/lang-xq.js" type="text/javascript"> </script><link rel="stylesheet" type="text/css" href="lib/prettify.css"/></head><body class="home"><div id="main"><h1><span class="namespace"/>  main module </h1><div id="variables"><h3>Variables</h3></div><div id="functions"><h3>Functions</h3></div><div><h3>Original Source Code</h3><pre class="prettyprint lang-xq">xquery version "3.0";
+
+import module namespace test = "http://www.marklogic.com/test"
+    at "../lib/test.xqm";
+
+import module namespace tparse = "tparse"
+    at "tparse.xqy";
+
+declare boundary-space preserve;
+    
+test:html(
+&lt;testsuite title="parse module"&gt;
+  &lt;test name="parse1" desc="parse module load"&gt;
+    &lt;expected&gt;true&lt;/expected&gt;
+    &lt;result&gt;{tparse:loadModuleTest()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="parse2a" desc="test explicit naming parsing"&gt;
+    &lt;expected&gt;{fn:doc('data/parse2aresult.xml')}&lt;/expected&gt;
+    &lt;result&gt;{tparse:parseExplicitNames()}&lt;/result&gt;
+  &lt;/test&gt;
+ &lt;test name="parse2b" desc="test explicit naming parsing"&gt;
+    &lt;expected&gt;{fn:doc('data/parse2bresult.xml')}&lt;/expected&gt;
+    &lt;result&gt;{tparse:parseExplicitNames1()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="parse2c" desc="test explicit naming parsing"&gt;
+    &lt;expected&gt;{fn:doc('data/parse2cresult.xml')}&lt;/expected&gt;
+    &lt;result&gt;{tparse:parseExplicitNames2()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="parse3a" desc="test explicit naming parsing adds parse: namespace"&gt;
+    &lt;expected&gt;true&lt;/expected&gt;
+    &lt;result&gt;{tparse:addParseNamespace()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="parse3b" desc="test explicit naming parsing adds p: namespace"&gt;
+    &lt;expected&gt;true&lt;/expected&gt;
+    &lt;result&gt;{tparse:addParseNamespace1()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="parse4a" desc="test parse:type returns correct type"&gt;
+    &lt;expected&gt;true&lt;/expected&gt;
+    &lt;result&gt;{tparse:testParseType1()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="parse4b" desc="test parse:type returns correct type"&gt;
+    &lt;expected&gt;error&lt;/expected&gt;
+    &lt;result&gt;{tparse:testParseType2()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="parse4c" desc="test parse:type returns correct type"&gt;
+    &lt;expected&gt;true&lt;/expected&gt;
+    &lt;result&gt;{tparse:testParseType3()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="parse4d" desc="test parse:type returns correct type"&gt;
+    &lt;expected&gt;true&lt;/expected&gt;
+    &lt;result&gt;{tparse:testParseType4()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="parse5" desc="test parse:type returns correct type"&gt;
+    &lt;expected&gt;true&lt;/expected&gt;
+    &lt;result&gt;{tparse:testParseType5()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="parse6" desc="test parse:type returns correct error type"&gt;
+    &lt;expected&gt;true&lt;/expected&gt;
+    &lt;result&gt;{tparse:testParseType6()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="parse7" desc="test parse:explicit-type"&gt;
+    &lt;expected&gt;{fn:doc('data/parse7result.xml')}&lt;/expected&gt;
+    &lt;result&gt;{tparse:parseExplicitNames()}&lt;/result&gt;2
+  &lt;/test&gt;
+  &lt;test name="parse7a" desc="test parse:explicit-type"&gt;
+    &lt;expected&gt;{fn:doc('data/parse7aresult.xml')}&lt;/expected&gt;
+    &lt;result&gt;{tparse:testExplicitName1()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="parse7b" desc="test parse:explicit-type with p:choose"&gt;
+    &lt;expected&gt;{fn:doc('data/parse7bresult.xml')}&lt;/expected&gt;
+    &lt;result&gt;{tparse:testExplicitName()}&lt;/result&gt;
+  &lt;/test&gt;
+
+  &lt;!--test name="parse7c" desc="test parse:explicit-name with p:group"&gt;
+    &lt;expected&gt;{fn:doc('data/parse7cresult.xml')}&lt;/expected&gt;
+    &lt;result&gt;{tparse:testExplicitName()}&lt;/result&gt;
+  &lt;/test&gt;
+
+  &lt;test name="parse7d" desc="test parse:explicit-name with p:viewport"&gt;
+    &lt;expected&gt;{fn:doc('data/parse7dresult.xml')}&lt;/expected&gt;
+    &lt;result&gt;{tparse:testExplicitName()}&lt;/result&gt;
+  &lt;/test--&gt;
+
+  &lt;test name="parse8a" desc="test parse:AST"&gt;
+    &lt;expected&gt;{fn:doc('data/parse8aresult.xml')}&lt;/expected&gt;
+    &lt;result&gt;{tparse:testAST()}&lt;/result&gt;
+  &lt;/test&gt;
+
+  &lt;test name="parse8b" desc="test parse:AST1"&gt;
+    &lt;expected&gt;{fn:doc('data/parse8bresult.xml')}&lt;/expected&gt;
+    &lt;result&gt;{tparse:testAST1()}&lt;/result&gt;
+  &lt;/test&gt;
+
+  &lt;test name="parse9a" desc="test parse:explicit-bindings"&gt;
+    &lt;expected&gt;{fn:doc('data/parse9aresult.xml')}&lt;/expected&gt;
+    &lt;result&gt;{tparse:testExplicitBindings1()}&lt;/result&gt;
+  &lt;/test&gt;
+
+  &lt;test name="parse9b" desc="test parse:explicit-bindings with nested group"&gt;
+    &lt;expected&gt;{fn:doc('data/parse9bresult.xml')}&lt;/expected&gt;
+    &lt;result&gt;{tparse:testExplicitBindings2()}&lt;/result&gt;
+  &lt;/test&gt;
+
+  &lt;test name="parse9c" desc="test parse:explicit-bindings with nested group"&gt;
+    &lt;expected&gt;{fn:doc('data/parse9cresult.xml')}&lt;/expected&gt;
+    &lt;result&gt;{tparse:testExplicitBindings3()}&lt;/result&gt;
+  &lt;/test&gt;
+
+  &lt;test name="parse9d" desc="test parse:explicit-bindings with explicit ports"&gt;
+    &lt;expected&gt;{fn:doc('data/parse9dresult.xml')}&lt;/expected&gt;
+    &lt;result&gt;{tparse:testExplicitBindings4()}&lt;/result&gt;
+  &lt;/test&gt;
+
+  &lt;test name="parse10a" desc="test step sorting"&gt;
+    &lt;expected&gt;{fn:doc('data/parse10aresult.xml')}&lt;/expected&gt;
+    &lt;result&gt;{tparse:testStepSort1()}&lt;/result&gt;
+  &lt;/test&gt;
+
+&lt;/testsuite&gt;
+)
+
+(:
+-- Local Variables:
+-- compile-command: "../../../bin/test.sh all-parse.xqy &gt; ../../../report/all-parse.html"
+-- End:
+:)
+</pre></div><br/><div class="footer"><p style="text-align:right"><i/> |
+          generated by xquerydoc <a href="https://github.com/xquery/xquerydoc" target="xquerydoc">https://github.com/xquery/xquerydoc</a></p></div></div><script type="application/javascript">
+	  window.onload = function(){ prettyPrint(); }
+	</script></body></html>

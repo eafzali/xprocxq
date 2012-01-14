@@ -78,9 +78,9 @@ declare function func:value-available($value1){
 
 
 (: -------------------------------------------------------------------------- :)
-declare function func:step-available($step-name){
+declare function func:step-available($step-name) as xs:boolean{
 (: -------------------------------------------------------------------------- :)
-    "true"
+    if(starts-with($step-name,'p')) then true() else false()
 };
 
 (: -------------------------------------------------------------------------- :)

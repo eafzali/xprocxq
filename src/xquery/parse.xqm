@@ -483,7 +483,7 @@ return
                        attribute xproc:step {"true"},
                        parse:input-port($node/p:input, $step-definition),
                        parse:output-port($node/p:output, $step-definition),
-                       parse:xpath-context($node/p:xpath-context, $step-definition)
+                       $node/p:xpath-context
                      },
                      parse:AST($node/*[@xproc:type ne 'comp'])
                    }

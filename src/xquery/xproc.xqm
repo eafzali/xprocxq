@@ -94,29 +94,30 @@ return
 (: -------------------------------------------------------------------------- :)
 declare function xproc:choose($primary,$secondary,$options,$currentstep) {
 (: -------------------------------------------------------------------------- :)
-let $namespaces  := xproc:enum-namespaces($currentstep)
+let $namespaces := xproc:enum-namespaces($currentstep)
 let $defaultname as xs:string := string($currentstep/@xproc:default-name)
 let $ast-otherwise := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/p:otherwise/node()}</p:declare-step>
 
 let $xpath-context as element(p:xpath-context) := $currentstep/ext:pre/p:xpath-context[1]
-let $xpath-context-select as xs:string   :=string($xpath-context/@select)
-let $xpath-context-binding   := $xpath-context[1]/node()[1]
+let $xpath-context-select as xs:string :=string($xpath-context/@select)
+let $xpath-context-binding := $xpath-context[1]/node()[1]
 let $xpath-context-data := xproc:resolve-inline-binding($xpath-context-binding/p:inline,$currentstep)
-let $context := if ($primary ne '') then 
-                  u:evalXPATH($xpath-context-select,document{$primary}) 
-                else 
-                  u:evalXPATH($xpath-context-select,document{$xpath-context}) 
-let $when-test as xs:boolean* :=  for $when at $count in $currentstep/p:when
+let $context := if ($primary ne '') then
+                  u:evalXPATH($xpath-context-select,document{$primary})
+                else
+                  u:evalXPATH($xpath-context-select,document{$xpath-context})
+let $when-test as xs:boolean* := for $when at $count in $currentstep/p:when
           let $check-when-test := u:assert(not($when/@test eq ''),"p:choose when test attribute cannot be empty")
           return
              if (u:evalXPATH(string($when/@test),document{$context},$options[@name])) then true() else false()
 return
-  if($when-test = true()) then 
+  if($when-test = true()) then
     let $ast-when := <p:declare-step name="{$defaultname}" xproc:default-name="{$defaultname}" >{$currentstep/p:when[$when-test[1]]/node()}</p:declare-step>
     return
       xproc:output(xproc:evalAST($ast-when,$xproc:eval-step,$namespaces,$primary,(),()), 0)
   else
       xproc:output(xproc:evalAST($ast-otherwise,$xproc:eval-step,$namespaces,$primary,(),()), 0)
+
 };
 
 

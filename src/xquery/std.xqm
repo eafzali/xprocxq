@@ -859,8 +859,9 @@ return
 declare function std:string-replace($primary,$secondary,$options,$variables) {
 (: -------------------------------------------------------------------------- :)
 let $ns := u:get-secondary('xproc:namespaces',$secondary)/*
-let $match  := u:get-option('match',$options,$primary)
-let $replace as xs:string := u:get-option('replace',$options,$primary)
+let $match  := u:get-string-option('match',$options,$primary)
+let $replace as xs:string := u:get-eval-option('replace',$options,$primary)
+
 let $template := <xsl:stylesheet version="2.0">
        {for $n in $ns return
         namespace {$n/@prefix} {$n/@URI}
@@ -883,21 +884,19 @@ return
 <xsl:template match="{$match}">
   <xsl:choose>
     <xsl:when test=". instance of attribute()">
-      <xsl:attribute name="{replace($match,'@','')}">
-        <xsl:value-of select="'{$replace}'"/>
+      <xsl:attribute name="{{name(.)}}">
+        <xsl:value-of select="{$replace}"/>
       </xsl:attribute>
     </xsl:when>
     <xsl:when test=". instance of element()">
-      <xsl:element name="{replace($match,'@','')}">
-      <xsl:copy-of select="@*"/>
         <xsl:value-of select="'{$replace}'"/>
-      </xsl:element>
     </xsl:when>
     <xsl:otherwise>
-      <xsl:value-of select="'{$replace}'"/>
+      <xsl:value-of select="{$replace}"/>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
+
 </xsl:stylesheet>      
 
 return

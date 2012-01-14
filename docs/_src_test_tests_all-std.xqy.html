@@ -1,0 +1,242 @@
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta http-equiv="Generator" content="xquerydoc - https://github.com/xquery/xquerydoc"/><title>xqDoc - </title><style type="text/css">
+          body {
+          font-family: Helvetica;
+          padding: 0.5em  1em;
+          }
+          pre {
+          font-family: Inconsolata, Consolas, monospace;
+          }
+          ol.results {
+          padding-left: 0;
+          }
+          .footer {
+          text-align:right;
+          border-top: solid 4px;
+          padding: 0.25em 0.5em;
+          font-size: 85%;
+          color: #999;
+          }
+          li.result {
+          list-style-position: inside;
+          list-style: none;
+          height:140px;
+          }
+          h2 {
+          display: inline-block;
+          margin: 0;
+          }
+
+          h2 a,
+          .result h3 a {
+          text-decoration: inherit;
+          color: inherit;
+          }
+          h3{
+	  font-size: 140%;
+	  background-color: #aaa;
+	  border-bottom: 1px solid #000;
+	  width: 100%;
+	  }
+          h4{
+	  font-size: 100%;
+	  background-color: #ddd;
+	  width: 90%;
+	  }
+
+          .namespace {
+          color: #999;
+          }
+          .namespace:before {
+          content: "{";
+          }
+          .namespace:after {
+          content: "}";
+          }
+          table{
+          width:75%;
+          float:right;
+          }
+          td {
+          height:100px;
+          width:50%;
+          vertical-align:text-top;
+          }
+        </style><script src="lib/prettify.js" type="text/javascript"> </script><script src="lib/lang-xq.js" type="text/javascript"> </script><link rel="stylesheet" type="text/css" href="lib/prettify.css"/></head><body class="home"><div id="main"><h1><span class="namespace"/>  main module </h1><div id="variables"><h3>Variables</h3></div><div id="functions"><h3>Functions</h3></div><div><h3>Original Source Code</h3><pre class="prettyprint lang-xq">xquery version "3.0";
+
+import module namespace test = "http://www.marklogic.com/test"
+    at "../lib/test.xqm";
+
+import module namespace tstd = "tstd"
+    at "tstd.xqy";
+
+
+test:html(
+&lt;testsuite title="std step module"&gt;
+  &lt;test name="std1" desc="std module loading"&gt;
+    &lt;expected&gt;true&lt;/expected&gt;
+    &lt;result&gt;{tstd:loadModuleTest()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std2" desc="std:identity step"&gt;
+    &lt;expected&gt;&lt;test/&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testIdentity()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std3" desc="std:count step"&gt;
+    &lt;expected&gt;&lt;c:result xmlns:c="http://www.w3.org/ns/xproc-step"&gt;1&lt;/c:result&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testCount()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std4a" desc="std:count step with limit set"&gt;
+    &lt;expected&gt;&lt;c:result xmlns:c="http://www.w3.org/ns/xproc-step"&gt;4&lt;/c:result&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testCount2()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std4b" desc="std:count step with limit set to 4"&gt;
+    &lt;expected&gt;&lt;c:result xmlns:c="http://www.w3.org/ns/xproc-step"&gt;4&lt;/c:result&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testCount3()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std4c" desc="std:count step with limit set to 2"&gt;
+    &lt;expected&gt;&lt;c:result xmlns:c="http://www.w3.org/ns/xproc-step"&gt;2&lt;/c:result&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testCount4()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;!--test name="std5" desc="std:error step, need to run on standalone"&gt;
+    &lt;expected&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testError()}&lt;/result&gt;
+  &lt;/test--&gt;
+  &lt;test name="std6" desc="std:filter which uses p:input"&gt;
+    &lt;expected&gt;&lt;a id="1"&gt;&lt;b id="2"&gt;test&lt;/b&gt;&lt;/a&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testFilter()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std7" desc="std:delete, initial test of xsltmatchpattern"&gt;
+    &lt;expected&gt;&lt;c&gt;aaa&lt;/c&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testDelete()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std7a" desc="std:delete"&gt;
+    &lt;expected&gt;&lt;c&gt;aaa&lt;a id="1"&gt;&lt;/a&gt;&lt;/c&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testDelete1()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std7b" desc="std:delete remove id attributes"&gt;
+    &lt;expected&gt;&lt;c&gt;aaa&lt;a&gt;&lt;b&gt;test&lt;/b&gt;&lt;/a&gt;&lt;/c&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testDelete2()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std8" desc="std:add-attribute"&gt;
+    &lt;expected&gt;&lt;c&gt;aaa&lt;a id="1"&gt;&lt;b id="2" test="test"&gt;test&lt;/b&gt;&lt;/a&gt;&lt;/c&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testAddAttr()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std9" desc="std:string-replace"&gt;
+    &lt;expected&gt;&lt;c&gt;aaa&lt;a id="1"&gt;&lt;b id="2"&gt;aaaa&lt;/b&gt;&lt;/a&gt;&lt;/c&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testStringReplace()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std10" desc="std:wrap"&gt;
+    &lt;expected&gt;&lt;c&gt;aaa&lt;a id="1"&gt;&lt;aaaa&gt;&lt;b id="2"&gt;test&lt;/b&gt;&lt;/aaaa&gt;&lt;/a&gt;&lt;/c&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testWrap()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std11" desc="std:wrap-sequence"&gt;
+    &lt;expected&gt;&lt;c&gt;aaa&lt;a id="1"&gt;&lt;aaaa&gt;&lt;b id="2"&gt;test&lt;/b&gt;&lt;/aaaa&gt;&lt;/a&gt;&lt;/c&gt;&lt;a&gt;&lt;aaaa&gt;&lt;b&gt;aaa&lt;/b&gt;&lt;/aaaa&gt;&lt;/a&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testWrapSequence()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std12" desc="std:unwrap"&gt;
+    &lt;expected&gt;&lt;c&gt;aaa&lt;a id="1"&gt;test&lt;/a&gt;&lt;/c&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testUnwrap()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std12a" desc="std:unwrap"&gt;
+    &lt;expected&gt;&lt;c&gt;aaa&lt;a id="1"&gt;testalternate&lt;/a&gt;&lt;/c&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testUnwrap1()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std13" desc="std:rename renaming element b to newname"&gt;
+    &lt;expected&gt;&lt;c&gt;aaa&lt;a id="1"&gt;&lt;newname id="2"&gt;test&lt;/newname&gt;&lt;newname&gt;alternate&lt;/newname&gt;&lt;/a&gt;&lt;/c&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testRename()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std13a" desc="std:rename renaming attribute id to newid"&gt;
+    &lt;expected&gt;&lt;c&gt;aaa&lt;a newid="1"&gt;&lt;b newid="2"&gt;test&lt;/b&gt;&lt;b&gt;alternate&lt;/b&gt;&lt;/a&gt;&lt;/c&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testRename1()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std14" desc="std:label-elements"&gt;
+    &lt;expected&gt;&lt;c&gt;aaa&lt;a id="1"&gt;&lt;b id="2" xml:id="somevalue"&gt;test&lt;/b&gt;&lt;b xml:id="somevalue"&gt;alternate&lt;/b&gt;&lt;/a&gt;&lt;/c&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testLabelElements()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std15" desc="std:xslt"&gt;
+    &lt;expected&gt;&lt;processed xmlns:xproc="http://xproc.net/xproc"&gt;processed correctly&lt;/processed&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testXSLT()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std16" desc="std:xml-base"&gt;
+    &lt;expected&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testAddXMLBase()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std17" desc="std:compare with equal inputs"&gt;
+    &lt;expected&gt;&lt;c:result xmlns:c="http://www.w3.org/ns/xproc-step"&gt;true&lt;/c:result&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testCompare()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std17a" desc="std:compare with unequal inputs"&gt;
+    &lt;expected&gt;&lt;c:result xmlns:c="http://www.w3.org/ns/xproc-step"&gt;false&lt;/c:result&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testCompare1()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std18" desc="std:directory-list"&gt;
+    &lt;expected&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testDirectoryList()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std19" desc="std:escape-markup"&gt;
+    &lt;expected&gt;&lt;c&gt;&amp;lt;a id="1"&amp;gt;
+ &amp;lt;b id="2"&amp;gt;test&amp;lt;/b&amp;gt;
+ &amp;lt;b&amp;gt;alternate&amp;lt;/b&amp;gt;
+&amp;lt;/a&amp;gt;&lt;/c&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testEscapeMarkup()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std20" desc="std:unescape-markup"&gt;
+    &lt;expected&gt;&lt;c&gt;&lt;a id="1"&gt;&lt;b id="2"&gt;test&lt;/b&gt;&lt;b&gt;alternate&lt;/b&gt;&lt;/a&gt;&lt;/c&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testUnescapeMarkup()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std21" desc="std:load"&gt;
+    &lt;expected&gt;&lt;document&gt;test&lt;/document&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testLoad()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std22" desc="std:make-absolute-uris"&gt;
+    &lt;expected&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testMakeAbsoluteUris()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std23" desc="std:pack"&gt;
+    &lt;expected&gt;&lt;packed&gt;&lt;c&gt;aaa&lt;a id="1"&gt;&lt;b id="2"&gt;test&lt;/b&gt;&lt;b&gt;alternate&lt;/b&gt;&lt;/a&gt;&lt;/c&gt;&lt;d xmlns:xproc="http://xproc.net/xproc"&gt;pack me along&lt;/d&gt;&lt;/packed&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testPack()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std24" desc="std:sink"&gt;
+    &lt;expected&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testSink()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std25" desc="std:store"&gt;
+    &lt;expected&gt;&lt;c:result xmlns:c="http://www.w3.org/ns/xproc-step"&gt;/tmp/storetest.xml&lt;/c:result&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testStore()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std26" desc="std:set-attributes"&gt;
+    &lt;expected&gt;&lt;c myattr="myattrval"&gt;aaa&lt;a id="1"&gt;&lt;b id="2"&gt;test&lt;/b&gt;&lt;b&gt;alternate&lt;/b&gt;&lt;/a&gt;&lt;/c&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testSetAttributes()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std26a" desc="std:replace with element"&gt;
+    &lt;expected&gt;&lt;c&gt;aaa&lt;a id="1"&gt;&lt;d xmlns:xproc="http://xproc.net/xproc" myattr="myattrval"&gt;&lt;/d&gt;&lt;/a&gt;&lt;d&gt;&lt;r&gt;&lt;d xmlns:xproc="http://xproc.net/xproc" myattr="myattrval"&gt;&lt;/d&gt;&lt;/r&gt;&lt;/d&gt;&lt;/c&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testReplace()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std26b" desc="std:replace with text"&gt;
+    &lt;expected&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testReplace()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std26c" desc="std:replace with processing instruction"&gt;
+    &lt;expected&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testReplace()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std26d" desc="std:replace with comment"&gt;
+    &lt;expected&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testReplace()}&lt;/result&gt;
+  &lt;/test&gt;
+  &lt;test name="std26e" desc="std:replace with attribute, should throw err:XC0023"&gt;
+    &lt;expected&gt;&lt;/expected&gt;
+    &lt;result&gt;{tstd:testReplace()}&lt;/result&gt;
+  &lt;/test&gt;
+
+&lt;/testsuite&gt;
+)
+
+(:
+-- Local Variables:
+-- compile-command: "../../../bin/test.sh all-std.xqy &gt; ../../../report/all-std.html"
+-- End:
+:)
+</pre></div><br/><div class="footer"><p style="text-align:right"><i/> |
+          generated by xquerydoc <a href="https://github.com/xquery/xquerydoc" target="xquerydoc">https://github.com/xquery/xquerydoc</a></p></div></div><script type="application/javascript">
+	  window.onload = function(){ prettyPrint(); }
+	</script></body></html>

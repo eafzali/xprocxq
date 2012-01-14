@@ -204,14 +204,36 @@ declare function u:get-secondary($name as xs:string,$secondary as element(xproc:
 };
 
 
+
 (: -------------------------------------------------------------------------- :)
-declare function u:get-option($option-name as xs:string,$options as element(xproc:options),$primary) as xs:string*{
+declare function u:get-eval-option($option-name as xs:string,$options as element(xproc:options),$primary) as xs:string{
 (: -------------------------------------------------------------------------- :)
 let $xpath as xs:string := string($options//p:with-option[@name eq $option-name]/@select)
 return
-if(starts-with($xpath,'&quot;') or starts-with($xpath,'http') or starts-with($xpath,'file')) then 
-  replace($xpath,"'","")
+if(starts-with($xpath,'&quot;') and ends-with($xpath,'&quot;')) then 
+  concat('&quot;',$xpath,'&quot;')
 else
+string(u:evalXPATH($xpath,$primary,$options[@name]))
+};
+
+(: -------------------------------------------------------------------------- :)
+declare function u:get-string-option($option-name as xs:string,$options as element(xproc:options),$primary) as xs:string{
+(: -------------------------------------------------------------------------- :)
+let $xpath as xs:string := string($options//p:with-option[@name eq $option-name]/@select)
+return
+  $xpath
+};
+
+(: -------------------------------------------------------------------------- :)
+declare function u:get-option($option-name as xs:string,$options as element(xproc:options),$primary) as xs:string{
+(: -------------------------------------------------------------------------- :)
+let $xpath as xs:string := string($options//p:with-option[@name eq $option-name]/@select)
+return
+if(starts-with($xpath,'&quot;') and ends-with($xpath,'&quot;')) then 
+ substring($xpath, 2, string-length($xpath) - 1)
+else if ( starts-with($xpath,'http') or starts-with($xpath,'file')) then 
+  replace($xpath,"'","")
+else 
   replace($xpath,"'","")
 
 (:string(
